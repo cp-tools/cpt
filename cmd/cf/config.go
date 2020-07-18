@@ -2,10 +2,13 @@ package cf
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
+	"github.com/infixint943/cookiejar"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -53,8 +56,8 @@ func config() {
 
 		fmt.Println("Logging in. Please wait.")
 		// remove all past session cookies
-		//hostURL, _ := url.Parse("https://codeforces.com")
-		//codeforces.SessCln.Jar.SetCookies(hostURL, nil)
+		jar, _ := cookiejar.New(nil)
+		codeforces.SessCln.Jar = jar
 
 		handle, err := codeforces.Login(usr, passwd)
 		if err != nil {
@@ -75,7 +78,9 @@ func config() {
 			os.Exit(1)
 		}
 
-		viper.Set("cookies", codeforces.SessCln.Jar)
+		hostURL, _ := url.Parse("https://codeforces.com")
+		http.DefaultClient.Jar.SetCookies(hostURL, jar.Cookies(hostURL))
+		viper.Set("cookies", http.DefaultClient.Jar)
 
 		cfViper.WriteConfig()
 		viper.WriteConfig()
