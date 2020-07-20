@@ -1,7 +1,3 @@
-/*
-Copyright © 2020 cp-tools
-
-*/
 package cmd
 
 import (
@@ -10,7 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cp-tools/cpt/cmd/cf"
 	"github.com/cp-tools/cpt/util"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -32,6 +30,9 @@ func init() {
 	genCmd.Run = func(cmd *cobra.Command, args []string) {
 		gen(tmpltFlag)
 	}
+
+	// pass gen to subcommands
+	cf.GenFunc = gen
 }
 
 func gen(tmplt string) {

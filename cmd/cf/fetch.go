@@ -10,15 +10,22 @@ import (
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// fetchCmd represents the 'cf fetch' command
-var fetchCmd = &cobra.Command{
-	Use: "fetch [SPECIFIER]",
-	Run: func(cmd *cobra.Command, args []string) {
-		fetch(util.DetectSpfr(args))
-	},
-}
+var (
+	// fetchCmd represents the 'cf fetch' command
+	fetchCmd = &cobra.Command{
+		Use: "fetch [SPECIFIER]",
+		Run: func(cmd *cobra.Command, args []string) {
+			fetch(util.DetectSpfr(args))
+		},
+	}
+
+	// GenFunc to run 'cpt gen'
+	// I hate cyclic dependencies
+	GenFunc func(tmplt string)
+)
 
 func init() {
 	RootCmd.AddCommand(fetchCmd)
@@ -94,6 +101,14 @@ func fetch(spfr, workDir string) {
 			}
 		}
 		fmt.Println(prob.Name, " ==> Fetched", len(prob.SampleTests), "sample tests")
+
 		// generate template if specified
+		genTmplt := viper.GetString("default_template")
+		if viper.GetBool("gen_on_fetch") && genTmplt != "none" {
+			currDir, _ := os.Getwd()
+			os.Chdir(probDir)
+			GenFunc(genTmplt)
+			os.Chdir(currDir)
+		}
 	}
 }
