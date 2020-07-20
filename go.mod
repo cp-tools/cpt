@@ -14,8 +14,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/oleiade/serrure v0.0.0-20160812094227-28794589ac9b
 	github.com/spf13/cobra v1.0.0
-	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.0
 	github.com/tidwall/gjson v1.6.0
-	golang.org/x/mod v0.1.0
+	golang.org/x/mod v0.3.0
 )

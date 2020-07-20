@@ -174,3 +174,12 @@ func ToByte(v interface{}) []byte {
 	data, _ := json.Marshal(v)
 	return data
 }
+
+func SliceContains(key string, data []string) bool {
+	for _, v := range data {
+		if strings.EqualFold(key, v) {
+			return true
+		}
+	}
+	return false
+}
