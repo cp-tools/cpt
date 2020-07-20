@@ -7,7 +7,6 @@ import (
 	"github.com/cp-tools/cpt-lib/codeforces"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -18,9 +17,6 @@ var (
 	}
 
 	cfViper = viper.New()
-
-	// local flags are parsed to this
-	lFlags *pflag.FlagSet
 )
 
 // InitConfig loads configurations

@@ -18,19 +18,23 @@ import (
 // submitCmd refers to 'submit' command
 var submitCmd = &cobra.Command{
 	Use: "submit [SPECIFIER]",
-	Run: func(cmd *cobra.Command, args []string) {
-		submit(util.DetectSpfr(args))
-	},
 }
 
 func init() {
 	RootCmd.AddCommand(submitCmd)
 
-	submitCmd.Flags().StringP("file", "f", "", "Select file to submit")
-	lFlags = submitCmd.Flags()
+	// set flags in command
+	var fileFlag string
+	submitCmd.Flags().StringVarP(&fileFlag, "file", "f", "", "Select file to submit")
+
+	// set run command
+	submitCmd.Run = func(cmd *cobra.Command, args []string) {
+		spfr, workDir := util.DetectSpfr(args)
+		submit(spfr, workDir, fileFlag)
+	}
 }
 
-func submit(spfr, workDir string) {
+func submit(spfr, workDir, fileFlag string) {
 	arg, err := codeforces.Parse(spfr)
 	if err != nil {
 		fmt.Println(err)
@@ -46,8 +50,7 @@ func submit(spfr, workDir string) {
 	}
 
 	// find all code files in current directory (check if given 'file' is valid)
-	file, _ := lFlags.GetString("file")
-	file, err = util.FindCodeFiles(file)
+	file, err := util.FindCodeFiles(fileFlag)
 	if err != nil {
 		fmt.Println("Could not select code file")
 		fmt.Println(err)
