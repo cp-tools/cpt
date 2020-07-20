@@ -1,0 +1,98 @@
+package cf
+
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt/util"
+	"github.com/gosuri/uilive"
+	"github.com/gosuri/uitable"
+	"github.com/spf13/cobra"
+)
+
+var listCmd = &cobra.Command{
+	Use:       "list [MODE] [SPECIFIER]",
+	ValidArgs: []string{"submissions", "dashboard", "contests"},
+}
+
+func init() {
+	RootCmd.AddCommand(listCmd)
+
+	// set flags in command
+	var numberFlag uint
+	var usernameFlag string
+	listCmd.Flags().UintVarP(&numberFlag, "number", "n", 5, "Maximum number of data rows to output")
+	listCmd.Flags().StringVarP(&usernameFlag, "username", "u", "", "Username to fetch data of")
+
+	// set listCmd Args validations
+	listCmd.Args = func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("requires a mode argument")
+		}
+		if util.SliceContains(args[0], listCmd.ValidArgs) {
+			return nil
+		}
+		return fmt.Errorf("invalid mode specified: %v", args[0])
+	}
+	// set listCmd Run command
+	listCmd.Run = func(cmd *cobra.Command, args []string) {
+		spfr, _ := util.DetectSpfr(args[1:])
+		list(spfr, args[0], numberFlag, usernameFlag)
+	}
+}
+
+func list(spfr, mode string, numberFlag uint, usernameFlag string) {
+	arg, err := codeforces.Parse(spfr)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	switch mode {
+	case "submissions":
+		// watch subissions row
+		writer := uilive.New()
+		writer.Start()
+		for isJudging := false; ; isJudging = false {
+			start := time.Now()
+
+			submissions, err := arg.GetSubmissions(usernameFlag)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			if len(submissions) == 0 {
+				fmt.Println("No submissions found")
+				os.Exit(0)
+			}
+
+			t := uitable.New()
+			t.Separator = " | "
+			t.MaxColWidth = 22
+
+			t.AddRow("#", "When", "Problem", "Lang", "Verdict", "Time", "Memory")
+
+			for i, sub := range submissions {
+				if uint(i) >= numberFlag {
+					break
+				}
+				if sub.IsJudging == true {
+					isJudging = true
+				}
+
+				t.AddRow(sub.ID, sub.When.Local().Format("Jan/02/2006 15:04"), sub.Problem,
+					sub.Language, sub.Verdict, sub.Time, sub.Memory)
+			}
+			fmt.Fprintln(writer, t.String())
+			if isJudging == false {
+				break
+			}
+
+			time.Sleep(time.Second*2 - time.Since(start))
+		}
+		writer.Stop()
+	}
+}

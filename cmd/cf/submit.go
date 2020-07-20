@@ -29,12 +29,12 @@ func init() {
 
 	// set run command
 	submitCmd.Run = func(cmd *cobra.Command, args []string) {
-		spfr, workDir := util.DetectSpfr(args)
-		submit(spfr, workDir, fileFlag)
+		spfr, _ := util.DetectSpfr(args)
+		submit(spfr, fileFlag)
 	}
 }
 
-func submit(spfr, workDir, fileFlag string) {
+func submit(spfr, fileFlag string) {
 	arg, err := codeforces.Parse(spfr)
 	if err != nil {
 		fmt.Println(err)
@@ -110,7 +110,7 @@ func submit(spfr, workDir, fileFlag string) {
 	for isDone := false; isDone == false; {
 		start := time.Now()
 
-		submissions, err := arg.GetSubmissions(cfViper.GetString("username"), true)
+		submissions, err := arg.GetSubmissions("")
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
