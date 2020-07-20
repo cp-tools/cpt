@@ -92,8 +92,7 @@ func submit(spfr, workDir string) {
 		fmt.Println("Current user:", handle)
 	}
 
-	tmplt := viper.GetStringMap("templates")[tmpltAlias].(map[string]interface{})
-	langName := tmplt["languages"].(map[string]interface{})["codeforces"].(string)
+	langName := viper.GetString("templates." + tmpltAlias + ".languages.codeforces")
 	err = arg.SubmitSolution(codeforces.LanguageID[langName], string(sourceData))
 	if err != nil {
 		fmt.Println("Could not submit code")
