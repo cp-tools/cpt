@@ -110,5 +110,7 @@ func upgrade() {
 		fmt.Println("Could not update binary executable")
 		fmt.Println("Rolled back to previous version")
 		fmt.Println(err)
+	} else {
+		fmt.Println("Successfully updated to", upgVers)
 	}
 }
