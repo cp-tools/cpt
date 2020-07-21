@@ -3,8 +3,10 @@ package cf
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
 
@@ -23,9 +25,11 @@ func init() {
 
 	// set flags in command
 	var numberFlag uint
-	var usernameFlag string
 	listCmd.Flags().UintVarP(&numberFlag, "number", "n", 5, "Maximum number of data rows to output")
+	var usernameFlag string
 	listCmd.Flags().StringVarP(&usernameFlag, "username", "u", "", "Username to fetch data of")
+	var registerFlag bool
+	listCmd.Flags().BoolVarP(&registerFlag, "register", "r", false, "Enable registration menu")
 
 	// set listCmd Args validations
 	listCmd.Args = func(cmd *cobra.Command, args []string) error {
@@ -40,11 +44,11 @@ func init() {
 	// set listCmd Run command
 	listCmd.Run = func(cmd *cobra.Command, args []string) {
 		spfr, _ := util.DetectSpfr(args[1:])
-		list(spfr, args[0], numberFlag, usernameFlag)
+		list(spfr, args[0], numberFlag, usernameFlag, registerFlag)
 	}
 }
 
-func list(spfr, mode string, numberFlag uint, usernameFlag string) {
+func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag bool) {
 	arg, err := codeforces.Parse(spfr)
 	if err != nil {
 		fmt.Println(err)
@@ -134,5 +138,115 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string) {
 			t.AddRow(prob.Name, solveStatus, prob.SolveCount)
 		}
 		fmt.Println(t.String())
+
+	case "contests":
+		// default to contests menu
+		if len(arg.Class) == 0 {
+			if registerFlag == true {
+				// it means contests
+				arg.Class = codeforces.ClassContest
+			} else {
+				util.SurveyErr(survey.AskOne(&survey.Select{
+					Message: "Select contest class to list:",
+					Options: []string{codeforces.ClassContest, codeforces.ClassGym},
+					Default: codeforces.ClassContest,
+				}, &arg.Class))
+			}
+		}
+
+		var omitFinishedContests bool
+		// omit finished contests if contest not set
+		if len(arg.Contest) == 0 {
+			omitFinishedContests = true
+		} else {
+			omitFinishedContests = false
+		}
+
+		contests, err := arg.GetContests(omitFinishedContests)
+		if err != nil {
+			fmt.Println("Could not fetch contests")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		t := uitable.New()
+		t.Separator = " | "
+		t.MaxColWidth = 30
+
+		t.AddRow("Name", "Writers", "Start", "Length", "Registration", "Count")
+		for c, cont := range contests {
+			if uint(c) >= numberFlag {
+				break
+			}
+
+			var regStatus string
+			switch cont.RegStatus {
+			case codeforces.RegistrationOpen:
+				regStatus = "OPEN"
+			case codeforces.RegistrationClosed:
+				regStatus = "CLOSED"
+			case codeforces.RegistrationDone:
+				regStatus = "REGISTERED"
+			case codeforces.RegistrationNotExists:
+				regStatus = "NO REGISTRATION"
+			}
+
+			t.AddRow(cont.Name, strings.Join(cont.Writers, "\n"),
+				cont.StartTime.Local().Format("Jan/02/2006 15:04"),
+				cont.Duration.String(), regStatus, cont.RegCount)
+		}
+		fmt.Println(t.String())
+
+		// give user chance to register
+		if registerFlag == true && arg.Class == codeforces.ClassContest {
+			fmt.Println()
+
+			var regOpenContestsName []string
+			var regOpenContests []codeforces.Contest
+			for c, cont := range contests {
+				if uint(c) >= numberFlag {
+					break
+				}
+				if cont.RegStatus == codeforces.RegistrationOpen {
+					regOpenContests = append(regOpenContests, cont)
+					regOpenContestsName = append(regOpenContestsName, cont.Name)
+				}
+			}
+
+			var idxChoice int
+			util.SurveyErr(survey.AskOne(&survey.Select{
+				Message: "Select contest to register in:",
+				Options: regOpenContestsName,
+			}, &idxChoice))
+
+			regInfo, err := regOpenContests[idxChoice].Arg.RegisterForContest()
+			if err != nil {
+				fmt.Println("Could not fetch registration page")
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			var cfm bool
+			util.SurveyErr(survey.AskOne(&survey.Confirm{
+				Message: "Agree to terms and conditions (Enter '?' to view)?",
+				Help:    regInfo.Terms,
+				Default: false,
+			}, &cfm))
+
+			if cfm == false {
+				fmt.Println("Registration aborted")
+				os.Exit(0)
+			}
+
+			fmt.Println("Registering in contest:", regOpenContests[idxChoice].Arg.Contest)
+			err = regInfo.Register()
+			if err != nil {
+				fmt.Println("Could not register user in contest")
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			fmt.Println("Registered successfully!")
+		}
 	}
 }
