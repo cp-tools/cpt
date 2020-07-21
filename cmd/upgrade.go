@@ -76,7 +76,7 @@ func upgrade() {
 	// fetch binary zip file
 	fmt.Println("Downloading binary file. Please wait...")
 
-	binaryURL := fmt.Sprintf("https://github.com/cp-tools/cpt/releases/download/%v/cf_%v_%v.tar.gz",
+	binaryURL := fmt.Sprintf("https://github.com/cp-tools/cpt/releases/download/%v/cpt_%v_%v.tar.gz",
 		upgVers, runtime.GOOS, runtime.GOARCH)
 
 	resp, err = http.Get(binaryURL)
