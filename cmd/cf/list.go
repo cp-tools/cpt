@@ -60,6 +60,7 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string) {
 
 			submissions, err := arg.GetSubmissions(usernameFlag)
 			if err != nil {
+				fmt.Println("Could not fetch submissions")
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -94,5 +95,43 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string) {
 			time.Sleep(time.Second*2 - time.Since(start))
 		}
 		writer.Stop()
+
+	case "dashboard":
+		dhbd, err := arg.GetDashboard()
+		if err != nil {
+			fmt.Println("Could not fetch dashboard")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		// list contest name
+		fmt.Println("Contest name:", dhbd.Name)
+		fmt.Println()
+
+		// list countdown to contest end
+		if dhbd.Countdown != 0 {
+			fmt.Println("Contest ends in:", dhbd.Countdown.String())
+			fmt.Println()
+		}
+
+		t := uitable.New()
+		t.Separator = " | "
+		t.MaxColWidth = 25
+
+		t.AddRow("Name", "Status", "Solved")
+		for _, prob := range dhbd.Problem {
+			var solveStatus string
+			switch prob.SolveStatus {
+			case codeforces.SolveAccepted:
+				solveStatus = "AC"
+			case codeforces.SolveNotAttempted:
+				solveStatus = "NA"
+			case codeforces.SolveRejected:
+				solveStatus = "WA"
+			}
+
+			t.AddRow(prob.Name, solveStatus, prob.SolveCount)
+		}
+		fmt.Println(t.String())
 	}
 }
