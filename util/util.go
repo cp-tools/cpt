@@ -60,7 +60,8 @@ func DetectSpfr(args []string) (string, string) {
 	tmp := strings.Split(currDir, string(os.PathSeparator))
 	for c := len(tmp) - 1; c >= 0; c-- {
 		if tmp[c] == "codeforces" {
-			return DetectSpfr(tmp[c+1:])
+			spfr, _ := DetectSpfr(tmp[c+1:])
+			return spfr, strings.TrimSuffix(currDir, filepath.Join(tmp[c:]...))
 		}
 	}
 	return "", currDir
