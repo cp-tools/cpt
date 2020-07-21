@@ -7,6 +7,7 @@ import (
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
+
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/spf13/cobra"
