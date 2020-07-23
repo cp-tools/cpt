@@ -13,7 +13,9 @@ import (
 var (
 	// RootCmd is 'cf' subcommand
 	RootCmd = &cobra.Command{
-		Use: "cf",
+		Use:     "cf",
+		Aliases: []string{"codeforces"},
+		Short:   "Utilities common to codeforces",
 	}
 
 	cfViper = viper.New()

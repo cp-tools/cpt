@@ -17,6 +17,7 @@ import (
 
 var listCmd = &cobra.Command{
 	Use:       "list [MODE] [SPECIFIER]",
+	Short:     "Prints tabulated results of various real-time data",
 	ValidArgs: []string{"submissions", "dashboard", "contests"},
 }
 

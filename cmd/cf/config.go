@@ -17,7 +17,8 @@ import (
 
 // cfConfigCmd represents the config command
 var configCmd = &cobra.Command{
-	Use: "config",
+	Use:   "config",
+	Short: "Configure settings exclusive to codeforces",
 	Run: func(cmd *cobra.Command, args []string) {
 		config()
 	},

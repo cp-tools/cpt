@@ -16,7 +16,8 @@ import (
 var (
 	// fetchCmd represents the 'cf fetch' command
 	fetchCmd = &cobra.Command{
-		Use: "fetch [SPECIFIER]",
+		Use:   "fetch [SPECIFIER]",
+		Short: "Fetch and save sample tests from website to local folder",
 		Run: func(cmd *cobra.Command, args []string) {
 			fetch(util.DetectSpfr(args))
 		},

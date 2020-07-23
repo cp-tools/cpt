@@ -20,7 +20,8 @@ import (
 
 // cptConfigCmd represents the config command
 var cptConfigCmd = &cobra.Command{
-	Use: "config",
+	Use:   "config",
+	Short: "Configure application wide settings",
 	Run: func(cmd *cobra.Command, args []string) {
 		cptConfig()
 	},

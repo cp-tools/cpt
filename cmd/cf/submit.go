@@ -17,7 +17,8 @@ import (
 
 // submitCmd refers to 'submit' command
 var submitCmd = &cobra.Command{
-	Use: "submit [SPECIFIER]",
+	Use:   "submit [SPECIFIER]",
+	Short: "Submit solution file to problem",
 }
 
 func init() {

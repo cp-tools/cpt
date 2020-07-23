@@ -10,7 +10,8 @@ import (
 )
 
 var openCmd = &cobra.Command{
-	Use: "open [SPECIFIER]",
+	Use:   "open [SPECIFIER]",
+	Short: "Open specified problem in default browser",
 	Run: func(cmd *cobra.Command, args []string) {
 		spfr, _ := util.DetectSpfr(args)
 		open(spfr)
