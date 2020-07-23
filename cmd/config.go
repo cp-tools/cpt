@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
@@ -39,6 +41,7 @@ func cptConfig() {
 			"Remove template",
 			"Run 'gen' after 'fetch'",
 			"Set application proxy",
+			"Generate tab autocompletion",
 		},
 	}, &idx)
 	util.SurveyErr(err)
@@ -196,6 +199,52 @@ func cptConfig() {
 
 		prxy, _ := url.ParseRequestURI(choice)
 		viper.Set("proxy_url", prxy)
+
+	case 5:
+		var choice string
+		util.SurveyErr(survey.AskOne(&survey.Select{
+			Message: "Select shell type:",
+			Options: []string{"bash", "zsh", "fish", "powershell"},
+		}, &choice))
+
+		var err error
+		switch choice {
+		case "bash":
+			switch runtime.GOOS {
+			case "linux":
+				err = rootCmd.GenBashCompletionFile("/etc/bash_completion.d/cpt")
+			case "darwin":
+				err = rootCmd.GenBashCompletionFile("/usr/local/etc/bash_completion.d/cpt")
+			default:
+				fmt.Println("OS", runtime.GOOS, "is not supported for bash completions")
+				os.Exit(0)
+			}
+
+		case "zsh":
+			err = rootCmd.GenZshCompletionFile("/usr/share/zsh/site-functions/_cpt")
+
+		case "fish":
+			gflPath, _ := homedir.Expand("~/.config/fish/completions/yourprogram.fish")
+			err = rootCmd.GenFishCompletionFile(gflPath, true)
+
+		case "powershell":
+			fmt.Println("Completion script shall be written to file cpt.ps1 in current directory")
+			fmt.Println("Read https://stackoverflow.com/a/20415779/9606036 for instructions to source the script")
+			err = rootCmd.GenPowerShellCompletionFile("cpt.ps1")
+		}
+
+		if errors.Is(err, os.ErrPermission) {
+			fmt.Println("Insufficient permissions! Try again as sudo/admin")
+			fmt.Println(err)
+			os.Exit(1)
+		} else if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Completion scripts written successfully!")
+		fmt.Println("Reload your shell for completion to take effect")
+		os.Exit(0)
 	}
 
 	if err := viper.WriteConfig(); err != nil {
