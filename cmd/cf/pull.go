@@ -59,6 +59,12 @@ func pull(spfr, workDir, usernameFlag string) {
 		os.Exit(0)
 	}
 
+	currDir, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	pMap := make(map[codeforces.Args]bool)
 	var failPull []codeforces.Args
 	// currently, only parses latest, AC submission.
@@ -95,10 +101,11 @@ func pull(spfr, workDir, usernameFlag string) {
 			os.Exit(1)
 		}
 
+		os.Chdir(probDir)
 		// generate code file
 		fileBase := sub.Arg.Problem
 		fileExt := codeforces.LanguageExtn[sub.Language]
-		for fileName, c := filepath.Join(probDir, fileBase+fileExt), 1; true; c++ {
+		for fileName, c := fileBase+fileExt, 1; true; c++ {
 			if _, err := os.Stat(fileName); os.IsNotExist(err) == false {
 				fmt.Println("File", fileName, "already exists in directory")
 			} else {
@@ -108,11 +115,12 @@ func pull(spfr, workDir, usernameFlag string) {
 					os.Exit(1)
 				}
 
-				fmt.Println("Saved submission", arg.Contest, arg.Problem, "to:", fileName)
+				fmt.Println("Saved submission", sub.Arg.Contest, sub.Arg.Problem, "to:", fileName)
 				break
 			}
-			fileName = filepath.Join(probDir, fmt.Sprintf("%v_%d%v", fileBase, c, fileExt))
+			fileName = fmt.Sprintf("%v_%d%v", fileBase, c, fileExt)
 		}
+		os.Chdir(currDir)
 	}
 
 	// what do I do with failPull[] ??
