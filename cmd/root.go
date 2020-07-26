@@ -28,6 +28,8 @@ var (
 			"Built by CP'ers, built for CP'ers.",
 		Version: "v0.9.0",
 	}
+
+	cfgDir string
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -51,7 +53,7 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	cfgDir := filepath.Join(dir, "cpt")
+	cfgDir = filepath.Join(dir, "cpt")
 	os.Mkdir(cfgDir, os.ModePerm)
 
 	// configure default settings

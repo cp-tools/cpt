@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -171,6 +172,29 @@ func FindTemplateToUse(file string) (string, error) {
 	}, &tmpltAlias))
 
 	return tmpltAlias, nil
+}
+
+func FindInpOutFiles(inpf, outf []string) ([]string, []string) {
+	if len(inpf) != 0 {
+		return inpf, outf
+	}
+
+	files, err := filepath.Glob("*")
+	if err != nil {
+		panic(err)
+	}
+
+	inpRe := regexp.MustCompile(`^\d+.in$`)
+	outRe := regexp.MustCompile(`^\d+.out$`)
+
+	for _, file := range files {
+		if inpRe.Match([]byte(file)) {
+			inpf = append(inpf, file)
+		} else if outRe.Match([]byte(file)) {
+			outf = append(outf, file)
+		}
+	}
+	return inpf, outf
 }
 
 func ToByte(v interface{}) []byte {
