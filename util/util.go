@@ -16,6 +16,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/gosuri/uilive"
+	"github.com/gosuri/uitable"
 	"github.com/oleiade/serrure/aes"
 	"github.com/spf13/viper"
 )
@@ -221,4 +222,14 @@ func BrowserOpen(url string) {
 		exec.Command("xdg-open", url).Start()
 	}
 	return
+}
+
+func DiffString(ouf, ans string) string {
+	t := uitable.New()
+	t.Separator = " | "
+	t.Wrap = true
+
+	t.AddRow("Output", "Answer")
+	t.AddRow(ouf, ans)
+	return t.String()
 }
