@@ -64,6 +64,11 @@ func init() {
 			// check if lengths of test case slice match
 			return fmt.Errorf("Invalid flag values - len of 'input' [%d], doesn't match len of 'output' [%d]", len(inpf), len(outf))
 		}
+
+		if lflags.Changed("checker") && lflags.Changed("input") {
+			return fmt.Errorf("Invalid flags - can't specify input/output files along with 'custom-invocation'")
+		}
+
 		for _, fp := range append(inpf, outf...) {
 			// check if all provided files exist
 			if _, err := os.Stat(fp); err != nil {
@@ -299,7 +304,7 @@ Checker log: {{.checkerLog}}
 
 /*
 Test: #1 -- Verdict: OK -- Time: 175ms
-Checker: SUCCESS
+Checker log: SUCCESS
 --------------------------------------
 Test: #2 -- Verdict: WA -- Time: 45ms
 Checker log: Expected 'YES', found 'NO' (term 2)
