@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 	"time"
@@ -36,7 +37,17 @@ func init() {
 				return nil, cobra.ShellCompDirectiveDefault
 			}
 			checkers := getCheckers(toComplete)
-			for i := range checkers {
+			for i, checker := range checkers {
+				hCmd := exec.Command(checker, "--help")
+				var data strings.Builder
+				hCmd.Stderr = &data
+				hCmd.Run()
+
+				rgx := regexp.MustCompile(`Checker name: "([ -~]*)"`)
+				if tmp := rgx.FindStringSubmatch(data.String()); len(tmp) > 1 {
+					checkers[i] = fmt.Sprintf("%v\t%v", filepath.Base(checkers[i]), tmp[1])
+					continue
+				}
 				checkers[i] = filepath.Base(checkers[i])
 			}
 			return checkers, cobra.ShellCompDirectiveNoFileComp
