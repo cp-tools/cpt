@@ -174,8 +174,6 @@ func test(lflags *pflag.FlagSet) {
 		inpf, outf = util.FindInpOutFiles(inpf, outf)
 
 		dur, _ := lflags.GetDuration("time-limit")
-		ctx, cancel := context.WithTimeout(context.Background(), dur)
-		defer cancel()
 
 		verdictTmpl, _ := template.New("verdict").Parse(
 			`Test: #{{.testIndex}} -- Verdict: {{.verdict}} -- Time: {{.dur}}
@@ -192,9 +190,12 @@ Checker log: {{.checkerLog}}
 {{- end}}{{- /* remove extra space at the end */}}
 --------------------------------------------`)
 
-		cmd := exec.CommandContext(ctx, sCmds[0], sCmds[1:]...)
 		// run tests for each sample case
 		for idx := 0; idx < len(inpf); idx++ {
+			ctx, cancel := context.WithTimeout(context.Background(), dur)
+			defer cancel()
+			cmd := exec.CommandContext(ctx, sCmds[0], sCmds[1:]...)
+
 			// holds verdictTmpl data values
 
 			var cmdStdoutT, cmdStderrT strings.Builder
@@ -216,7 +217,7 @@ Checker log: {{.checkerLog}}
 				"dur":       since.Truncate(time.Millisecond).String(),
 			}
 
-			if since > 2*time.Second {
+			if since >= dur {
 				tplData["verdict"] = "TLE"
 			} else if err != nil {
 				tplData["verdict"] = "RTE"
