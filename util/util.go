@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/gosuri/uilive"
+	"github.com/gosuri/uitable"
 	"github.com/oleiade/serrure/aes"
 	"github.com/spf13/viper"
 )
@@ -173,6 +175,29 @@ func FindTemplateToUse(file string) (string, error) {
 	return tmpltAlias, nil
 }
 
+func FindInpOutFiles(inpf, outf *[]string) {
+	if len(*inpf) != 0 {
+		return
+	}
+
+	files, err := filepath.Glob("*")
+	if err != nil {
+		panic(err)
+	}
+
+	inpRe := regexp.MustCompile(`^\d+.in$`)
+	outRe := regexp.MustCompile(`^\d+.out$`)
+
+	for _, file := range files {
+		if inpRe.Match([]byte(file)) {
+			*inpf = append(*inpf, file)
+		} else if outRe.Match([]byte(file)) {
+			*outf = append(*outf, file)
+		}
+	}
+	return
+}
+
 func ToByte(v interface{}) []byte {
 	data, _ := json.Marshal(v)
 	return data
@@ -197,4 +222,14 @@ func BrowserOpen(url string) {
 		exec.Command("xdg-open", url).Start()
 	}
 	return
+}
+
+func Diff(ouf, out string) string {
+	t := uitable.New()
+	t.Separator = " | "
+	t.Wrap = true
+
+	t.AddRow("Output", "Answer")
+	t.AddRow(strings.TrimSpace(ouf), strings.TrimSpace(out))
+	return t.String()
 }
