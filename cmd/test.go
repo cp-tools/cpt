@@ -30,28 +30,27 @@ var testCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(testCmd)
 	// define flags here
-	testCmd.Flags().StringP("checker", "c", "lcmp", "Select output checker to use")
-	testCmd.RegisterFlagCompletionFunc("checker",
-		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			if len(args) != 0 {
-				return nil, cobra.ShellCompDirectiveDefault
-			}
-			checkers := getCheckers(toComplete)
-			for i, checker := range checkers {
-				hCmd := exec.Command(checker, "--help")
-				var data strings.Builder
-				hCmd.Stderr = &data
-				hCmd.Run()
+	testCmd.Flags().StringP("checker", "c", "lcmp", "Select (testlib) checker to use")
+	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command,
+		_ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 
-				rgx := regexp.MustCompile(`Checker name: "([ -~]*)"`)
-				if tmp := rgx.FindStringSubmatch(data.String()); len(tmp) > 1 {
-					checkers[i] = fmt.Sprintf("%v\t%v", filepath.Base(checkers[i]), tmp[1])
-					continue
-				}
-				checkers[i] = filepath.Base(checkers[i])
+		allCheckers := getCheckers(toComplete)
+		for i, checker := range allCheckers {
+			hCmd := exec.Command(checker, "--help")
+			var data strings.Builder
+			hCmd.Stderr = &data
+			hCmd.Run()
+
+			rgx := regexp.MustCompile(`Checker name: "([ -~]*)"`)
+			if tmp := rgx.FindStringSubmatch(data.String()); len(tmp) > 1 {
+				allCheckers[i] = fmt.Sprintf("%v\t%v", filepath.Base(allCheckers[i]), tmp[1])
+				continue
 			}
-			return checkers, cobra.ShellCompDirectiveNoFileComp
-		},
+			baseName := filepath.Base(allCheckers[i])
+			allCheckers[i] = strings.TrimSuffix(baseName, filepath.Ext(baseName))
+		}
+		return allCheckers, cobra.ShellCompDirectiveNoFileComp
+	},
 	)
 
 	testCmd.Flags().StringP("file", "f", "", "Solution file to run tests")
@@ -60,39 +59,43 @@ func init() {
 	testCmd.Flags().StringSlice("input", nil, "Test case inputs (corresponding to --output slice)")
 	testCmd.Flags().StringSlice("output", nil, "Test case outputs (corresponding to --input slice)")
 
-	// the execution part. idk why I'm even saying this :-\
-	// maybe cause it's 4 at night? idk XD
 	testCmd.RunE = func(cmd *cobra.Command, _ []string) error {
 		lflags := testCmd.Flags()
 
 		if lflags.Changed("checker") && lflags.Changed("custom-invocation") {
+			// both '--checker' and '--custom-invocation' specified
 			return fmt.Errorf("Invalid flags - can't use both 'checker' and 'custom-invocation'")
 		}
 
-		inpf, _ := lflags.GetStringSlice("input")
-		outf, _ := lflags.GetStringSlice("output")
-		if len(inpf) != len(outf) {
-			// check if lengths of test case slice match
-			return fmt.Errorf("Invalid flag values - len of 'input' [%d], doesn't match len of 'output' [%d]", len(inpf), len(outf))
+		if lflags.Changed("custom-invocation") && (lflags.Changed("input") || lflags.Changed("output")) {
+			// both ('--input' or '--output') and '--custom-invocation' specified
+			return fmt.Errorf("Invalid flags - can't use both 'input'/'output' and 'custom-invocation'")
 		}
 
-		if lflags.Changed("checker") && lflags.Changed("input") {
-			return fmt.Errorf("Invalid flags - can't specify input/output files along with 'custom-invocation'")
+		inFiles, _ := lflags.GetStringSlice("input")
+		outFiles, _ := lflags.GetStringSlice("output")
+		if len(inFiles) != len(outFiles) {
+			// lengths of slices '--input' and '--output' don't match
+			return fmt.Errorf("Invalid flags - len of 'input' [%d] != len of 'output' [%d]", len(inFiles), len(outFiles))
 		}
 
-		for _, fp := range append(inpf, outf...) {
+		// move this to utils function, getSampleTestFiles()....
+		for _, file := range append(inFiles, outFiles...) {
 			// check if all provided files exist
-			if _, err := os.Stat(fp); err != nil {
-				return fmt.Errorf("Invalid test files - file %v doesn't exist", fp)
+			if _, err := os.Stat(file); err != nil {
+				return fmt.Errorf("Invalid flags - file %v doesn't exist", file)
 			}
 		}
-		checker, _ := lflags.GetString("checker")
-		if len(getCheckers(checker)) == 0 {
-			return fmt.Errorf("Invalid checker - checker %v not found in %v",
-				checker, filepath.Join(cfgDir, "cpt", "checkers", "."))
-		}
-		lflags.Lookup("checker").Value.Set(getCheckers(checker)[0])
 
+		checker, _ := lflags.GetString("checker")
+		allCheckers := getCheckers(checker)
+		if len(allCheckers) == 0 {
+			// no checker of value '--checker' exists (in checkers)
+			return fmt.Errorf("Invalid flags - checker %v not found", checker)
+		}
+		lflags.Lookup("checker").Value.Set(allCheckers[0])
+
+		// finally, run the test command
 		test(lflags)
 		return nil
 	}
@@ -100,23 +103,23 @@ func init() {
 
 // return all matching checkers from ...cpt/checkers/
 func getCheckers(toComplete string) []string {
-	var checkers []string
-	// read checkers from .../cpt/checkers/
-	ckrDir := filepath.Join(cfgDir, "checkers")
-	files, err := ioutil.ReadDir(ckrDir)
+	// find all checkers in checkers directory
+	checkerDir := filepath.Join(cfgDir, "checkers")
+	var allCheckers []string
+	files, err := ioutil.ReadDir(checkerDir)
 	if err != nil {
-		panic(err)
+		// unexpected, what do I do?
+		return nil
 	}
 
 	for _, file := range files {
-		if file.IsDir() || file.Mode()&0111 == 0 || !strings.HasPrefix(file.Name(), toComplete) {
-			// continue if not executable file matching desc
+		if file.Mode()&0111 == 0 || !strings.HasPrefix(file.Name(), toComplete) {
+			// continue if not executable file matching description
 			continue
 		}
-
-		checkers = append(checkers, filepath.Join(ckrDir, file.Name()))
+		allCheckers = append(allCheckers, filepath.Join(checkerDir, file.Name()))
 	}
-	return checkers
+	return allCheckers
 }
 
 func test(lflags *pflag.FlagSet) {
@@ -146,9 +149,12 @@ func test(lflags *pflag.FlagSet) {
 		}
 
 		var scp strings.Builder
-		err = tmpl.Execute(&scp, map[string]string{
-			"file": file,
-		})
+		var tmplMap map[string]interface{}
+		tmplMap["file"] = file
+		tmplMap["fileBasename"] = filepath.Base(file)
+		tmplMap["fileBasenameNoExt"] = filepath.Ext(filepath.Base(file))
+
+		err = tmpl.Execute(&scp, tmplMap)
 
 		fmt.Println("Prescript:", scp.String())
 		cmds, err := shellquote.Split(scp.String())
@@ -294,9 +300,12 @@ func test(lflags *pflag.FlagSet) {
 		}
 
 		var scp strings.Builder
-		err = tmpl.Execute(&scp, map[string]string{
-			"file": file,
-		})
+		var tmplMap map[string]interface{}
+		tmplMap["file"] = file
+		tmplMap["fileBasename"] = filepath.Base(file)
+		tmplMap["fileBasenameNoExt"] = filepath.Ext(filepath.Base(file))
+
+		err = tmpl.Execute(&scp, tmplMap)
 
 		fmt.Println("Postscript:", scp.String())
 		cmds, err := shellquote.Split(scp.String())
@@ -314,21 +323,3 @@ func test(lflags *pflag.FlagSet) {
 		}
 	}
 }
-
-/*
-Test: #1 -- Verdict: OK -- Time: 175ms
-Checker log: SUCCESS
---------------------------------------
-Test: #2 -- Verdict: WA -- Time: 45ms
-Checker log: Expected 'YES', found 'NO' (term 2)
-Output		| Expected output
-Yes			| Yes
-No			| Yes
-No			| No
-Yes			| No
---------------------------------------
-Test: #3 -- Verdict: TLE -- Time: 0ms
-Stderr: This app is bugged
-Don't ask why, but it's hacky
---------------------------------------
-*/
