@@ -182,6 +182,8 @@ func test(lflags *pflag.FlagSet) {
 			fmt.Println("-------START-------")
 			cmd.Run()
 			fmt.Println("--------END--------")
+
+			fmt.Println()
 		} else {
 			// run checker judge (non interactive)
 			inFiles, _ := lflags.GetStringSlice("input")
@@ -192,6 +194,7 @@ func test(lflags *pflag.FlagSet) {
 
 			// set verdict template data to parse
 			tmplStr := "Test: #{{.testIndex}} -- Verdict: {{.verdict}} -- Time: {{.dur}}\n" +
+				"------------------------------------------\n" +
 				"{{- if .stderr}}\nStderr: {{.stderr}}{{end}}\n" +
 				"{{- if eq .verdict \"WA\"}}\nInput\n{{.inp}}\n{{.diff}}{{end}}\n" +
 				"{{- if .checkerLog}}\nChecker log: {{.checkerLog}}{{end}}\n"
@@ -277,8 +280,8 @@ func test(lflags *pflag.FlagSet) {
 					}
 					tmplMap["checkerLog"] = checkerStderr.String()
 
-					tmpl.Execute(os.Stdout, tmplMap)
 				}
+				tmpl.Execute(os.Stdout, tmplMap)
 			}
 		}
 	}
