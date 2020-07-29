@@ -175,9 +175,9 @@ func FindTemplateToUse(file string) (string, error) {
 	return tmpltAlias, nil
 }
 
-func FindInpOutFiles(inpf, outf []string) ([]string, []string) {
-	if len(inpf) != 0 {
-		return inpf, outf
+func FindInpOutFiles(inpf, outf *[]string) {
+	if len(*inpf) != 0 {
+		return
 	}
 
 	files, err := filepath.Glob("*")
@@ -190,12 +190,12 @@ func FindInpOutFiles(inpf, outf []string) ([]string, []string) {
 
 	for _, file := range files {
 		if inpRe.Match([]byte(file)) {
-			inpf = append(inpf, file)
+			*inpf = append(*inpf, file)
 		} else if outRe.Match([]byte(file)) {
-			outf = append(outf, file)
+			*outf = append(*outf, file)
 		}
 	}
-	return inpf, outf
+	return
 }
 
 func ToByte(v interface{}) []byte {
@@ -224,12 +224,12 @@ func BrowserOpen(url string) {
 	return
 }
 
-func DiffString(ouf, ans string) string {
+func DiffString(ouf, out string) string {
 	t := uitable.New()
 	t.Separator = " | "
 	t.Wrap = true
 
 	t.AddRow("Output", "Answer")
-	t.AddRow(ouf, ans)
+	t.AddRow(ouf, out)
 	return t.String()
 }
