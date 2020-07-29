@@ -10,6 +10,7 @@ import (
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -25,7 +26,7 @@ var (
 
 	// GenFunc to run 'cpt gen'
 	// I hate cyclic dependencies
-	GenFunc func(tmplt string)
+	GenFunc func(*pflag.FlagSet)
 )
 
 func init() {
@@ -106,9 +107,13 @@ func fetch(spfr, workDir string) {
 		// generate template if specified
 		genTmplt := viper.GetString("default_template")
 		if viper.GetBool("gen_on_fetch") && genTmplt != "none" {
+			// set flags to run 'gen' command
+			var genFlags *pflag.FlagSet
+			genFlags.Set("template", genTmplt)
+
 			currDir, _ := os.Getwd()
 			os.Chdir(probDir)
-			GenFunc(genTmplt)
+			GenFunc(genFlags)
 			os.Chdir(currDir)
 		}
 	}

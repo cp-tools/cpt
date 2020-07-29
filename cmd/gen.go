@@ -10,6 +10,7 @@ import (
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -22,30 +23,46 @@ var genCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(genCmd)
+	// add flags here
+	genCmd.Flags().StringP("template", "t", "", "Template (by alias) to use")
+	genCmd.RegisterFlagCompletionFunc("template", func(cmd *cobra.Command,
+		_ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		allTmplts := util.ExtractMapKeys(viper.GetStringMap("templates"))
+		return allTmplts, cobra.ShellCompDirectiveNoFileComp
+	})
 
-	var tmpltFlag string
-	genCmd.Flags().StringVarP(&tmpltFlag, "template", "t", "",
-		"Select template configuration (by alias name) to use")
+	genCmd.RunE = func(cmd *cobra.Command, args []string) error {
+		lflags := genCmd.Flags()
+		// set template to default template if flag '--template' not set
+		if tmplt, _ := lflags.GetString("template"); tmplt == "" {
+			defTmplt := viper.GetString("default_template")
+			if defTmplt == "" {
+				return fmt.Errorf("Invalid flags - no template specified")
+			}
+			lflags.Lookup("template").Value.Set(defTmplt)
+		}
 
-	genCmd.Run = func(cmd *cobra.Command, args []string) {
-		gen(tmpltFlag)
+		// check if given '--template' flag is valid
+		allTmplts := util.ExtractMapKeys(viper.GetStringMap("templates"))
+		if tmplt, _ := lflags.GetString("template"); !util.SliceContains(tmplt, allTmplts) {
+			return fmt.Errorf("Invalid flags - template '%v' not found", tmplt)
+		}
+
+		gen(lflags)
+		return nil
 	}
 
 	// pass gen to subcommands
 	cf.GenFunc = gen
 }
 
-func gen(tmplt string) {
-	if len(tmplt) == 0 {
-		tmplt = viper.GetString("default_template")
+func gen(lflags *pflag.FlagSet) {
+	// get template configuration to use
+	tmplt, _ := lflags.GetString("template")
+	if viper.IsSet("templates."+tmplt) == false {
+		fmt.Println("Template '", tmplt, "' not configured!")
+		os.Exit(1)
 	}
-
-	allTmplts := util.ExtractMapKeys(viper.GetStringMap("templates"))
-	if !util.SliceContains(tmplt, allTmplts) {
-		fmt.Println("Select a valid template [alias] to generate")
-		os.Exit(2)
-	}
-
 	tmpltConfig := viper.GetStringMap("templates." + tmplt)
 
 	currDir, err := os.Getwd()
