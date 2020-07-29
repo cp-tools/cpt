@@ -149,7 +149,7 @@ func test(lflags *pflag.FlagSet) {
 		}
 
 		var scp strings.Builder
-		var tmplMap map[string]interface{}
+		tmplMap := make(map[string]interface{})
 		tmplMap["file"] = file
 		tmplMap["fileBasename"] = filepath.Base(file)
 		tmplMap["fileBasenameNoExt"] = filepath.Ext(filepath.Base(file))
@@ -270,22 +270,50 @@ func test(lflags *pflag.FlagSet) {
 						// there was an exit-error here!
 						tmplMap["verdict"] = "WA"
 
-						inBuf, _ := ioutil.ReadFile(inFiles[i])
-						tmplMap["inp"] = string(inBuf)
-						// diff prints all lines
-						outFile, err := os.Open(outFiles[i])
-						defer outFile.Close()
+						inFile, err := os.Open(inFiles[i])
 						if err != nil {
 							panic(err)
 						}
-						outBuf, _ := ioutil.ReadFile(outFiles[i])
-						oufBuf, _ := ioutil.ReadFile(oufFile.Name())
-						tmplMap["diff"] = util.DiffString(string(oufBuf), string(outBuf))
+						defer inFile.Close()
+
+						outFile, err := os.Open(outFiles[i])
+						if err != nil {
+							panic(err)
+						}
+						defer outFile.Close()
+
+						oufFile, err := os.Open(oufFile.Name())
+						if err != nil {
+							panic(err)
+						}
+						defer oufFile.Close()
+
+						inBuf := make([]byte, 70)
+						if n, _ := inFile.Read(inBuf); n == 70 {
+							// append '...' to the end
+							inBuf = append(inBuf, []byte("...")...)
+						}
+
+						outBuf := make([]byte, 70)
+						if n, _ := outFile.Read(outBuf); n == 70 {
+							// append '...' to the end
+							outBuf = append(outBuf, []byte("...")...)
+						}
+
+						oufBuf := make([]byte, 70)
+						if n, _ := oufFile.Read(oufBuf); n == 70 {
+							// append '...' to the end
+							oufBuf = append(oufBuf, []byte("...")...)
+						}
+
+						diff := util.Diff(string(oufBuf), string(outBuf))
+						tmplMap["diff"] = diff
+						tmplMap["inp"] = string(inBuf)
 					} else {
+						// feel better yet?!
 						tmplMap["verdict"] = "AC"
 					}
 					tmplMap["checkerLog"] = checkerStderr.String()
-
 				}
 				tmpl.Execute(os.Stdout, tmplMap)
 			}
@@ -300,7 +328,7 @@ func test(lflags *pflag.FlagSet) {
 		}
 
 		var scp strings.Builder
-		var tmplMap map[string]interface{}
+		tmplMap := make(map[string]interface{})
 		tmplMap["file"] = file
 		tmplMap["fileBasename"] = filepath.Base(file)
 		tmplMap["fileBasenameNoExt"] = filepath.Ext(filepath.Base(file))

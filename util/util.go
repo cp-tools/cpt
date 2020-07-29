@@ -224,12 +224,12 @@ func BrowserOpen(url string) {
 	return
 }
 
-func DiffString(ouf, out string) string {
+func Diff(ouf, out string) string {
 	t := uitable.New()
 	t.Separator = " | "
 	t.Wrap = true
 
 	t.AddRow("Output", "Answer")
-	t.AddRow(ouf, out)
+	t.AddRow(strings.TrimSpace(ouf), strings.TrimSpace(out))
 	return t.String()
 }
