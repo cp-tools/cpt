@@ -272,7 +272,7 @@ func test(lflags *pflag.FlagSet) {
 
 						inBuf, _ := ioutil.ReadFile(inFiles[i])
 						tmplMap["inp"] = string(inBuf)
-						// diff prints all lines (todo: add '--no-diff' flag)
+						// diff prints all lines
 						outFile, err := os.Open(outFiles[i])
 						defer outFile.Close()
 						if err != nil {
