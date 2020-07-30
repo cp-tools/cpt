@@ -83,6 +83,10 @@ func initConfig() {
 	jar, _ := cookiejar.New(nil)
 	jar.UnmarshalJSON(util.ToByte(viper.Get("cookies")))
 	http.DefaultClient.Jar = jar
+	// if cookies type is not set in the beginning
+	// rewriting parsed values (without changing cookies)
+	// causes the cookies data to be written as a map.
+	viper.Set("cookies", jar)
 
 	// load modules of each website
 	cf.InitConfig(cfgDir)
