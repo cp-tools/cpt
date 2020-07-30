@@ -108,12 +108,13 @@ func fetch(spfr, workDir string) {
 		genTmplt := viper.GetString("default_template")
 		if viper.GetBool("gen_on_fetch") && genTmplt != "none" {
 			// set flags to run 'gen' command
-			var genFlags *pflag.FlagSet
-			genFlags.Set("template", genTmplt)
+			var genFlags pflag.FlagSet
+			// do I have any other option?!
+			genFlags.String("template", genTmplt, "")
 
 			currDir, _ := os.Getwd()
 			os.Chdir(probDir)
-			GenFunc(genFlags)
+			GenFunc(&genFlags)
 			os.Chdir(currDir)
 		}
 	}
