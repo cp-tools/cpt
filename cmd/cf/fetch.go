@@ -56,7 +56,7 @@ func fetch(spfr, workDir string) {
 	if dur.Seconds() > 0 {
 		util.StartCountdown(dur, "Contest starts in:")
 		// open problems page once parsing is done
-		// defer cfOpen()
+		open(spfr)
 	}
 
 	// fetch all problems from contest page
