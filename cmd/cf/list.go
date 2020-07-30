@@ -6,13 +6,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var listCmd = &cobra.Command{
@@ -24,32 +25,58 @@ var listCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(listCmd)
 
-	// set flags in command
-	var numberFlag uint
-	listCmd.Flags().UintVarP(&numberFlag, "number", "n", 5, "Maximum number of data rows to output")
-	var usernameFlag string
-	listCmd.Flags().StringVarP(&usernameFlag, "username", "u", "", "Username to fetch data of")
-	var registerFlag bool
-	listCmd.Flags().BoolVarP(&registerFlag, "register", "r", false, "Enable registration menu")
+	// set flags here
+	listCmd.Flags().UintP("number", "n", 5, "Number of rows to output [contests submissions]")
+	listCmd.Flags().BoolP("register", "r", false, "Enable registration menu [contests]")
+	listCmd.Flags().StringP("username", "u", "", "Username to fetch data of [submissions]")
 
 	// set listCmd Args validations
 	listCmd.Args = func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return fmt.Errorf("requires a mode argument")
+			return fmt.Errorf("Invalid args - requires mode argument")
 		}
 		if util.SliceContains(args[0], listCmd.ValidArgs) {
 			return nil
 		}
-		return fmt.Errorf("invalid mode specified: %v", args[0])
+		return fmt.Errorf("Invalid args - mode '%v' not valid", args[0])
 	}
 	// set listCmd Run command
-	listCmd.Run = func(cmd *cobra.Command, args []string) {
+	listCmd.RunE = func(cmd *cobra.Command, args []string) error {
+		lflags := listCmd.Flags()
+		// various flag combination validators
+		switch args[0] {
+		case "contests":
+			if lflags.Changed("username") {
+				// can't use username with contests (arg)
+				return fmt.Errorf("Invalid flags - 'username' not applicable for mode 'contests'")
+			}
+		case "dashboard":
+			if lflags.Changed("username") || lflags.Changed("number") || lflags.Changed("number") {
+				// can't use username any flag with dashboard
+				return fmt.Errorf("Invalid flags - mode 'dashboard' takes no flags")
+			}
+		case "submissions":
+			if lflags.Changed("register") {
+				// can't use register with submissions (arg)
+				return fmt.Errorf("Invalid flags - 'register' not applicable for mode 'dashboard'")
+			}
+			// set current user username if not set
+			if !lflags.Changed("username") {
+				username := cfViper.GetString("username")
+				if username == "" {
+					return fmt.Errorf("Invalid flags - 'username' not specified")
+				}
+				lflags.Lookup("username").Value.Set(cfViper.GetString("username"))
+			}
+		}
+
 		spfr, _ := util.DetectSpfr(args[1:])
-		list(spfr, args[0], numberFlag, usernameFlag, registerFlag)
+		list(spfr, args[0], lflags)
+		return nil
 	}
 }
 
-func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag bool) {
+func list(spfr, mode string, lflags *pflag.FlagSet) {
 	arg, err := codeforces.Parse(spfr)
 	if err != nil {
 		fmt.Println(err)
@@ -64,7 +91,8 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag 
 		for isJudging := false; ; isJudging = false {
 			start := time.Now()
 
-			submissions, err := arg.GetSubmissions(usernameFlag)
+			username, _ := lflags.GetString("username")
+			submissions, err := arg.GetSubmissions(username)
 			if err != nil {
 				fmt.Println("Could not fetch submissions")
 				fmt.Println(err)
@@ -83,7 +111,8 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag 
 			t.AddRow("#", "When", "Problem", "Lang", "Verdict", "Time", "Memory")
 
 			for i, sub := range submissions {
-				if uint(i) >= numberFlag {
+				number, _ := lflags.GetUint("number")
+				if uint(i) >= number {
 					break
 				}
 				if sub.IsJudging == true {
@@ -143,7 +172,8 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag 
 	case "contests":
 		// default to contests menu
 		if len(arg.Class) == 0 {
-			if registerFlag == true {
+			register, _ := lflags.GetBool("register")
+			if register == true {
 				// it means contests
 				arg.Class = codeforces.ClassContest
 			} else {
@@ -176,7 +206,8 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag 
 
 		t.AddRow("Name", "Writers", "Start", "Length", "Registration", "Count")
 		for c, cont := range contests {
-			if uint(c) >= numberFlag {
+			number, _ := lflags.GetUint("number")
+			if uint(c) >= number {
 				break
 			}
 
@@ -199,13 +230,15 @@ func list(spfr, mode string, numberFlag uint, usernameFlag string, registerFlag 
 		fmt.Println(t.String())
 
 		// give user chance to register
-		if registerFlag == true && arg.Class == codeforces.ClassContest {
+		register, _ := lflags.GetBool("register")
+		if register == true && arg.Class == codeforces.ClassContest {
 			fmt.Println()
 
 			var regOpenContestsName []string
 			var regOpenContests []codeforces.Contest
 			for c, cont := range contests {
-				if uint(c) >= numberFlag {
+				number, _ := lflags.GetUint("number")
+				if uint(c) >= number {
 					break
 				}
 				if cont.RegStatus == codeforces.RegistrationOpen {

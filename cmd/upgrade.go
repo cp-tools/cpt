@@ -25,6 +25,7 @@ import (
 var upgradeCmd = &cobra.Command{
 	Use:   "upgrade",
 	Short: "Upgrade binary using github releases",
+	Args:  cobra.NoArgs,
 }
 
 func init() {

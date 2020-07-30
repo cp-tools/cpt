@@ -12,6 +12,7 @@ import (
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -25,17 +26,21 @@ func init() {
 	RootCmd.AddCommand(submitCmd)
 
 	// set flags in command
-	var fileFlag string
-	submitCmd.Flags().StringVarP(&fileFlag, "file", "f", "", "Select file to submit")
+	submitCmd.Flags().StringP("file", "f", "", "Select file to submit")
 
 	// set run command
 	submitCmd.Run = func(cmd *cobra.Command, args []string) {
+		lflags := submitCmd.Flags()
+
+		// checking if file is valid is not reqd here
+		// since it's done below while reading the file
+
 		spfr, _ := util.DetectSpfr(args)
-		submit(spfr, fileFlag)
+		submit(spfr, lflags)
 	}
 }
 
-func submit(spfr, fileFlag string) {
+func submit(spfr string, lflags *pflag.FlagSet) {
 	arg, err := codeforces.Parse(spfr)
 	if err != nil {
 		fmt.Println(err)
@@ -51,7 +56,8 @@ func submit(spfr, fileFlag string) {
 	}
 
 	// find all code files in current directory (check if given 'file' is valid)
-	file, err := util.FindCodeFiles(fileFlag)
+	file, _ := lflags.GetString("file")
+	file, err = util.FindCodeFiles(file)
 	if err != nil {
 		fmt.Println("Could not select code file")
 		fmt.Println(err)

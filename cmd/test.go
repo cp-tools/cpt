@@ -25,6 +25,7 @@ import (
 var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Run solution file against test cases",
+	Args:  cobra.NoArgs,
 }
 
 func init() {

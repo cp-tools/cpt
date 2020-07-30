@@ -10,6 +10,7 @@ import (
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var pullCmd = &cobra.Command{
@@ -21,25 +22,27 @@ func init() {
 	RootCmd.AddCommand(pullCmd)
 
 	// set flags in command
-	var usernameFlag string
-	pullCmd.Flags().StringVarP(&usernameFlag, "username", "u", "", "Username to fetch submissions of")
-	/*var currDirFlag bool
-	pullCmd.Flags().BoolVar(&currDirFlag, "current-directory", false, "Save code file(s) to current directory")
-	var subIDFlag string
-	pullCmd.Flags().StringVarP(&subIDFlag, "submission-id", "i", "", "Submission id of submission")*/
+	pullCmd.Flags().StringP("username", "u", "", "Username to fetch submissions of")
 
 	pullCmd.RunE = func(cmd *cobra.Command, args []string) error {
-		/*if _, err := strconv.Atoi(subIDFlag); len(subIDFlag) > 0 && err != nil {
-			return fmt.Errorf("submission-id requires an integer value")
-		}*/
+		lflags := pullCmd.Flags()
+
+		// set current user username if not set
+		if !lflags.Changed("username") {
+			usr := cfViper.GetString("username")
+			if usr == "" {
+				return fmt.Errorf("Invalid flags - 'username' not specified")
+			}
+			lflags.Lookup("username").Value.Set(cfViper.GetString("username"))
+		}
 
 		spfr, workDir := util.DetectSpfr(args)
-		pull(spfr, workDir, usernameFlag)
+		pull(spfr, workDir, lflags)
 		return nil
 	}
 }
 
-func pull(spfr, workDir, usernameFlag string) {
+func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 	arg, err := codeforces.Parse(spfr)
 	if err != nil {
 		fmt.Println(err)
@@ -47,7 +50,8 @@ func pull(spfr, workDir, usernameFlag string) {
 	}
 
 	fmt.Println("Fetching submission(s) details... Please wait!")
-	submissions, err := arg.GetSubmissions(usernameFlag)
+	username, _ := lflags.GetString("username")
+	submissions, err := arg.GetSubmissions(username)
 	if err != nil {
 		fmt.Println("Could not pull submission(s) details")
 		fmt.Println(err)
@@ -122,6 +126,5 @@ func pull(spfr, workDir, usernameFlag string) {
 		}
 		os.Chdir(currDir)
 	}
-
 	// what do I do with failPull[] ??
 }
