@@ -8,6 +8,7 @@ import (
 
 	"github.com/cp-tools/cpt/cmd/cf"
 	"github.com/cp-tools/cpt/util"
+	"github.com/fatih/color"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -59,10 +60,6 @@ func init() {
 func gen(lflags *pflag.FlagSet) {
 	// get template configuration to use
 	tmplt, _ := lflags.GetString("template")
-	if viper.IsSet("templates."+tmplt) == false {
-		fmt.Println("Template '", tmplt, "' not configured!")
-		os.Exit(1)
-	}
 	tmpltConfig := viper.GetStringMap("templates." + tmplt)
 
 	currDir, err := os.Getwd()
@@ -77,7 +74,7 @@ func gen(lflags *pflag.FlagSet) {
 	for fName, c := fileBase+fileExt, 1; true; c++ {
 
 		if _, err := os.Stat(fName); os.IsNotExist(err) == false {
-			fmt.Println("File", fName, "already exists in directory")
+			color.Yellow("File %v exists in directory", fName)
 		} else {
 			data, err := ioutil.ReadFile(tmpltConfig["file"].(string))
 			if err != nil {
@@ -90,7 +87,7 @@ func gen(lflags *pflag.FlagSet) {
 				os.Exit(1)
 			}
 
-			fmt.Println("Created file", fName, "in current directory")
+			color.Green("Created template file %v", fName)
 			break
 		}
 
