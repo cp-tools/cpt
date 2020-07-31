@@ -230,8 +230,26 @@ func Diff(ouf, out string) string {
 	t.Separator = " | "
 	t.Wrap = true
 
-	t.AddRow("Output", "Answer")
-	t.AddRow(strings.TrimSpace(ouf), strings.TrimSpace(out))
+	t.AddRow(HeaderCol("Output"), HeaderCol("Answer"))
+	oufData := strings.Split(strings.TrimSpace(ouf), " ")
+	outData := strings.Split(strings.TrimSpace(out), " ")
+
+	c := 0
+	for c < len(oufData) && c < len(outData) {
+		t.AddRow(oufData[c], outData[c])
+		c++
+	}
+
+	for c < len(oufData) {
+		t.AddRow(oufData[c], "")
+		c++
+	}
+
+	for c < len(outData) {
+		t.AddRow("", outData[c])
+		c++
+	}
+
 	return t.String()
 }
 
