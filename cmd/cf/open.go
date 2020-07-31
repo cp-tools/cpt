@@ -36,6 +36,6 @@ func open(spfr string) {
 		os.Exit(1)
 	}
 
-	fmt.Println(color.BlueString("Opening problem's page:"), arg.Contest, arg.Problem)
+	fmt.Println(color.BlueString("Opening problem's page:"), arg)
 	util.BrowserOpen(arg.ProblemsPage())
 }

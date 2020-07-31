@@ -6,7 +6,7 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.0.8
 	github.com/Netflix/go-expect v0.0.0-20200312175327-da48e75238e2 // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/cp-tools/cpt-lib v1.4.0
+	github.com/cp-tools/cpt-lib v1.5.1
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect

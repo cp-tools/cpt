@@ -120,7 +120,7 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 					os.Exit(1)
 				}
 
-				color.Green("Saved submission in: %v%v", sub.Arg.Contest, sub.Arg.Problem)
+				color.Green("Saved submission in: %v", sub.Arg)
 				break
 			}
 			fileName = fmt.Sprintf("%v_%d%v", fileBase, c, fileExt)

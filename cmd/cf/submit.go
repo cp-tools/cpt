@@ -118,7 +118,7 @@ func submit(spfr string, lflags *pflag.FlagSet) {
 	for isDone := false; isDone == false; {
 		start := time.Now()
 
-		submissions, err := arg.GetSubmissions("")
+		submissions, err := arg.GetSubmissions(cfViper.GetString("username"))
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

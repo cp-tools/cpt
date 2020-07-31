@@ -280,7 +280,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 				os.Exit(0)
 			}
 
-			fmt.Println(color.BlueString("Registering in contest:"), regOpenContests[idxChoice].Arg.Contest)
+			fmt.Println(color.BlueString("Registering in:"), regOpenContests[idxChoice].Arg)
 			err = regInfo.Register()
 			if err != nil {
 				color.Red("Could not register user in contest")

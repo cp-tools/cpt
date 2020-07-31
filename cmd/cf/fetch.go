@@ -46,7 +46,7 @@ func fetch(spfr, workDir string) {
 		os.Exit(1)
 	}
 
-	fmt.Println(color.BlueString("Fetching details of:"), arg.Contest)
+	fmt.Println(color.BlueString("Fetching details of:"), arg)
 	dur, err := arg.GetCountdown()
 	if err != nil {
 		color.Red("Could not extract countdown")
