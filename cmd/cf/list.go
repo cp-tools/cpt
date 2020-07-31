@@ -250,6 +250,11 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 				}
 			}
 
+			if len(regOpenContestsName) == 0 {
+				fmt.Println("No contests with open registration found")
+				os.Exit(0)
+			}
+
 			var idxChoice int
 			util.SurveyErr(survey.AskOne(&survey.Select{
 				Message: "Select contest to register in:",

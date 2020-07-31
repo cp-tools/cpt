@@ -163,7 +163,7 @@ func FindTemplateToUse(file string) (string, error) {
 	}
 
 	if len(tmpltsAlias) == 0 {
-		return "", fmt.Errorf("No templates found")
+		return "", fmt.Errorf("No templates matching file %v found", file)
 	} else if len(tmpltsAlias) == 1 {
 		return tmpltsAlias[0], nil
 	}

@@ -209,6 +209,10 @@ func test(lflags *pflag.FlagSet) {
 				fmt.Sprintf("{{- if .diff}}%v\n{{.input}}\n{{.diff}}{{end}}\n", util.HeaderCol("Input"))
 			tmpl, _ := template.New("verdict").Parse(tmplStr)
 
+			// @todo Run tests in parallel
+			// @body Will speed up evaluation somewhat.
+			// @body Tho the order of tests might not hold.
+
 			// run test for each input/output sample file(s)
 			for i := 0; i < len(inFiles); i++ {
 				// holds tmpl data values
