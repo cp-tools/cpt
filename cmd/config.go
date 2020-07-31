@@ -43,6 +43,7 @@ func cptConfig() {
 			"Run 'gen' after 'fetch'",
 			"Set application proxy",
 			"Generate tab autocompletion",
+			"Set interface colorization",
 		},
 	}, &idx)
 	util.SurveyErr(err)
@@ -246,6 +247,15 @@ func cptConfig() {
 		fmt.Println("Completion scripts written successfully!")
 		fmt.Println("Reload your shell for completion to take effect")
 		os.Exit(0)
+
+	case 6:
+		var choice bool
+		util.SurveyErr(survey.AskOne(&survey.Confirm{
+			Message: "Enable colorization of CLI?",
+			Default: false,
+		}, &choice))
+
+		viper.Set("enable_colorization", choice)
 	}
 
 	if err := viper.WriteConfig(); err != nil {
