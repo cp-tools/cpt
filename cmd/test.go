@@ -207,6 +207,10 @@ func test(lflags *pflag.FlagSet) {
 				"{{- if .checkerLog}}\nChecker log: {{.checkerLog}}{{end}}\n"
 			tmpl, _ := template.New("verdict").Parse(tmplStr)
 
+			// @todo Run tests in parallel
+			// @body Will speed up evaluation somewhat.
+			// @body Tho the order of tests might not hold.
+
 			// run test for each input/output sample file(s)
 			for i := 0; i < len(inFiles); i++ {
 				// holds tmpl data values
