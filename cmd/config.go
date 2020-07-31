@@ -10,6 +10,7 @@ import (
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
+	"github.com/fatih/color"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/kballard/go-shellquote"
@@ -50,8 +51,8 @@ func cptConfig() {
 
 	switch idx {
 	case 0:
-		fmt.Println("Welcome to the template creation wizard!")
-		fmt.Println("Visit cpt wiki for a comprehensive guide")
+		color.Blue("Welcome to the template creation wizard!")
+		color.Blue("Visit cpt wiki for a comprehensive guide")
 
 		var alias string
 		err := survey.AskOne(&survey.Input{
@@ -161,7 +162,7 @@ func cptConfig() {
 
 	case 2:
 		if len(viper.GetStringMap("templates")) == 0 {
-			fmt.Println("No configured templates found")
+			color.Red("No configured templates found")
 			os.Exit(1)
 		}
 
@@ -218,7 +219,7 @@ func cptConfig() {
 			case "darwin":
 				err = rootCmd.GenBashCompletionFile("/usr/local/etc/bash_completion.d/cpt")
 			default:
-				fmt.Println("OS", runtime.GOOS, "is not supported for bash completions")
+				color.Yellow("OS %v is not supported for bash completions", runtime.GOOS)
 				os.Exit(0)
 			}
 
@@ -230,13 +231,13 @@ func cptConfig() {
 			err = rootCmd.GenFishCompletionFile(gflPath, true)
 
 		case "powershell":
-			fmt.Println("Completion script shall be written to file cpt.ps1 in current directory")
-			fmt.Println("Read https://stackoverflow.com/a/20415779/9606036 for instructions to source the script")
+			color.Blue("Completion script shall be written to file cpt.ps1 in current directory")
+			color.Blue("Read https://stackoverflow.com/a/20415779/9606036 for instructions to source the script")
 			err = rootCmd.GenPowerShellCompletionFile("cpt.ps1")
 		}
 
 		if errors.Is(err, os.ErrPermission) {
-			fmt.Println("Insufficient permissions! Try again as sudo/admin")
+			color.Red("Insufficient permissions! Try again as sudo/admin")
 			fmt.Println(err)
 			os.Exit(1)
 		} else if err != nil {
@@ -244,8 +245,8 @@ func cptConfig() {
 			os.Exit(1)
 		}
 
-		fmt.Println("Completion scripts written successfully!")
-		fmt.Println("Reload your shell for completion to take effect")
+		color.Green("Completion scripts written successfully!")
+		color.Green("Reload your shell for completion to take effect")
 		os.Exit(0)
 
 	case 6:
@@ -259,9 +260,9 @@ func cptConfig() {
 	}
 
 	if err := viper.WriteConfig(); err != nil {
-		fmt.Println("Failed to save configurations")
+		color.Red("Failed to save configurations")
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println("Configurations successfully saved!")
+	color.Green("Configurations successfully saved!")
 }
