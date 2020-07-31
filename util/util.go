@@ -15,6 +15,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/oleiade/serrure/aes"
@@ -232,4 +233,10 @@ func Diff(ouf, out string) string {
 	t.AddRow("Output", "Answer")
 	t.AddRow(strings.TrimSpace(ouf), strings.TrimSpace(out))
 	return t.String()
+}
+
+func HeaderCol(data string) string {
+	// simple blue bold with underline
+	col := color.New(color.FgBlue).Add(color.Underline)
+	return col.Sprint(data)
 }
