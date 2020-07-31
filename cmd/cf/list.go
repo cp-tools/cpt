@@ -121,25 +121,8 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 					isJudging = true
 				}
 
-				// compress verdict string
-				verdict := sub.Verdict
-				verdict = strings.ReplaceAll(verdict, "Time limit exceeded", "TLE")
-				verdict = strings.ReplaceAll(verdict, "Compilation error", "CE")
-				verdict = strings.ReplaceAll(verdict, "Runtime error", "RTE")
-				verdict = strings.ReplaceAll(verdict, "Wrong answer", "WA")
-				verdict = strings.ReplaceAll(verdict, "Accepted", "AC")
-				verdict = strings.ReplaceAll(verdict, "Partial result", "PR")
-
-				if strings.HasPrefix(verdict, "CE") || strings.HasPrefix(verdict, "TLE") {
-					verdict = color.HiYellowString(verdict)
-				} else if strings.HasPrefix(verdict, "RTE") || strings.HasPrefix(verdict, "WA") {
-					verdict = color.HiRedString(verdict)
-				} else if verdict == "AC" || strings.HasPrefix(verdict, "PR") {
-					verdict = color.HiGreenString(verdict)
-				}
-
 				t.AddRow(sub.ID, sub.When.Local().Format("Jan/02/2006 15:04"), sub.Problem,
-					sub.Language, verdict, sub.Time, sub.Memory)
+					sub.Language, colorVerdict(sub.Verdict), sub.Time, sub.Memory)
 			}
 			fmt.Fprintln(writer, t.String())
 			if isJudging == false {
