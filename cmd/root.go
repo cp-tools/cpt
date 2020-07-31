@@ -9,6 +9,7 @@ import (
 
 	"github.com/cp-tools/cpt/cmd/cf"
 	"github.com/cp-tools/cpt/util"
+	"github.com/fatih/color"
 	"github.com/infixint943/cookiejar"
 
 	"github.com/spf13/cobra"
@@ -59,12 +60,16 @@ func initConfig() {
 	// configure default settings
 	viper.SetDefault("default_template", "none")
 	viper.SetDefault("gen_on_fetch", false)
+	viper.SetDefault("enable_colorization", false)
 
 	// load global settings
 	cfgFile := filepath.Join(cfgDir, "cpt.json")
 	viper.SetConfigFile(cfgFile)
 	viper.SafeWriteConfig()
 	viper.ReadInConfig()
+
+	// set application wide colorization to use
+	color.NoColor = !viper.GetBool("enable_colorization")
 
 	// set global proxy configuration
 	if viper.IsSet("proxy_url") == false {

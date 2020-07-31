@@ -15,6 +15,7 @@ import (
 
 	"github.com/cp-tools/cpt/util"
 
+	"github.com/fatih/color"
 	"github.com/kballard/go-shellquote"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -128,14 +129,14 @@ func test(lflags *pflag.FlagSet) {
 	file, _ := lflags.GetString("file")
 	file, err := util.FindCodeFiles(file)
 	if err != nil {
-		fmt.Println("Could not select code file")
+		color.Red("Could not select code file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	// find template configuration to use
 	tmpltAlias, err := util.FindTemplateToUse(file)
 	if err != nil {
-		fmt.Println("Could not select template configuration")
+		color.Red("Could not select template configuration")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -157,7 +158,7 @@ func test(lflags *pflag.FlagSet) {
 
 		err = tmpl.Execute(&scp, tmplMap)
 
-		fmt.Println("Prescript:", scp.String())
+		fmt.Println(color.BlueString("Prescript:"), scp.String())
 		cmds, err := shellquote.Split(scp.String())
 		if err != nil {
 			panic(err)
@@ -186,9 +187,9 @@ func test(lflags *pflag.FlagSet) {
 			cmd := exec.Command(cmds[0], cmds[1:]...)
 			cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 
-			fmt.Println("-------START-------")
+			color.Green("-------START-------")
 			cmd.Run()
-			fmt.Println("--------END--------")
+			color.Green("--------END--------")
 
 			fmt.Println()
 		} else {
@@ -199,12 +200,13 @@ func test(lflags *pflag.FlagSet) {
 
 			timeLimitDur, _ := lflags.GetDuration("time-limit")
 
+			blue := color.New(color.FgBlue).SprintFunc()
+
 			// set verdict template data to parse
-			tmplStr := "Test: #{{.testIndex}} -- Verdict: {{.verdict}} -- Time: {{.dur}}\n" +
-				"------------------------------------------\n" +
-				"{{- if .stderr}}\nStderr: {{.stderr}}{{end}}\n" +
-				"{{- if eq .verdict \"WA\"}}\nInput\n{{.inp}}\n{{.diff}}{{end}}\n" +
-				"{{- if .checkerLog}}\nChecker log: {{.checkerLog}}{{end}}\n"
+			tmplStr := fmt.Sprintf("%v #{{.testIndex}}\t%v {{.verdict}}\t%v {{.dur}}\n", blue("Test:"), blue("Verdict:"), blue("Time:")) +
+				fmt.Sprintf("{{- if .stderr}}\n%v {{.stderr}}{{end}}\n", blue("Stderr:")) +
+				fmt.Sprintf("{{- if .checkerLog}}\n%v {{.checkerLog}}{{end}}\n", blue("Checker log:")) +
+				fmt.Sprintf("{{- if .diff}}%v\n{{.input}}\n{{.diff}}{{end}}\n", util.HeaderCol("Input"))
 			tmpl, _ := template.New("verdict").Parse(tmplStr)
 
 			// @todo Run tests in parallel
@@ -226,8 +228,8 @@ func test(lflags *pflag.FlagSet) {
 
 				inFile, err := os.Open(inFiles[i])
 				if err != nil {
-					fmt.Println("Could not read file", inFiles[i])
-					fmt.Println("Skipping test case...")
+					color.Red("Could not read file %v", inFiles[i])
+					color.Yellow("Skipping test case...")
 					continue
 				}
 				defer inFile.Close()
@@ -245,11 +247,11 @@ func test(lflags *pflag.FlagSet) {
 				select {
 				case <-ctx.Done():
 					// TLE timeout took place
-					tmplMap["verdict"] = "TLE"
+					tmplMap["verdict"] = color.HiYellowString("TLE")
 				default:
 					// not a TLE, continue
 					if err != nil {
-						tmplMap["verdict"] = "RTE"
+						tmplMap["verdict"] = color.HiRedString("RTE")
 						break
 					}
 
@@ -273,7 +275,7 @@ func test(lflags *pflag.FlagSet) {
 					err = checkerCmd.Run()
 					if _, ok := err.(*exec.ExitError); ok {
 						// there was an exit-error here!
-						tmplMap["verdict"] = "WA"
+						tmplMap["verdict"] = color.HiRedString("WA")
 
 						inFile, err := os.Open(inFiles[i])
 						if err != nil {
@@ -313,10 +315,10 @@ func test(lflags *pflag.FlagSet) {
 
 						diff := util.Diff(string(oufBuf), string(outBuf))
 						tmplMap["diff"] = diff
-						tmplMap["inp"] = string(inBuf)
+						tmplMap["input"] = string(inBuf)
 					} else {
 						// feel better yet?!
-						tmplMap["verdict"] = "AC"
+						tmplMap["verdict"] = color.HiGreenString("AC")
 					}
 					tmplMap["checkerLog"] = checkerStderr.String()
 				}
@@ -340,7 +342,7 @@ func test(lflags *pflag.FlagSet) {
 
 		err = tmpl.Execute(&scp, tmplMap)
 
-		fmt.Println("Postscript:", scp.String())
+		fmt.Println(color.BlueString("Postscript:"), scp.String())
 		cmds, err := shellquote.Split(scp.String())
 		if err != nil {
 			panic(err)

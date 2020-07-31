@@ -9,6 +9,7 @@ import (
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -41,20 +42,20 @@ func fetch(spfr, workDir string) {
 	}
 
 	if len(arg.Contest) == 0 {
-		fmt.Println("Contest id not specified")
+		color.Red("Contest id not specified")
 		os.Exit(1)
 	}
 
-	fmt.Println("Fetching details of:", arg.Contest)
+	fmt.Println(color.BlueString("Fetching details of:"), arg.Contest)
 	dur, err := arg.GetCountdown()
 	if err != nil {
-		fmt.Println("Could not extract countdown")
+		color.Red("Could not extract countdown")
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	if dur.Seconds() > 0 {
-		util.StartCountdown(dur, "Contest starts in:")
+		util.StartCountdown(dur, color.BlueString("Contest starts in:"))
 		// open problems page once parsing is done
 		open(spfr)
 	}
@@ -62,13 +63,9 @@ func fetch(spfr, workDir string) {
 	// fetch all problems from contest page
 	problems, err := arg.GetProblems()
 	if err != nil {
-		fmt.Println("Could not fetch sample tests")
+		color.Red("Could not fetch sample tests")
 		fmt.Println(err)
 		os.Exit(1)
-	}
-
-	if len(arg.Problem) == 0 {
-		fmt.Println("Fetched", len(problems), "problems")
 	}
 
 	for _, prob := range problems {
@@ -81,7 +78,7 @@ func fetch(spfr, workDir string) {
 
 		err := os.MkdirAll(probDir, os.ModePerm)
 		if err != nil {
-			fmt.Println("Could not create problem folder")
+			color.Red("Could not create problem folder")
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -102,7 +99,7 @@ func fetch(spfr, workDir string) {
 				os.Exit(1)
 			}
 		}
-		fmt.Println(prob.Name, " ==> Fetched", len(prob.SampleTests), "sample tests")
+		fmt.Println(color.BlueString("Fetched %v sample tests:", len(prob.SampleTests)), prob.Name)
 
 		// generate template if specified
 		genTmplt := viper.GetString("default_template")

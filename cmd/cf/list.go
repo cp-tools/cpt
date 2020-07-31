@@ -10,6 +10,7 @@ import (
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/spf13/cobra"
@@ -94,13 +95,13 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 			username, _ := lflags.GetString("username")
 			submissions, err := arg.GetSubmissions(username)
 			if err != nil {
-				fmt.Println("Could not fetch submissions")
+				color.Red("Could not fetch submissions")
 				fmt.Println(err)
 				os.Exit(1)
 			}
 
 			if len(submissions) == 0 {
-				fmt.Println("No submissions found")
+				color.Yellow("No submissions found")
 				os.Exit(0)
 			}
 
@@ -108,7 +109,8 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 			t.Separator = " | "
 			t.MaxColWidth = 22
 
-			t.AddRow("#", "When", "Problem", "Lang", "Verdict", "Time", "Memory")
+			t.AddRow(util.HeaderCol("#"), util.HeaderCol("When"), util.HeaderCol("Problem"), util.HeaderCol("Lang"),
+				util.HeaderCol("Verdict"), util.HeaderCol("Time"), util.HeaderCol("Memory"))
 
 			for i, sub := range submissions {
 				number, _ := lflags.GetUint("number")
@@ -120,7 +122,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 				}
 
 				t.AddRow(sub.ID, sub.When.Local().Format("Jan/02/2006 15:04"), sub.Problem,
-					sub.Language, sub.Verdict, sub.Time, sub.Memory)
+					sub.Language, colorVerdict(sub.Verdict), sub.Time, sub.Memory)
 			}
 			fmt.Fprintln(writer, t.String())
 			if isJudging == false {
@@ -134,18 +136,18 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 	case "dashboard":
 		dhbd, err := arg.GetDashboard()
 		if err != nil {
-			fmt.Println("Could not fetch dashboard")
+			color.Red("Could not fetch dashboard")
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
 		// list contest name
-		fmt.Println("Contest name:", dhbd.Name)
+		fmt.Println(color.BlueString("Contest name:"), dhbd.Name)
 		fmt.Println()
 
 		// list countdown to contest end
 		if dhbd.Countdown != 0 {
-			fmt.Println("Contest ends in:", dhbd.Countdown.String())
+			fmt.Println(color.BlueString("Contest ends in:"), dhbd.Countdown.String())
 			fmt.Println()
 		}
 
@@ -153,16 +155,16 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 		t.Separator = " | "
 		t.MaxColWidth = 25
 
-		t.AddRow("Name", "Status", "Solved")
+		t.AddRow(util.HeaderCol("Name"), util.HeaderCol("Status"), util.HeaderCol("Solved"))
 		for _, prob := range dhbd.Problem {
 			var solveStatus string
 			switch prob.SolveStatus {
 			case codeforces.SolveAccepted:
-				solveStatus = "AC"
+				solveStatus = color.HiGreenString("AC")
 			case codeforces.SolveNotAttempted:
 				solveStatus = "NA"
 			case codeforces.SolveRejected:
-				solveStatus = "WA"
+				solveStatus = color.HiRedString("WA")
 			}
 
 			t.AddRow(prob.Name, solveStatus, prob.SolveCount)
@@ -195,7 +197,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 
 		contests, err := arg.GetContests(omitFinishedContests)
 		if err != nil {
-			fmt.Println("Could not fetch contests")
+			color.Red("Could not fetch contests")
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -204,7 +206,8 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 		t.Separator = " | "
 		t.MaxColWidth = 30
 
-		t.AddRow("Name", "Writers", "Start", "Length", "Registration", "Count")
+		t.AddRow(util.HeaderCol("#"), util.HeaderCol("Name"), util.HeaderCol("Writers"), util.HeaderCol("Start"),
+			util.HeaderCol("Length"), util.HeaderCol("Registration"), util.HeaderCol("Count"))
 		for c, cont := range contests {
 			number, _ := lflags.GetUint("number")
 			if uint(c) >= number {
@@ -214,16 +217,16 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 			var regStatus string
 			switch cont.RegStatus {
 			case codeforces.RegistrationOpen:
-				regStatus = "OPEN"
+				regStatus = color.HiGreenString("OPEN")
 			case codeforces.RegistrationClosed:
-				regStatus = "CLOSED"
+				regStatus = color.HiRedString("CLOSED")
 			case codeforces.RegistrationDone:
-				regStatus = "REGISTERED"
+				regStatus = color.HiGreenString("REGISTERED")
 			case codeforces.RegistrationNotExists:
 				regStatus = "NO REGISTRATION"
 			}
 
-			t.AddRow(cont.Name, strings.Join(cont.Writers, "\n"),
+			t.AddRow(cont.Arg.Contest, cont.Name, strings.Join(cont.Writers, " "),
 				cont.StartTime.Local().Format("Jan/02/2006 15:04"),
 				cont.Duration.String(), regStatus, cont.RegCount)
 		}
@@ -248,7 +251,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 			}
 
 			if len(regOpenContestsName) == 0 {
-				fmt.Println("No contests with open registration found")
+				color.Yellow("No contests with open registration found")
 				os.Exit(0)
 			}
 
@@ -260,7 +263,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 
 			regInfo, err := regOpenContests[idxChoice].Arg.RegisterForContest()
 			if err != nil {
-				fmt.Println("Could not fetch registration page")
+				color.Red("Could not fetch registration page")
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -273,19 +276,19 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 			}, &cfm))
 
 			if cfm == false {
-				fmt.Println("Registration aborted")
+				color.Yellow("Registration aborted")
 				os.Exit(0)
 			}
 
-			fmt.Println("Registering in contest:", regOpenContests[idxChoice].Arg.Contest)
+			fmt.Println(color.BlueString("Registering in contest:"), regOpenContests[idxChoice].Arg.Contest)
 			err = regInfo.Register()
 			if err != nil {
-				fmt.Println("Could not register user in contest")
+				color.Red("Could not register user in contest")
 				fmt.Println(err)
 				os.Exit(1)
 			}
 
-			fmt.Println("Registered successfully!")
+			color.Green("Registered successfully!")
 		}
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/infixint943/cookiejar"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -43,8 +44,8 @@ func config() {
 	case 0:
 		// check if any saved session present
 		if usr := cfViper.GetString("username"); len(usr) != 0 {
-			fmt.Println("Current user handle:", usr)
-			fmt.Println("Existing session will be OVERWRITTEN!")
+			fmt.Println(color.BlueString("Current user handle:"), usr)
+			color.Yellow("Existing session will be OVERWRITTEN!")
 		}
 
 		var usr, passwd string
@@ -55,26 +56,26 @@ func config() {
 			&passwd, survey.WithValidator(survey.Required))
 		util.SurveyErr(err)
 
-		fmt.Println("Logging in. Please wait.")
+		color.Blue("Logging in. Please wait.")
 		// remove all past session cookies
 		jar, _ := cookiejar.New(nil)
 		codeforces.SessCln.Jar = jar
 
 		handle, err := codeforces.Login(usr, passwd)
 		if err != nil {
-			fmt.Println("Login failed")
+			color.Red("Login failed")
 			fmt.Println(err)
 			os.Exit(0)
 		}
 
-		fmt.Println("Login successful")
-		fmt.Println("Welcome", handle)
+		color.Green("Login successful")
+		fmt.Println(color.BlueString("Welcome"), handle)
 
 		cfViper.Set("username", usr)
 		if ed, err := util.Encrypt(usr, passwd); err == nil {
 			cfViper.Set("password", ed)
 		} else {
-			fmt.Println("Could not encrypt password")
+			color.Red("Could not encrypt password")
 			fmt.Println(err)
 			os.Exit(1)
 		}
