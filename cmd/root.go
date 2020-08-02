@@ -27,7 +27,7 @@ var (
 			"Automates all the boring parts of CP, so that you don't have to!\n" +
 			"A little venomous advantage doesn't hurt, does it?\n\n" +
 			"Built by CP'ers, built for CP'ers.",
-		Version: "v0.11.1",
+		Version: "v0.12.0",
 	}
 
 	cfgDir string
