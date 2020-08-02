@@ -9,9 +9,9 @@ import (
 
 	"github.com/cp-tools/cpt/cmd/cf"
 	"github.com/cp-tools/cpt/util"
-	"github.com/fatih/color"
 	"github.com/infixint943/cookiejar"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -27,7 +27,7 @@ var (
 			"Automates all the boring parts of CP, so that you don't have to!\n" +
 			"A little venomous advantage doesn't hurt, does it?\n\n" +
 			"Built by CP'ers, built for CP'ers.",
-		Version: "v0.12.0",
+		Version: "v0.12.1",
 	}
 
 	cfgDir string
