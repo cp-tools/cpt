@@ -1,26 +1,34 @@
 name: Tag and Release
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   job1:
     name: Tag new version
     runs-on: ubuntu-latest
+    outputs:
+      previous_version: ${{ steps.create_tag.outputs.previous-version }}
+      current_version: ${{ steps.create_tag.outputs.current-version }}
+
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 2
       
       - uses: salsify/action-detect-and-tag-new-version@v2
+        id: create_tag
         with:
           version-command: |
             grep -Po '\bVersion: "v\K.*?(?=")' cmd/root.go
 
   job2:
-    name: Goreleaser
+    name: Upload releases (goreleaser)
     needs: job1
-    if: ${{ needs.job1.outputs.previous-version }} != ${{ needs.job1.outputs.current-version }}
     runs-on: ubuntu-latest
+    if: needs.job1.outputs.previous_version != needs.job1.outputs.current_version
     steps:
       - name: Checkout
         uses: actions/checkout@v2
