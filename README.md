@@ -19,6 +19,7 @@ Written using [golang](https://golang.org/), enabling compilation to native mach
   - [Installation](#Installation)
   - [Shell Completions](#Shell-Completions)
 - [Usage](#Usage)
+  - [Quick start](#Quick-start)
 - [FAQ](#FAQ)
 - [Contributing](#Contributing)
 
@@ -82,7 +83,7 @@ cd cpt/
 go build -ldflags "-s -w"
 ```
 
-Once installed, you can install *checkers* (for `cpt test`) with the command `cpt upgrade --checkers`.
+Once installed, you can install *checkers* (for `cpt test`) with the command `cpt upgrade --checkers`. This step is necessary for using `cpt test`.
 
 ### Shell Completions
 
@@ -95,6 +96,31 @@ To generate shell completions, run `cpt config` as admin, and select your shell 
 Enough said already! Here's a GIF to present the tool in action (made using [asciinema](https://asciinema.org)!)
 
 ![demo](assets/demo.gif)
+
+
+
+### Quick start
+
+Here's a super quick tutorial on how to set the tool up and compete in a [codeforces](https://codeforces.com) contest, contest [1221](https://codeforces.com/contest/1221). This walk through assumes you have downloaded and setup `cpt` and installed the checkers (using `cpt upgrade --checker`). Also, login to codeforces using `cpt cf config` and select *'login to codeforces'* in the menu that appears.
+
+1. **Template configuration** - This step is *required* for testing solution against samples as well as submitting your solution. Save your template code to a file (`template.cpp` in the below example) and follow the recording below.
+
+   <img src="assets/new_template.gif" alt="new_template" style="zoom:70%;" />
+
+   *For the complete list of placeholders (like `{{.file}}` in the above GIF) refer the wiki docs.*
+
+   Similarly, you can create your own template, in any of the languages supported by codeforces.
+
+2. **Set default template** - We select the template we just created above as the default template, which will be generated every time we run `cpt gen` without any parameters. Also, we set *'gen on fetch'*, which will automatically create a new template file for each problem that is parsed.
+   <img src="assets/template_config.gif" alt="template_config" style="zoom:80%;" />
+
+
+
+
+
+
+
+
 
 For complete documentation, head to the [wiki]() page.
 
