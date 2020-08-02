@@ -225,6 +225,7 @@ func test(lflags *pflag.FlagSet) {
 					var buf strings.Builder
 					tmpl.Execute(&buf, tmplMap)
 					str := strings.TrimSpace(buf.String())
+					str = strings.ReplaceAll(str, "\n\n", "\n")
 					fmt.Println(str + "\n")
 				}(i)
 			}
