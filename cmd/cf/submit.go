@@ -57,8 +57,7 @@ func submit(spfr string, lflags *pflag.FlagSet) {
 	}
 
 	// find all code files in current directory (check if given 'file' is valid)
-	file, _ := lflags.GetString("file")
-	file, err = util.FindCodeFiles(file)
+	file, err := util.FindCodeFiles(lflags.MustGetString("file"))
 	if err != nil {
 		color.Red("Could not select code file")
 		fmt.Println(err)

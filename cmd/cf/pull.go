@@ -51,8 +51,7 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 	}
 
 	color.Blue("Fetching submission details")
-	username, _ := lflags.GetString("username")
-	submissions, err := arg.GetSubmissions(username)
+	submissions, err := arg.GetSubmissions(lflags.MustGetString("username"))
 	if err != nil {
 		color.Red("Could not pull submission(s) details")
 		fmt.Println(err)

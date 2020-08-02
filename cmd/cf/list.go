@@ -92,7 +92,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 		for isJudging := false; ; isJudging = false {
 			start := time.Now()
 
-			username, _ := lflags.GetString("username")
+			username := lflags.MustGetString("username")
 			submissions, err := arg.GetSubmissions(username)
 			if err != nil {
 				color.Red("Could not fetch submissions")
@@ -113,8 +113,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 				util.HeaderCol("Verdict"), util.HeaderCol("Time"), util.HeaderCol("Memory"))
 
 			for i, sub := range submissions {
-				number, _ := lflags.GetUint("number")
-				if uint(i) >= number {
+				if uint(i) >= lflags.MustGetUint("number") {
 					break
 				}
 				if sub.IsJudging == true {
@@ -174,8 +173,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 	case "contests":
 		// default to contests menu
 		if len(arg.Class) == 0 {
-			register, _ := lflags.GetBool("register")
-			if register == true {
+			if lflags.MustGetBool("register") == true {
 				// it means contests
 				arg.Class = codeforces.ClassContest
 			} else {
@@ -209,8 +207,7 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 		t.AddRow(util.HeaderCol("#"), util.HeaderCol("Name"), util.HeaderCol("Writers"), util.HeaderCol("Start"),
 			util.HeaderCol("Length"), util.HeaderCol("Registration"), util.HeaderCol("Count"))
 		for c, cont := range contests {
-			number, _ := lflags.GetUint("number")
-			if uint(c) >= number {
+			if uint(c) >= lflags.MustGetUint("number") {
 				break
 			}
 
@@ -233,15 +230,13 @@ func list(spfr, mode string, lflags *pflag.FlagSet) {
 		fmt.Println(t.String())
 
 		// give user chance to register
-		register, _ := lflags.GetBool("register")
-		if register == true && arg.Class == codeforces.ClassContest {
+		if lflags.MustGetBool("register") == true && arg.Class == codeforces.ClassContest {
 			fmt.Println()
 
 			var regOpenContestsName []string
 			var regOpenContests []codeforces.Contest
 			for c, cont := range contests {
-				number, _ := lflags.GetUint("number")
-				if uint(c) >= number {
+				if uint(c) >= lflags.MustGetUint("number") {
 					break
 				}
 				if cont.RegStatus == codeforces.RegistrationOpen {
