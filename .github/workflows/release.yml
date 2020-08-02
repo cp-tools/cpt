@@ -25,13 +25,8 @@ jobs:
     name: Goreleaser
     needs: job1
     runs-on: ubuntu-latest
-    if: ${{ needs.job1.outputs.previous_version }} != ${{ needs.job1.outputs.current_version }}
+    if: (${{ needs.job1.outputs.previous_version }} == ${{ needs.job1.outputs.current_version }}) == false
     steps:
-      - name: Echo version
-        run: |
-          echo ${{ needs.job1.outputs.previous_version }}
-          echo ${{ needs.job1.outputs.current_version }}
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
