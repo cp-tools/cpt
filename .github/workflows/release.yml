@@ -22,16 +22,11 @@ jobs:
             grep -Po '\bVersion: "v\K.*?(?=")' cmd/root.go
 
   job2:
-    name: Goreleaser
+    name: Upload releases (goreleaser)
     needs: job1
     runs-on: ubuntu-latest
     if: needs.job1.outputs.previous_version != needs.job1.outputs.current_version
     steps:
-      - name: Echo version
-        run: |
-          echo ${{ needs.job1.outputs.previous_version }}
-          echo ${{ needs.job1.outputs.current_version }}
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
