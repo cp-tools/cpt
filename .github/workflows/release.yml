@@ -6,12 +6,17 @@ jobs:
   job1:
     name: Tag new version
     runs-on: ubuntu-latest
+    outputs:
+      previous_version: ${{ steps.create_tag.outputs.previous-version }}
+      current_version: ${{ steps.create_tag.outputs.current-version }}
+
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 2
       
       - uses: salsify/action-detect-and-tag-new-version@v2
+        id: create_tag
         with:
           version-command: |
             grep -Po '\bVersion: "v\K.*?(?=")' cmd/root.go
@@ -20,12 +25,12 @@ jobs:
     name: Goreleaser
     needs: job1
     runs-on: ubuntu-latest
-    if: ${{ needs.job1.outputs.previous-version }} != ${{ needs.job1.outputs.current-version }}
+    if: ${{ needs.job1.outputs.previous_version }} != ${{ needs.job1.outputs.current_version }}
     steps:
       - name: Echo version
         run: |
-          echo ${{ needs.job1.outputs.previous-version }}
-          echo ${{ needs.job1.outputs.current-version }}
+          echo ${{ needs.job1.outputs.previous_version }}
+          echo ${{ needs.job1.outputs.current_version }}
 
       - name: Checkout
         uses: actions/checkout@v2
