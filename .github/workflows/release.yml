@@ -1,12 +1,25 @@
-name: goreleaser
+name: Tag and Release
 
-on:
-  push:
-    tags:
-      - '*'
+on: push
 
 jobs:
-  goreleaser:
+  job1:
+    name: Tag new version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      
+      - uses: salsify/action-detect-and-tag-new-version@v2
+        with:
+          version-command: |
+            grep -Po '\bVersion: "v\K.*?(?=")' cmd/root.go
+
+  job2:
+    name: Goreleaser
+    needs: job1
+    if: ${{ needs.job1.outputs.previous-version }} != ${{ needs.job1.outputs.current-version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
