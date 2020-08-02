@@ -28,7 +28,7 @@ require (
 	github.com/oleiade/serrure v0.0.0-20160812094227-28794589ac9b
 	github.com/pelletier/go-toml v1.8.0 // indirect
 	github.com/smartystreets/assertions v1.1.1 // indirect
-	github.com/spf13/afero v1.3.2 // indirect
+	github.com/spf13/afero v1.3.3 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.0.1-0.20200719220246-c6fe2d4df810
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -47,3 +47,5 @@ require (
 )
 
 replace github.com/spf13/pflag => github.com/infixint943/pflag v1.0.6-0.20200801213445-50927f2f338d
+
+replace github.com/AlecAivazis/survey/v2 => github.com/infixint943/survey/v2 v2.0.9-0.20200709223734-2d36b1d790a1
