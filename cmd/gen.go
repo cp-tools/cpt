@@ -35,7 +35,7 @@ func init() {
 	genCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		lflags := genCmd.Flags()
 		// set template to default template if flag '--template' not set
-		if tmplt, _ := lflags.GetString("template"); tmplt == "" {
+		if lflags.MustGetString("template") == "" {
 			defTmplt := viper.GetString("default_template")
 			if defTmplt == "" {
 				return fmt.Errorf("Invalid flags - no template specified")
@@ -45,7 +45,7 @@ func init() {
 
 		// check if given '--template' flag is valid
 		allTmplts := util.ExtractMapKeys(viper.GetStringMap("templates"))
-		if tmplt, _ := lflags.GetString("template"); !util.SliceContains(tmplt, allTmplts) {
+		if tmplt := lflags.MustGetString("template"); !util.SliceContains(tmplt, allTmplts) {
 			return fmt.Errorf("Invalid flags - template '%v' not found", tmplt)
 		}
 
@@ -59,8 +59,7 @@ func init() {
 
 func gen(lflags *pflag.FlagSet) {
 	// get template configuration to use
-	tmplt, _ := lflags.GetString("template")
-	tmpltConfig := viper.GetStringMap("templates." + tmplt)
+	tmpltConfig := viper.GetStringMap("templates." + lflags.MustGetString("template"))
 
 	currDir, err := os.Getwd()
 	if err != nil {

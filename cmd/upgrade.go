@@ -45,7 +45,7 @@ func init() {
 func upgrade(lflags *pflag.FlagSet) {
 	color.Blue("Querying releases information from github")
 
-	checkerFlag, _ := lflags.GetBool("checker")
+	checkerFlag := lflags.MustGetBool("checker")
 	if checkerFlag == true {
 		// get checker releases from github
 		const releasesURL = "https://api.github.com/repos/cp-tools/cpt-checker/releases"
