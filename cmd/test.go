@@ -57,7 +57,7 @@ cpt test -c myesno
 cpt test -C                 
                             Run custom invocation mode
 cpt test --input 0.txt,1.in --output 0.out,1.out
-							Test file for [0.txt/0.out] and [1.in/1.out]
+                            Test file for [0.txt/0.out] and [1.in/1.out]
 cpt test -t 4s
                             Set time limit of 4 seconds
 
