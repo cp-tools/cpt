@@ -20,12 +20,19 @@ import (
 
 // cptConfigCmd represents the config command
 var cptConfigCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Configure application wide settings",
+	Use:  "config",
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cptConfig()
 	},
-	Args: cobra.NoArgs,
+	Short: "Configure application wide settings",
+	Long: `Application wide settings configuration.
+Options like 'colorization', 'template generation', 'proxy' etc
+are configured here. Use the selection menu that appears to make 
+changes to the settings.
+
+All settings are saved to $CONFIGDIR/cpt/cpt.json file.
+`,
 }
 
 func init() {
