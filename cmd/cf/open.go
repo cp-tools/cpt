@@ -12,12 +12,17 @@ import (
 )
 
 var openCmd = &cobra.Command{
-	Use:   "open [SPECIFIER]",
-	Short: "Open specified problem in default browser",
+	Use: "open [SPECIFIER]",
 	Run: func(cmd *cobra.Command, args []string) {
 		spfr, _ := util.DetectSpfr(args)
 		open(spfr)
 	},
+	Short: "Open specified problem in default browser",
+	Long: `Opens problem(s) page in default browser.
+Ensure you have a browser installed and set as default.
+
+Refer 'cpt cf -h' for details on argument [SPECIFIER].
+`,
 }
 
 func init() {

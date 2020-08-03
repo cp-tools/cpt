@@ -2,12 +2,11 @@ name: Build
 
 on:
   push:
-    tags-ignore:
-      - 'v*'
-  
+    branches:
+    - master
   pull_request:
-    tags-ignore:
-      - 'v*'
+    branches:
+    - master
 
 jobs:
   build:

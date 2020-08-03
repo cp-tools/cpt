@@ -18,11 +18,21 @@ import (
 var (
 	// fetchCmd represents the 'cf fetch' command
 	fetchCmd = &cobra.Command{
-		Use:   "fetch [SPECIFIER]",
-		Short: "Fetch and save sample tests from website to local folder",
+		Use: "fetch [SPECIFIER]",
 		Run: func(cmd *cobra.Command, args []string) {
 			fetch(util.DetectSpfr(args))
 		},
+		Short: "Fetch and save sample tests from website to local folder",
+		Long: `Saves sample tests in problem to structured folders.
+Creates a folder with structure /codeforces/<class>/<contest-id>/<problem-id>
+Where class is either [group gym contest]. In case of group, a subfolder with
+group id is created right after <class>.
+
+Sample tests are saved as <i>.in and <i>.out for input and output respectively,
+for each sample test (<i> starts from 1...)
+
+Refer 'cpt cf -h' for details on argument [SPECIFIER].
+`,
 	}
 
 	// GenFunc to run 'cpt gen'

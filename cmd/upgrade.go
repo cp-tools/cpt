@@ -25,8 +25,24 @@ import (
 // upgradeCmd represents the upgrade command
 var upgradeCmd = &cobra.Command{
 	Use:   "upgrade",
-	Short: "Upgrade binary using github releases",
 	Args:  cobra.NoArgs,
+	Short: "Upgrade binary using github releases",
+	Long: `Downloads latest release from github and replaces current executable.
+The easiest way to upgrade to the latest release, with rollback option on failure.
+
+Presents you with a selection list of ALL releases so far, giving you the greatest
+flexibility to choose the version you want to use. Using latest version is recommended.
+
+Use --checker flag to upgrade the set of default checkers available for 'cpt test'.
+Note that, checker upgrade replaces checkers in $CONFIGDIR/cpt/checkers with the same name.
+
+Usage examples:
+cpt upgrade
+                            Bring selection menu for version to upgrade to
+cpt upgrade -c
+                            Same as 'cpt upgrade' but for default checkers
+
+`,
 }
 
 func init() {

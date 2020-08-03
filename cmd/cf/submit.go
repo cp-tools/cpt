@@ -21,6 +21,17 @@ import (
 var submitCmd = &cobra.Command{
 	Use:   "submit [SPECIFIER]",
 	Short: "Submit solution file to problem",
+	Long: `Submits solution to problem directly.
+Submits selected submission file to problem on codeforces.
+Lists dynamic status of submission (by pinging codeforces every second)
+till judging is over. Uses code language as configured in template.
+
+Note: During long queue, CTRL^C to stop dynamic verdict display.
+Instead occasionally run 'cpt cf list submissions' to get submission verdict.
+Use flag --file to select file to submit (similar to cpt test).
+
+Refer 'cpt cf -h' for details on argument [SPECIFIER].
+`,
 }
 
 func init() {

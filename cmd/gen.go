@@ -18,8 +18,18 @@ import (
 // genCmd represents the gen command
 var genCmd = &cobra.Command{
 	Use:   "gen",
-	Short: "Generate template code in current directory",
 	Args:  cobra.NoArgs,
+	Short: "Generate template code in current directory",
+	Long: `Creates a new template file in the current directory with name <folder-name>.
+If file already exists, creates file <folder-name>_<i> where 'i' iterates from 1 till the number
+for which no file of the given name exists.
+
+Usage examples:
+cpt gen                    
+                            Creates the default configured template
+cpt gen -t fft             
+                            Creates configured template of alias 'fft'
+`,
 }
 
 func init() {
