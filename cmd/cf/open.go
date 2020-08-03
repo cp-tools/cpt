@@ -6,6 +6,8 @@ import (
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
+
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -30,10 +32,10 @@ func open(spfr string) {
 	}
 
 	if len(arg.Contest) == 0 {
-		fmt.Println("Contest id not specified")
+		color.Red("Contest id not specified")
 		os.Exit(1)
 	}
 
-	fmt.Println("Opening problem's page:", arg.Contest, arg.Problem)
+	fmt.Println(color.BlueString("Opening problem's page:"), arg)
 	util.BrowserOpen(arg.ProblemsPage())
 }

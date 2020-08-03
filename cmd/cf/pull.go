@@ -9,6 +9,7 @@ import (
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -49,17 +50,16 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 		os.Exit(1)
 	}
 
-	fmt.Println("Fetching submission(s) details... Please wait!")
-	username, _ := lflags.GetString("username")
-	submissions, err := arg.GetSubmissions(username)
+	color.Blue("Fetching submission details")
+	submissions, err := arg.GetSubmissions(lflags.MustGetString("username"))
 	if err != nil {
-		fmt.Println("Could not pull submission(s) details")
+		color.Red("Could not pull submission(s) details")
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	if len(submissions) == 0 {
-		fmt.Println("No submissions found")
+		color.Yellow("No submissions found")
 		os.Exit(0)
 	}
 
@@ -83,10 +83,10 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 
 		pMap[sub.Arg] = true
 
-		fmt.Println("Pulling submission:", sub.ID)
+		fmt.Println(color.BlueString("Pulling submission:"), sub.ID)
 		sourceCode, err := sub.GetSourceCode()
 		if err != nil {
-			fmt.Println("Could not pull submission")
+			color.Red("Could not pull submission")
 			fmt.Println(err)
 			// or should I break immediately?
 			failPull = append(failPull, sub.Arg)
@@ -100,7 +100,7 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 		probDir = filepath.Join(probDir, sub.Arg.Contest, sub.Arg.Problem)
 		err = os.MkdirAll(probDir, os.ModePerm)
 		if err != nil {
-			fmt.Println("Could not create problem folder")
+			color.Red("Could not create problem folder")
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -111,7 +111,7 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 		fileExt := codeforces.LanguageExtn[sub.Language]
 		for fileName, c := fileBase+fileExt, 1; true; c++ {
 			if _, err := os.Stat(fileName); os.IsNotExist(err) == false {
-				fmt.Println("File", fileName, "already exists in directory")
+				color.Yellow("File %v already exists in directory", fileName)
 			} else {
 				err = ioutil.WriteFile(fileName, []byte(sourceCode), 0644)
 				if err != nil {
@@ -119,7 +119,7 @@ func pull(spfr, workDir string, lflags *pflag.FlagSet) {
 					os.Exit(1)
 				}
 
-				fmt.Println("Saved submission", sub.Arg.Contest, sub.Arg.Problem, "to:", fileName)
+				color.Green("Saved submission in: %v", sub.Arg)
 				break
 			}
 			fileName = fmt.Sprintf("%v_%d%v", fileBase, c, fileExt)

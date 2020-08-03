@@ -10,11 +10,14 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"text/template"
 	"time"
 
 	"github.com/cp-tools/cpt/util"
 
+	"github.com/fatih/color"
+	"github.com/gosuri/uitable"
 	"github.com/kballard/go-shellquote"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -107,8 +110,8 @@ func init() {
 			return fmt.Errorf("Invalid flags - can't use both 'input'/'output' and 'custom-invocation'")
 		}
 
-		inFiles, _ := lflags.GetStringSlice("input")
-		outFiles, _ := lflags.GetStringSlice("output")
+		inFiles := lflags.MustGetStringSlice("input")
+		outFiles := lflags.MustGetStringSlice("output")
 		if len(inFiles) != len(outFiles) {
 			// lengths of slices '--input' and '--output' don't match
 			return fmt.Errorf("Invalid flags - len of 'input' [%d] != len of 'output' [%d]", len(inFiles), len(outFiles))
@@ -122,7 +125,7 @@ func init() {
 			}
 		}
 
-		checker, _ := lflags.GetString("checker")
+		checker := lflags.MustGetString("checker")
 		allCheckers := getCheckers(checker)
 		if len(allCheckers) == 0 {
 			// no checker of value '--checker' exists (in checkers)
@@ -159,17 +162,16 @@ func getCheckers(toComplete string) []string {
 
 func test(lflags *pflag.FlagSet) {
 	// find code file to test
-	file, _ := lflags.GetString("file")
-	file, err := util.FindCodeFiles(file)
+	file, err := util.FindCodeFiles(lflags.MustGetString("file"))
 	if err != nil {
-		fmt.Println("Could not select code file")
+		color.Red("Could not select code file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	// find template configuration to use
 	tmpltAlias, err := util.FindTemplateToUse(file)
 	if err != nil {
-		fmt.Println("Could not select template configuration")
+		color.Red("Could not select template configuration")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -191,7 +193,7 @@ func test(lflags *pflag.FlagSet) {
 
 		err = tmpl.Execute(&scp, tmplMap)
 
-		fmt.Println("Prescript:", scp.String())
+		fmt.Println(color.BlueString("Prescript:"), scp.String())
 		cmds, err := shellquote.Split(scp.String())
 		if err != nil {
 			panic(err)
@@ -208,150 +210,60 @@ func test(lflags *pflag.FlagSet) {
 		fmt.Println()
 	}
 
-	// run script
+	// run script next
 	if script := tmplt["script"].(string); true {
 		cmds, err := shellquote.Split(script)
 		if err != nil {
 			panic(err)
 		}
 
-		if ci, _ := lflags.GetBool("custom-invocation"); ci == true {
-			// run custom invocation judge
-			cmd := exec.Command(cmds[0], cmds[1:]...)
-			cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
+		switch {
+		case lflags.MustGetBool("custom-invocation"):
+			param := make(map[string]interface{})
+			param["cmds"] = cmds
+			customInvocation(param)
 
-			fmt.Println("-------START-------")
-			cmd.Run()
-			fmt.Println("--------END--------")
+		default:
+			// non interactive judge to run
+			inFilesPath := lflags.MustGetStringSlice("input")
+			outFilesPath := lflags.MustGetStringSlice("output")
+			util.FindInpOutFiles(&inFilesPath, &outFilesPath)
 
-			fmt.Println()
-		} else {
-			// run checker judge (non interactive)
-			inFiles, _ := lflags.GetStringSlice("input")
-			outFiles, _ := lflags.GetStringSlice("output")
-			util.FindInpOutFiles(&inFiles, &outFiles)
+			tlDur := lflags.MustGetDuration("time-limit")
 
-			timeLimitDur, _ := lflags.GetDuration("time-limit")
+			fvt := color.New(color.FgBlue).Add(color.Bold).SprintFunc()
+			// set verdict template to use
+			tmplStr := fmt.Sprintf("%v #{{.testIndex}}\t%v {{.verdict}}\t%v {{.duration}}\n", fvt("Test:"), fvt("Verdict:"), fvt("Time:")) +
+				fmt.Sprintf("{{- if .log}}\n%v {{.log}}{{end}}\n", fvt("Fail log:")) +
+				fmt.Sprintf("{{- if .stderr}}\n%v {{.stderr}}{{end}}\n", fvt("Stderr:")) +
+				fmt.Sprintf("{{- if .checkerLog}}\n%v {{.checkerLog}}{{end}}\n", fvt("Checker log:")) +
+				fmt.Sprintf("{{- if .diff}}\n%v\n{{.input}}\n{{.diff}}{{end}}", util.HeaderCol("Input"))
+			tmpl, _ := template.New("verdictTmpl").Option("missingkey=zero").Parse(tmplStr)
 
-			// set verdict template data to parse
-			tmplStr := "Test: #{{.testIndex}} -- Verdict: {{.verdict}} -- Time: {{.dur}}\n" +
-				"------------------------------------------\n" +
-				"{{- if .stderr}}\nStderr: {{.stderr}}{{end}}\n" +
-				"{{- if eq .verdict \"WA\"}}\nInput\n{{.inp}}\n{{.diff}}{{end}}\n" +
-				"{{- if .checkerLog}}\nChecker log: {{.checkerLog}}{{end}}\n"
-			tmpl, _ := template.New("verdict").Parse(tmplStr)
+			var wg sync.WaitGroup
+			for i := 0; i < len(inFilesPath); i++ {
+				wg.Add(1)
 
-			// run test for each input/output sample file(s)
-			for i := 0; i < len(inFiles); i++ {
-				// holds tmpl data values
-				tmplMap := make(map[string]interface{})
-				tmplMap["testIndex"] = i + 1
-
-				ctx, cancel := context.WithTimeout(context.Background(), timeLimitDur)
-				defer cancel()
-
-				cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
-				var cmdStdout, cmdStderr bytes.Buffer
-				cmd.Stdout, cmd.Stderr = &cmdStdout, &cmdStderr
-
-				inFile, err := os.Open(inFiles[i])
-				if err != nil {
-					fmt.Println("Could not read file", inFiles[i])
-					fmt.Println("Skipping test case...")
-					continue
+				param := map[string]interface{}{
+					"cmds":        cmds,
+					"inFilePath":  inFilesPath[i],
+					"outFilePath": outFilesPath[i],
+					"time-limit":  tlDur,
+					"checker":     lflags.MustGetString("checker"),
 				}
-				defer inFile.Close()
-				cmd.Stdin = inFile
 
-				// run the executable now
-				cmdStart := time.Now()
-				err = cmd.Run()
-				cmdTime := time.Since(cmdStart)
-				cmdTime = cmdTime.Truncate(time.Millisecond)
-				// write data to verdict tmpl
-				tmplMap["stderr"] = cmdStderr.String()
-				tmplMap["dur"] = cmdTime.String()
-
-				select {
-				case <-ctx.Done():
-					// TLE timeout took place
-					tmplMap["verdict"] = "TLE"
-				default:
-					// not a TLE, continue
-					if err != nil {
-						tmplMap["verdict"] = "RTE"
-						break
-					}
-
-					oufFile, err := ioutil.TempFile(os.TempDir(), "ouf")
-					defer os.Remove(oufFile.Name())
-					if err != nil {
-						// or should I not panic?
-						panic(err)
-					}
-					if _, err = oufFile.Write(cmdStdout.Bytes()); err != nil {
-						panic(err)
-					}
-
-					// run checker (testlib (args) - <input> <ouf> <out>)
-					checker, _ := lflags.GetString("checker")
-					var checkerStderr bytes.Buffer
-					checkerCmd := exec.Command(checker, inFiles[i], oufFile.Name(), outFiles[i])
-					checkerCmd.Stderr = &checkerStderr
-
-					// run checker here
-					err = checkerCmd.Run()
-					if _, ok := err.(*exec.ExitError); ok {
-						// there was an exit-error here!
-						tmplMap["verdict"] = "WA"
-
-						inFile, err := os.Open(inFiles[i])
-						if err != nil {
-							panic(err)
-						}
-						defer inFile.Close()
-
-						outFile, err := os.Open(outFiles[i])
-						if err != nil {
-							panic(err)
-						}
-						defer outFile.Close()
-
-						oufFile, err := os.Open(oufFile.Name())
-						if err != nil {
-							panic(err)
-						}
-						defer oufFile.Close()
-
-						inBuf := make([]byte, 70)
-						if n, _ := inFile.Read(inBuf); n == 70 {
-							// append '...' to the end
-							inBuf = append(inBuf, []byte("...")...)
-						}
-
-						outBuf := make([]byte, 70)
-						if n, _ := outFile.Read(outBuf); n == 70 {
-							// append '...' to the end
-							outBuf = append(outBuf, []byte("...")...)
-						}
-
-						oufBuf := make([]byte, 70)
-						if n, _ := oufFile.Read(oufBuf); n == 70 {
-							// append '...' to the end
-							oufBuf = append(oufBuf, []byte("...")...)
-						}
-
-						diff := util.Diff(string(oufBuf), string(outBuf))
-						tmplMap["diff"] = diff
-						tmplMap["inp"] = string(inBuf)
-					} else {
-						// feel better yet?!
-						tmplMap["verdict"] = "AC"
-					}
-					tmplMap["checkerLog"] = checkerStderr.String()
-				}
-				tmpl.Execute(os.Stdout, tmplMap)
+				go func(i int) {
+					defer wg.Done()
+					tmplMap := checkerJudge(param)
+					tmplMap["testIndex"] = i + 1
+					var buf strings.Builder
+					tmpl.Execute(&buf, tmplMap)
+					str := strings.TrimSpace(buf.String())
+					str = strings.ReplaceAll(str, "\n\n", "\n")
+					fmt.Println(str + "\n")
+				}(i)
 			}
+			wg.Wait()
 		}
 	}
 
@@ -370,7 +282,7 @@ func test(lflags *pflag.FlagSet) {
 
 		err = tmpl.Execute(&scp, tmplMap)
 
-		fmt.Println("Postscript:", scp.String())
+		fmt.Println(color.BlueString("Postscript:"), scp.String())
 		cmds, err := shellquote.Split(scp.String())
 		if err != nil {
 			panic(err)
@@ -385,4 +297,137 @@ func test(lflags *pflag.FlagSet) {
 			os.Exit(0)
 		}
 	}
+}
+
+// checkerJudge is the checker based judge.
+// Data to be passed are:
+// cmds ([]string) => script commands split
+// inFilePath (string) => input file path
+// outFilePath (string) => output file path
+// time-limit (time.Duration) => run timelimit
+// checker (string) => path to checker file to use
+func checkerJudge(param map[string]interface{}) (tmplMap map[string]interface{}) {
+	tmplMap = make(map[string]interface{})
+
+	// handle panic, recover
+	defer func() {
+		if r := recover(); r != nil {
+			tmplMap["verdict"] = color.RedString("FAIL")
+			tmplMap["log"] = r
+		}
+	}()
+
+	ctx, cancel := context.WithTimeout(context.Background(), param["time-limit"].(time.Duration))
+	defer cancel()
+
+	cmds := param["cmds"].([]string)
+	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
+	var cmdStdout, cmdStderr bytes.Buffer
+	cmd.Stdout = &cmdStdout
+	cmd.Stderr = &cmdStderr
+
+	inFile, err := os.Open(param["inFilePath"].(string))
+	if err != nil {
+		panic(err)
+	}
+	defer inFile.Close()
+	cmd.Stdin = inFile
+
+	// run the executable
+	start := time.Now()
+	err = cmd.Run()
+	since := time.Since(start).Truncate(time.Millisecond)
+
+	tmplMap["stderr"] = cmdStderr.String()
+	tmplMap["duration"] = since.String()
+
+	if since >= param["time-limit"].(time.Duration) {
+		// Time Limit Exceeded occured.
+		tmplMap["verdict"] = color.YellowString("TLE")
+		return tmplMap
+	}
+	// not a TLE; continue
+	if err != nil {
+		// runtime error occured.
+		tmplMap["verdict"] = color.RedString("RTE")
+		return tmplMap
+	}
+
+	// write submission output to temp file
+	oufFile, err := ioutil.TempFile(os.TempDir(), "ouf")
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(oufFile.Name())
+	if _, err = oufFile.Write(cmdStdout.Bytes()); err != nil {
+		panic(err)
+	}
+
+	// run checker (<checker> <inp> <ouf> <out>)
+	var checkerStderr bytes.Buffer
+	checkerCmd := exec.Command(param["checker"].(string), param["inFilePath"].(string),
+		oufFile.Name(), param["outFilePath"].(string))
+	checkerCmd.Stderr = &checkerStderr
+
+	err = checkerCmd.Run()
+
+	tmplMap["checkerLog"] = string(checkerStderr.Bytes())
+	if _, ok := err.(*exec.ExitError); ok {
+		// there was a non-zero exit code. WA output
+		tmplMap["verdict"] = color.RedString("WA")
+
+		inFileData, err := ioutil.ReadFile(param["inFilePath"].(string))
+		if err != nil {
+			panic(err)
+		}
+		if len(inFileData) > 70 {
+			inFileData = append(inFileData[:70], []byte("...")...)
+		}
+
+		outFileData, err := ioutil.ReadFile(param["outFilePath"].(string))
+		if err != nil {
+			panic(err)
+		}
+		if len(outFileData) > 70 {
+			outFileData = append(outFileData[:70], []byte("...")...)
+		}
+
+		oufFileData, err := ioutil.ReadFile(oufFile.Name())
+		if err != nil {
+			panic(err)
+		}
+		if len(oufFileData) > 70 {
+			oufFileData = append(oufFileData[:70], []byte("...")...)
+		}
+
+		diff := uitable.New()
+		diff.Separator = " | "
+		diff.AddRow(util.HeaderCol("OUTPUT"), util.HeaderCol("ANSWER"))
+		diff.AddRow(string(oufFileData), string(outFileData))
+
+		tmplMap["diff"] = diff.String()
+		tmplMap["input"] = string(inFileData)
+		return tmplMap
+	} else if err != nil {
+		panic(err)
+	}
+
+	tmplMap["verdict"] = color.GreenString("AC")
+	return tmplMap
+}
+
+// customInvocation is for well, custom invocation run.
+// Data to be passed are:
+// cmds ([]string) => script commands split
+func customInvocation(param map[string]interface{}) {
+	cmds := param["cmds"].([]string)
+	cmd := exec.Command(cmds[0], cmds[1:]...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	color.Green("---- * ---- * ---- * ----")
+	cmd.Run()
+	color.Green("---- * ---- * ---- * ----")
+	fmt.Println()
 }

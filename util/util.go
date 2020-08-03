@@ -15,6 +15,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/oleiade/serrure/aes"
@@ -162,7 +163,7 @@ func FindTemplateToUse(file string) (string, error) {
 	}
 
 	if len(tmpltsAlias) == 0 {
-		return "", fmt.Errorf("No templates found")
+		return "", fmt.Errorf("No templates matching file %v found", file)
 	} else if len(tmpltsAlias) == 1 {
 		return tmpltsAlias[0], nil
 	}
@@ -229,7 +230,31 @@ func Diff(ouf, out string) string {
 	t.Separator = " | "
 	t.Wrap = true
 
-	t.AddRow("Output", "Answer")
-	t.AddRow(strings.TrimSpace(ouf), strings.TrimSpace(out))
+	t.AddRow(HeaderCol("Output"), HeaderCol("Answer"))
+	oufData := strings.Split(strings.TrimSpace(ouf), " ")
+	outData := strings.Split(strings.TrimSpace(out), " ")
+
+	c := 0
+	for c < len(oufData) && c < len(outData) {
+		t.AddRow(oufData[c], outData[c])
+		c++
+	}
+
+	for c < len(oufData) {
+		t.AddRow(oufData[c], "")
+		c++
+	}
+
+	for c < len(outData) {
+		t.AddRow("", outData[c])
+		c++
+	}
+
 	return t.String()
+}
+
+func HeaderCol(data string) string {
+	// simple blue bold with underline
+	col := color.New(color.FgBlue).Add(color.Underline)
+	return col.Sprint(data)
 }

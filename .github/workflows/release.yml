@@ -1,20 +1,40 @@
-name: goreleaser
+name: Tag and Release
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - master
 
 jobs:
-  goreleaser:
+  job1:
+    name: Tag new version
     runs-on: ubuntu-latest
+    outputs:
+      previous_version: ${{ steps.create_tag.outputs.previous-version }}
+      current_version: ${{ steps.create_tag.outputs.current-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      
+      - uses: salsify/action-detect-and-tag-new-version@v2
+        id: create_tag
+        with:
+          version-command: |
+            grep -Po '\bVersion: "v\K.*?(?=")' cmd/root.go
+
+  job2:
+    name: Upload releases (goreleaser)
+    needs: job1
+    runs-on: ubuntu-latest
+    if: needs.job1.outputs.previous_version != needs.job1.outputs.current_version
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      
-      - name: Unshallow
-        run: git fetch --prune --unshallow
-      
+        with:
+          fetch-depth: 0
+           
       - name: Set up Go
         uses: actions/setup-go@v2
         with:

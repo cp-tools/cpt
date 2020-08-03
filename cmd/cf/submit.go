@@ -9,6 +9,7 @@ import (
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
 
+	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 	"github.com/gosuri/uitable"
 	"github.com/spf13/cobra"
@@ -48,18 +49,17 @@ func submit(spfr string, lflags *pflag.FlagSet) {
 	}
 
 	if len(arg.Contest) == 0 {
-		fmt.Println("Contest id not specified")
+		color.Red("Contest id not specified")
 		os.Exit(1)
 	} else if len(arg.Problem) == 0 {
-		fmt.Println("Problem id not specified")
+		color.Red("Problem id not specified")
 		os.Exit(1)
 	}
 
 	// find all code files in current directory (check if given 'file' is valid)
-	file, _ := lflags.GetString("file")
-	file, err = util.FindCodeFiles(file)
+	file, err := util.FindCodeFiles(lflags.MustGetString("file"))
 	if err != nil {
-		fmt.Println("Could not select code file")
+		color.Red("Could not select code file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -67,7 +67,7 @@ func submit(spfr string, lflags *pflag.FlagSet) {
 	// find template configuration to use
 	tmpltAlias, err := util.FindTemplateToUse(file)
 	if err != nil {
-		fmt.Println("Could not select template configuration")
+		color.Red("Could not select template configuration")
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -75,41 +75,41 @@ func submit(spfr string, lflags *pflag.FlagSet) {
 	// read selected source file (and submit)
 	sourceData, err := ioutil.ReadFile(file)
 	if err != nil {
-		fmt.Println("Could not read code file")
+		color.Red("Could not read code file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Checking login status")
+	color.Blue("Checking login status")
 	if usr, passwd := cfViper.GetString("username"), cfViper.GetString("password"); len(usr) == 0 || len(passwd) == 0 {
-		fmt.Println("Could not find any saved login credentials")
-		os.Exit(1)
+		color.Yellow("Could not find any saved login credentials")
+		os.Exit(0)
 	} else {
 		passwd, err := util.Decrypt(usr, passwd)
 		if err != nil {
-			fmt.Println("Could not decrypt password")
+			color.Red("Could not decrypt password")
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
 		handle, err := codeforces.Login(usr, passwd)
 		if err != nil {
-			fmt.Println("Could not check login status")
+			color.Red("Could not check login status")
 			fmt.Println(err)
 			os.Exit(1)
 		}
 		// current user is loaded correctly
-		fmt.Println("Current user:", handle)
+		fmt.Println(color.BlueString("Current user:"), handle)
 	}
 
 	langName := viper.GetString("templates." + tmpltAlias + ".languages.codeforces")
 	err = arg.SubmitSolution(codeforces.LanguageID[langName], string(sourceData))
 	if err != nil {
-		fmt.Println("Could not submit code")
-		fmt.Printf("%+q\n", err)
+		color.Red("Could not submit code")
+		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println("Submitted")
+	color.Green("Submitted")
 
 	// watch submission row, and print data
 	writer := uilive.New()
@@ -117,22 +117,21 @@ func submit(spfr string, lflags *pflag.FlagSet) {
 	for isDone := false; isDone == false; {
 		start := time.Now()
 
-		submissions, err := arg.GetSubmissions("")
+		submissions, err := arg.GetSubmissions(cfViper.GetString("username"))
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
 		if len(submissions) == 0 {
-			fmt.Println("Expected atleast 1 submission for problem, found 0")
-			fmt.Println("Quiting....")
+			color.Red("Expected atleast 1 submission for problem, found 0")
 			os.Exit(1)
 		}
 
 		t := uitable.New()
 		t.Separator = " "
 
-		t.AddRow("Verdict:", submissions[0].Verdict)
+		t.AddRow("Verdict:", colorVerdict(submissions[0].Verdict))
 		if submissions[0].IsJudging == false {
 			t.AddRow("Memory:", submissions[0].Memory)
 			t.AddRow("Time:", submissions[0].Time)

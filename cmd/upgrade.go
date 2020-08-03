@@ -12,6 +12,7 @@ import (
 	"runtime"
 
 	"github.com/cp-tools/cpt/util"
+	"github.com/fatih/color"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/inconshreveable/go-update"
@@ -58,15 +59,15 @@ func init() {
 }
 
 func upgrade(lflags *pflag.FlagSet) {
-	fmt.Println("Querying releases information from github")
+	color.Blue("Querying releases information from github")
 
-	checkerFlag, _ := lflags.GetBool("checker")
+	checkerFlag := lflags.MustGetBool("checker")
 	if checkerFlag == true {
 		// get checker releases from github
 		const releasesURL = "https://api.github.com/repos/cp-tools/cpt-checker/releases"
 		allReleases := getReleases(releasesURL)
 
-		fmt.Println("Current checker build version:", viper.GetString("checker_version"))
+		fmt.Println(color.BlueString("Current checker build version:"), viper.GetString("checker_version"))
 
 		var upgVers string
 		util.SurveyErr(survey.AskOne(&survey.Select{
@@ -74,7 +75,7 @@ func upgrade(lflags *pflag.FlagSet) {
 			Options: allReleases,
 		}, &upgVers))
 
-		fmt.Println("Downloading checkers. Please wait...")
+		color.Green("Downloading checkers. Please wait...")
 		fileURL := fmt.Sprintf("https://github.com/cp-tools/cpt-checker/releases/download/%v/cpt-checker_%v.tar.gz",
 			upgVers, runtime.GOOS)
 		resp, err := http.Get(fileURL)
@@ -85,7 +86,7 @@ func upgrade(lflags *pflag.FlagSet) {
 		defer resp.Body.Close()
 		tr := getTarball(resp)
 
-		fmt.Println("Saved checkers:")
+		color.Blue("Downloaded checkers:")
 		for true {
 			hdr, err := tr.Next()
 			if err == io.EOF {
@@ -112,18 +113,18 @@ func upgrade(lflags *pflag.FlagSet) {
 
 		viper.Set("checker_version", upgVers)
 		if err := viper.WriteConfig(); err != nil {
-			fmt.Println("Failed to save configurations")
+			color.Red("Failed to save configurations")
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Checkers upgraded successfully!")
+		color.Green("Checkers upgraded successfully!")
 	} else {
 		// get cpt releases from github
 		const releasesURL = "https://api.github.com/repos/cp-tools/cpt/releases"
 		allReleases := getReleases(releasesURL)
 
-		fmt.Println("Current cli app version:", rootCmd.Version)
+		fmt.Println(color.BlueString("Current cli app version:"), rootCmd.Version)
 
 		var upgVers string
 		util.SurveyErr(survey.AskOne(&survey.Select{
@@ -131,7 +132,7 @@ func upgrade(lflags *pflag.FlagSet) {
 			Options: allReleases,
 		}, &upgVers))
 
-		fmt.Println("Downloading cli binary. Please wait...")
+		color.Blue("Downloading cli binary. Please wait...")
 		fileURL := fmt.Sprintf("https://github.com/cp-tools/cpt/releases/download/%v/cpt_%v_%v.tar.gz",
 			upgVers, runtime.GOOS, runtime.GOARCH)
 		resp, err := http.Get(fileURL)
@@ -147,17 +148,17 @@ func upgrade(lflags *pflag.FlagSet) {
 		if err := update.Apply(tr, update.Options{}); err != nil {
 			// update failed. Attempt rollback
 			if rerr := update.RollbackError(err); rerr != nil {
-				fmt.Println("Failed to roll back from defective update")
+				color.Red("Failed to roll back from stalled update")
 				fmt.Println(rerr)
 				os.Exit(1)
 			}
 
-			fmt.Println("Could not update binary executable")
-			fmt.Println("Rolled back to previous version")
+			color.Red("Could not update binary executable")
+			color.Yellow("Rolled back to previous version")
 			fmt.Println(err)
 			os.Exit(0)
 		}
-		fmt.Println("Upgraded cli app successfully!")
+		color.Green("Upgraded cli app successfully!")
 	}
 }
 
@@ -186,7 +187,7 @@ func getReleases(releasesURL string) []string {
 func getTarball(resp *http.Response) *tar.Reader {
 	gzr, err := gzip.NewReader(resp.Body)
 	if err != nil {
-		fmt.Println("Could not read tarball")
+		color.Red("Could not read tarball")
 		fmt.Println(err)
 		os.Exit(1)
 	}
