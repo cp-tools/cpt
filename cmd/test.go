@@ -212,7 +212,20 @@ func test(lflags *pflag.FlagSet) {
 
 	// run script next
 	if script := tmplt["script"].(string); true {
-		cmds, err := shellquote.Split(script)
+		tmpl, err := template.New("script").Parse(script)
+		if err != nil {
+			panic(err)
+		}
+
+		var scp strings.Builder
+		tmplMap := make(map[string]interface{})
+		tmplMap["file"] = file
+		tmplMap["fileBasename"] = filepath.Base(file)
+		tmplMap["fileBasenameNoExt"] = filepath.Ext(filepath.Base(file))
+
+		err = tmpl.Execute(&scp, tmplMap)
+
+		cmds, err := shellquote.Split(scp.String())
 		if err != nil {
 			panic(err)
 		}

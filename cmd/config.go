@@ -64,8 +64,8 @@ func cptConfig() {
 		var alias string
 		err := survey.AskOne(&survey.Input{
 			Message: "Template name:",
-			Help: "What do you want to call this template? Ex: 'default c++'\n" +
-				"Should be unique and less than 15 characters long.",
+			Help: `What do you want to call this template? Should be unique
+and less than 15 characters long.`,
 		}, &alias, survey.WithValidator(func(ans interface{}) error {
 			if len(ans.(string)) == 0 {
 				return fmt.Errorf("value is required")
@@ -108,6 +108,17 @@ func cptConfig() {
 				Name: "prescript",
 				Prompt: &survey.Input{
 					Message: "Prescript:",
+					Help: `Prescript is generally used for compiling your solution file.
+There are some placeholders which you can use in your script. They are:
+{{.file}} - Solution file selected to test. Example ./a/a.cpp
+{{.fileBasename}} - Basename of selected solution file. Example: a.cpp
+{{.fileBasenameNoExt}} - Same as above, but without the file extension. Example: a
+
+A simple prescript command for C++ would be:
+> g++ {{.file}}
+
+Intepreted languages can omit prescript, as compilation is not required.
+`,
 				},
 				Validate: func(ans interface{}) error {
 					_, err := shellquote.Split(ans.(string))
@@ -118,6 +129,18 @@ func cptConfig() {
 				Name: "script",
 				Prompt: &survey.Input{
 					Message: "Script:",
+					Help: `Script is the command run multiple times, once per test case while testing.
+Valid placeholders that can be used are similar to the previous configuration-
+{{.file}} - Solution file selected to test. Example ./a/a.cpp
+{{.fileBasename}} - Basename of selected solution file. Example: a.cpp
+{{.fileBasenameNoExt}} - Same as above, but without the file extension. Example: a
+
+To execute the previously compiled file, use:
+> ./a.out
+
+Or for python, the following script can be used:
+> python3.6 {{.file}}
+`,
 				},
 				Validate: func(ans interface{}) error {
 					cmdArgs, err := shellquote.Split(ans.(string))
@@ -131,6 +154,19 @@ func cptConfig() {
 				Name: "postscript",
 				Prompt: &survey.Input{
 					Message: "Postscript:",
+					Help: `Postscript is run after testing is done.
+Valid placeholders that can be used are similar to the previous configuration-
+{{.file}} - Solution file selected to test. Example ./a/a.cpp
+{{.fileBasename}} - Basename of selected solution file. Example: a.cpp
+{{.fileBasenameNoExt}} - Same as above, but without the file extension. Example: a
+					
+Generally, postscript is used for cleaning up residual files.
+In sequence to the above examples, the following script can be used
+to remove the compiled executable binaries:
+> rm a.out
+
+Optional field; can be omitted.
+`,
 				},
 				Validate: func(ans interface{}) error {
 					_, err := shellquote.Split(ans.(string))
@@ -146,7 +182,7 @@ func cptConfig() {
 				Name: "codeforces",
 				Prompt: &survey.Select{
 					Message: "Language (codeforces):",
-					Options: util.ExtractMapKeys(codeforces.LanguageID),
+					Options: append(util.ExtractMapKeys(codeforces.LanguageID), "none"),
 				},
 			},
 		}, &langMap)
