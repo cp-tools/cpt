@@ -19,9 +19,8 @@ Written using [golang](https://golang.org/), enabling compilation to native mach
   - [Installation](#Installation)
   - [Shell Completions](#Shell-Completions)
 - [Usage](#Usage)
-  - [Quick start](#Quick-start)
-- [FAQ](#FAQ)
 - [Contributing](#Contributing)
+- [FAQ](#FAQ)
 
 ## About the Project
 
@@ -52,7 +51,6 @@ Non-exclusive feature support table for various websites is given below:
 | Site                                 | Login              | Fetch Samples      | Submit Solution    | Pull Submissions   |
 | ------------------------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
 | [codeforces](https://codeforces.com) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [atcoder](https://atcoder.jp)        |                    |                    |                    |                    |
 
 What are you waiting for? Go ahead and download it. You'll love it, I promise!
 
@@ -99,30 +97,23 @@ Enough said already! Here's a GIF to present the tool in action (made using [asc
 
 
 
-### Quick start
+*For complete documentation, head to the [wiki]() page.*
 
 Here's a super quick tutorial on how to set the tool up and compete in a [codeforces](https://codeforces.com) contest, contest [1221](https://codeforces.com/contest/1221). This walk through assumes you have downloaded and setup `cpt` and installed the checkers (using `cpt upgrade --checker`). Also, login to codeforces using `cpt cf config` and select *'login to codeforces'* in the menu that appears.
 
-1. **Template configuration** - This step is *required* for testing solution against samples as well as submitting your solution. Save your template code to a file (`template.cpp` in the below example) and follow the recording below.
+1. **Template configuration** - This step is *required* for testing solution against samples as well as submitting your solution. Save your template code to a file and create a new template by selecting *Add new code template* from the `cpt config` menu and following the given directions.
+2. **Default configuration** - Through the `cpt config` menu, set the *default template* and *run 'gen' on 'fetch'* to let the tool automatically create a new template file for each problem that is parsed.
+3. **Fetch sample tests** - Fetching sample tests in an entire contest (we are dealing with codeforces contest) is possible using the command `cpt cf fetch 1221`. This will create a folder of the following structure - *./codeforces/contest/1221/<problem-id>*  (where *<problem-id>* in contest 1221 is `[a b c d e f g]`). Also, the configured default template is created in each problem folder.
+4. **Test solution** - Once you finish coding your solution and wish to run it against sample tests, run the command `cpt test` in the problem folder. This will automatically determine the submission file to use and run the configured scripts (when we created a new template). The verdict of each test will be displayed.
+5. **Submit solution** - When you wish to submit your solution, run the command `cpt cf submit`  from within the problem folder. The solution will be submitted through your account and the (dynamic) verdict will be displayed in the terminal.
 
-   <img src="assets/new_template.gif" alt="new_template" style="zoom:70%;" />
+## Contributing
 
-   *For the complete list of placeholders (like `{{.file}}` in the above GIF) refer the wiki docs.*
+Here are the ways through which you can contribute to this project:
 
-   Similarly, you can create your own template, in any of the languages supported by codeforces.
-
-2. **Set default template** - We select the template we just created above as the default template, which will be generated every time we run `cpt gen` without any parameters. Also, we set *'gen on fetch'*, which will automatically create a new template file for each problem that is parsed.
-   <img src="assets/template_config.gif" alt="template_config" style="zoom:80%;" />
-
-
-
-
-
-
-
-
-
-For complete documentation, head to the [wiki]() page.
+- **Create a pull request** - Yes, the best way to contribute would by helping us make this tool better and better. Simply fork the project, make additions/changes, and create a pull request! It isn't that hard, trust me!
+- **Star this project** - Yep, you heard it right. I'm an insatiable beast, with a never quenching thirst for GitHub stars. Jokes aside, I'm a normal teenager, utilising the few hours of spare time that I have, to give something back to the community. So, your stars let me know that the community likes this project and it only motivates me to do better!
+- **Helping in documentation** - Yes, documentation sucks (a lot)! However, the existence of a well written documentation is very essential. Help the community (and get your name etched forever in the contributors list) by improvising the [wiki pages](https://github.com/cp-tools/cpt.wiki).
 
 ## FAQ
 
@@ -134,18 +125,10 @@ If you wish to upgrade the tool to the latest version, simply run `cpt upgrade` 
 
 #### How do I configure my login credentials? Are they securely stored?
 
-For module (`cf`, `atc` etc) specific configurations, use the `config` sub command in the corresponding module.
+For module specific configurations, use the `config` sub command in the corresponding module.
 
 Yes, none of your data is accessible by us! Your passwords are encrypted using *AES* and saved locally. However do note that, your password is **NOT** secure. The encryption is simply to prevent others from reading the password when stored as plain text (if someone got access to your device, you can consider your account compromised in any case, and the encryption won't help much.)
 
 #### Can I enable dynamic tab completion support? How?
 
 Yes, you can! However, some features (like custom tab completion) are not accessible unless you use `zsh` or `bash`. Refer [Shell Completions](#Shell-Completions) for complete information.
-
-## Contributing
-
-Here are the ways through which you can contribute to this project:
-
-- **Create a pull request** - Yes, the best way to contribute would by helping us make this tool better and better. Simply fork the project, make additions/changes, and create a pull request! It isn't that hard, trust me!
-- **Star this project** - Yep, you heard it right. I'm an insatiable beast, with a never quenching thirst for GitHub stars. Jokes aside, I'm a normal teenager, utilising the few hours of spare time that I have, to give something back to the community. So, your stars let me know that the community likes this project and it only motivates me to do better!
-- **Helping in documentation** - Yes, documentation sucks (a lot)! However, the existence of a well written documentation is very essential. Help the community (and get your name etched forever in the contributors list) by improvising the [wiki pages](https://github.com/cp-tools/cpt.wiki).
