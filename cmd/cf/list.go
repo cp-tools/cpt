@@ -19,8 +19,39 @@ import (
 
 var listCmd = &cobra.Command{
 	Use:       "list [MODE] [SPECIFIER]",
-	Short:     "Prints tabulated results of various real-time data",
 	ValidArgs: []string{"submissions", "dashboard", "contests"},
+	Short:     "Prints tabulated results of various real-time data",
+	Long: `List tabulated data of various real-time information.
+Supported MODE values are [submissions dashboard contests].
+
+Mode submission lists submissions in SPECIFIER. Defaults to active users
+submissions. Use flag --username to list submissions of particular user.
+
+Mode dashboard lists dashboard data of current user. Data displayed are
+contest name, duration to contest end and problem solve status.
+
+Mode contests lists contests matching SPECIFIER. If no contest id is
+given, lists only upcoming contests in either [gym contest].
+Use flag --register to enable the registration menu (only contests)
+
+Use flag --number to limit the number of lines of info displayed (default 5).
+
+Refer 'cpt cf -h' for details on argument [SPECIFIER].
+
+Usage examples:
+cpt cf list submissions 4
+                            Lists submissions of current user in contest 4
+cpt cf list submissions 4 -u cp-tools
+                            Lists submissions of user 'cp-tools' in contest
+cpt cf list submissions 4 -t 2
+                            Lists only the latest 2 rows of submission data
+cpt cf list contests
+                            Lists upcoming contests in either [contest gym]
+cpt cf list contests 4 -r
+                            Lists registration menu for contest 4
+cpt cf list dashboard 4
+                            Lists dashboard of current user in contest
+`,
 }
 
 func init() {

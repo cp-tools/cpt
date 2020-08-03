@@ -15,9 +15,34 @@ import (
 var (
 	// RootCmd is 'cf' subcommand
 	RootCmd = &cobra.Command{
-		Use:     "cf",
-		Aliases: []string{"codeforces"},
-		Short:   "Utilities common to codeforces",
+		Use:   "cf",
+		Short: "Utilities common to codeforces",
+		Long: `Helper functions for codeforces are in this subcommand.
+Configure codeforces login credentials using 'cpt cf config'. Your
+password is encrypted with AES and saved to $CONFIGDIR/cpt/cf.json.
+
+However, note that anyone who gets access to the file could extract
+your password using the corresponding key. The encryption is to prevent
+people from directly reading the file if saved as plaintext.
+
+You will find argument [SPECIFIER] required in multiple places. An imcomplete list
+of valid specifiers for this subcommand are as follows:
+
+- Links:
+  codeforces.com/contest/1388
+  https://codeforces.com/gym/102672
+  codeforces.com/gym/102672/problem/I
+  codeforces.com/problemset/problem/1389/A
+  codeforces.com/group/OzCWQ49fxc/contest/279141
+
+- Direct:
+  1234 f
+  102672
+  OzCWQ49fxc 279141e
+
+If no specifier is provided, specifier is parsed from current
+directory structure.
+`,
 	}
 
 	cfViper = viper.New()

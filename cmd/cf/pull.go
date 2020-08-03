@@ -17,6 +17,22 @@ import (
 var pullCmd = &cobra.Command{
 	Use:   "pull [SPECIFIER]",
 	Short: "Pulls and saves submission code to local file",
+	Long: `Pulls submissions of specified user to local copy.
+Pulls latest AC submission of user to directory similar to 'cpt cf fetch'.
+By default, pulls the submission of current active user. Use flag --username
+to pull submissions of particular user.
+
+If SPECIFIER is not given, pulls all submissions matching above criteria.
+Please DON'T MISUSE THIS TO DDOS CODEFORCES, as it is resource intensive.
+
+Refer 'cpt cf -h' for details on argument [SPECIFIER].
+
+Usage examples:
+cpt cf pull 4 a
+                            Pulls submissions of current user in problem 4a
+cpt cf pull -u cp-tools
+                            Pulls all submissions of user 'cp-tools'
+`,
 }
 
 func init() {
@@ -27,15 +43,6 @@ func init() {
 
 	pullCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		lflags := pullCmd.Flags()
-
-		// set current user username if not set
-		if !lflags.Changed("username") {
-			usr := cfViper.GetString("username")
-			if usr == "" {
-				return fmt.Errorf("Invalid flags - 'username' not specified")
-			}
-			lflags.Lookup("username").Value.Set(cfViper.GetString("username"))
-		}
 
 		spfr, workDir := util.DetectSpfr(args)
 		pull(spfr, workDir, lflags)
