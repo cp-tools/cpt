@@ -17,6 +17,7 @@ require (
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/infixint943/cookiejar v0.1.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
+	github.com/knadh/koanf v0.13.0 // indirect
 	github.com/kr/pty v1.1.8 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
