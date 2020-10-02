@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
 
 	"github.com/knadh/koanf"
@@ -41,6 +42,12 @@ func init() {
 		initSettings,
 		initTemplates,
 	)
+
+	// set OnSIGINT function for survey
+	survey.OnSIGINTFunc = func() {
+		fmt.Println("interrupted")
+		os.Exit(1)
+	}
 }
 
 // determine and set configDir path
@@ -60,7 +67,7 @@ func initSettings() {
 	configSettings = koanf.New(".")
 	// configure default values
 	configSettings.Load(confmap.Provider(map[string]interface{}{
-		"ui.stdoutColor": true,
+		"ux.stdoutColor": true,
 	}, "."), nil)
 
 	configSettingsPath := filepath.Join(configDir, "cpt.yaml")
