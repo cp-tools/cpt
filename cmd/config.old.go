@@ -3,17 +3,13 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
-	"path/filepath"
 	"runtime"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/util"
 	"github.com/fatih/color"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/kballard/go-shellquote"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -45,9 +41,7 @@ func cptConfig() {
 	err := survey.AskOne(&survey.Select{
 		Message: "Select configuration:",
 		Options: []string{
-			"Add new code template",
 			"Set default template",
-			"Remove template",
 			"Run 'gen' after 'fetch'",
 			"Set application proxy",
 			"Generate tab autocompletion",
@@ -57,139 +51,6 @@ func cptConfig() {
 	util.SurveyErr(err)
 
 	switch idx {
-	case 0:
-		color.Blue("Welcome to the template creation wizard!")
-		color.Blue("Visit cpt wiki for a comprehensive guide")
-
-		var alias string
-		err := survey.AskOne(&survey.Input{
-			Message: "Template name:",
-			Help: `What do you want to call this template? Should be unique
-and less than 15 characters long.`,
-		}, &alias, survey.WithValidator(func(ans interface{}) error {
-			if len(ans.(string)) == 0 {
-				return fmt.Errorf("value is required")
-			}
-
-			for alias := range viper.GetStringMap("templates") {
-				if alias == ans.(string) {
-					return fmt.Errorf("Template with given name exists")
-				}
-			}
-			return nil
-		}))
-		util.SurveyErr(err)
-
-		newTmplt := make(map[string]interface{})
-		err = survey.Ask([]*survey.Question{
-			{
-				Name: "file",
-				Prompt: &survey.Input{
-					Message: "Relative/absolute path to template file:",
-				},
-				Validate: func(ans interface{}) error {
-					path, err := homedir.Expand(ans.(string))
-					if err != nil {
-						return err
-					}
-
-					if file, err := os.Stat(path); err != nil || file.IsDir() == true {
-						return fmt.Errorf("Path does not correspond to a valid file")
-					}
-					return nil
-				},
-				Transform: func(ans interface{}) interface{} {
-					path, _ := homedir.Expand(ans.(string))
-					path, _ = filepath.Abs(path)
-					return path
-				},
-			},
-			{
-				Name: "prescript",
-				Prompt: &survey.Input{
-					Message: "Prescript:",
-					Help: `Prescript is generally used for compiling your solution file.
-There are some placeholders which you can use in your script. They are:
-{{.file}} - Solution file selected to test. Example ./a/a.cpp
-{{.fileBasename}} - Basename of selected solution file. Example: a.cpp
-{{.fileBasenameNoExt}} - Same as above, but without the file extension. Example: a
-
-A simple prescript command for C++ would be:
-> g++ {{.file}}
-
-Intepreted languages can omit prescript, as compilation is not required.
-`,
-				},
-				Validate: func(ans interface{}) error {
-					_, err := shellquote.Split(ans.(string))
-					return err
-				},
-			},
-			{
-				Name: "script",
-				Prompt: &survey.Input{
-					Message: "Script:",
-					Help: `Script is the command run multiple times, once per test case while testing.
-Valid placeholders that can be used are similar to the previous configuration-
-{{.file}} - Solution file selected to test. Example ./a/a.cpp
-{{.fileBasename}} - Basename of selected solution file. Example: a.cpp
-{{.fileBasenameNoExt}} - Same as above, but without the file extension. Example: a
-
-To execute the previously compiled file, use:
-> ./a.out
-
-Or for python, the following script can be used:
-> python3.6 {{.file}}
-`,
-				},
-				Validate: func(ans interface{}) error {
-					cmdArgs, err := shellquote.Split(ans.(string))
-					if len(cmdArgs) == 0 {
-						return fmt.Errorf("value is required")
-					}
-					return err
-				},
-			},
-			{
-				Name: "postscript",
-				Prompt: &survey.Input{
-					Message: "Postscript:",
-					Help: `Postscript is run after testing is done.
-Valid placeholders that can be used are similar to the previous configuration-
-{{.file}} - Solution file selected to test. Example ./a/a.cpp
-{{.fileBasename}} - Basename of selected solution file. Example: a.cpp
-{{.fileBasenameNoExt}} - Same as above, but without the file extension. Example: a
-					
-Generally, postscript is used for cleaning up residual files.
-In sequence to the above examples, the following script can be used
-to remove the compiled executable binaries:
-> rm a.out
-
-Optional field; can be omitted.
-`,
-				},
-				Validate: func(ans interface{}) error {
-					_, err := shellquote.Split(ans.(string))
-					return err
-				},
-			},
-		}, &newTmplt)
-		util.SurveyErr(err)
-
-		langMap := make(map[string]string)
-		err = survey.Ask([]*survey.Question{
-			{
-				Name: "codeforces",
-				Prompt: &survey.Select{
-					Message: "Language (codeforces):",
-					Options: append(util.ExtractMapKeys(codeforces.LanguageID), "none"),
-				},
-			},
-		}, &langMap)
-		util.SurveyErr(err)
-
-		newTmplt["languages"] = langMap
-		viper.Set("templates."+alias, newTmplt)
 
 	case 1:
 		opts := append(util.ExtractMapKeys(viper.GetStringMap("templates")), "none")
@@ -203,23 +64,6 @@ Optional field; can be omitted.
 
 		viper.Set("default_template", choice)
 
-	case 2:
-		if len(viper.GetStringMap("templates")) == 0 {
-			color.Red("No configured templates found")
-			os.Exit(1)
-		}
-
-		data := viper.GetStringMap("templates")
-		var choice string
-		err := survey.AskOne(&survey.Select{
-			Message: "Select template to remove",
-			Options: util.ExtractMapKeys(data),
-		}, &choice)
-		util.SurveyErr(err)
-
-		delete(data, choice)
-		viper.Set("templates", data)
-
 	case 3:
 		var choice bool
 		util.SurveyErr(survey.AskOne(&survey.Confirm{
@@ -227,24 +71,6 @@ Optional field; can be omitted.
 			Default: false,
 		}, &choice))
 		viper.Set("gen_on_fetch", choice)
-
-	case 4:
-		var choice string
-		err := survey.AskOne(&survey.Input{
-			Message: "Proxy URL:",
-			Help: "Set new proxy (should match protocol://host[:port])\n" +
-				"Leave blank to reset to environment proxy",
-		}, &choice, survey.WithValidator(func(ans interface{}) error {
-			if ans.(string) == "" {
-				return nil
-			}
-			_, err := url.ParseRequestURI(ans.(string))
-			return err
-		}))
-		util.SurveyErr(err)
-
-		prxy, _ := url.ParseRequestURI(choice)
-		viper.Set("proxy_url", prxy)
 
 	case 5:
 		var choice string
@@ -292,14 +118,6 @@ Optional field; can be omitted.
 		color.Green("Reload your shell for completion to take effect")
 		os.Exit(0)
 
-	case 6:
-		var choice bool
-		util.SurveyErr(survey.AskOne(&survey.Confirm{
-			Message: "Enable colorization of CLI?",
-			Default: false,
-		}, &choice))
-
-		viper.Set("enable_colorization", choice)
 	}
 
 	if err := viper.WriteConfig(); err != nil {
