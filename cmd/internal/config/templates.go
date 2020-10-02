@@ -13,7 +13,7 @@ import (
 )
 
 // AddTemplate inserts a new template into the template map.
-func AddTemplate(templates map[string]interface{}) {
+func AddTemplate(dataMap map[string]interface{}) {
 	// template alias - what template will be called
 	alias := ""
 	survey.AskOne(&survey.Input{
@@ -28,7 +28,7 @@ It must be unique, and should not contain whitespaces.`,
 			return fmt.Errorf("alias should not have whitespace")
 		}
 
-		for val := range templates {
+		for val := range dataMap {
 			if ans.(string) == val {
 				return fmt.Errorf("template with given alias exists")
 			}
@@ -37,7 +37,7 @@ It must be unique, and should not contain whitespaces.`,
 	}))
 
 	// select file containing template code
-	newTemplate := make(map[string]interface{})
+	template := make(map[string]interface{})
 	survey.Ask([]*survey.Question{
 		{
 			Name: "codeFile",
@@ -154,15 +154,15 @@ Java ==> 'rm {{.fileNoExt}}' (linux)
 				return err
 			},
 		},
-	}, &newTemplate)
+	}, &template)
 	// write newTemplate to all templates
-	templates[alias] = newTemplate
+	dataMap[alias] = template
 	return
 }
 
 // RemoveTemplate deletes selected template from template map.
-func RemoveTemplate(templates map[string]interface{}) {
-	if len(templates) == 0 {
+func RemoveTemplate(dataMap map[string]interface{}) {
+	if len(dataMap) == 0 {
 		color.Red("no templates present")
 		os.Exit(1)
 	}
@@ -170,9 +170,9 @@ func RemoveTemplate(templates map[string]interface{}) {
 	alias := ""
 	survey.AskOne(&survey.Select{
 		Message: "Which template do you want to delete?",
-		Options: util.ExtractMapKeys(templates),
+		Options: util.ExtractMapKeys(dataMap),
 	}, &alias)
 	// remove alias named template
-	delete(templates, alias)
+	delete(dataMap, alias)
 	return
 }

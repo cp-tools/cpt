@@ -67,7 +67,7 @@ func initSettings() {
 	configSettings = koanf.New(".")
 	// configure default values
 	configSettings.Load(confmap.Provider(map[string]interface{}{
-		"ux.stdoutColor": true,
+		"ui.stdoutColor": true,
 	}, "."), nil)
 
 	configSettingsPath := filepath.Join(configDir, "cpt.yaml")
