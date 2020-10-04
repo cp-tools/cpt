@@ -34,3 +34,10 @@ func (cnf *Conf) GetBool(key string) bool {
 func (cnf *Conf) GetFloat64(key string) float64 {
 	return cnf.ko.Float64(key)
 }
+
+// GetMapKeys returns a sorted string list of keys in a map
+// addressed by the given path. If the path is not a map,
+// an empty string slice is returned.
+func (cnf *Conf) GetMapKeys(key string) []string {
+	return cnf.ko.MapKeys(key)
+}

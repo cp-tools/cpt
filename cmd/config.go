@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/cp-tools/cpt/cmd/internal/config"
-	"github.com/cp-tools/cpt/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -38,7 +37,7 @@ var configCmd = &cobra.Command{
 			config.SetGenerateOnFetch(confSettings)
 			confSettings.WriteFile()
 		case 3:
-			aliases := util.ExtractMapKeys(confTemplates.GetAll())
+			aliases := confTemplates.GetMapKeys("")
 			config.SetDefaultTemplate(confSettings, aliases)
 			confSettings.WriteFile()
 		case 4:
