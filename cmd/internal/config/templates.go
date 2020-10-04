@@ -5,16 +5,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/AlecAivazis/survey/v2"
+	"github.com/cp-tools/cpt/packages/conf"
 	"github.com/cp-tools/cpt/util"
+
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/kballard/go-shellquote"
 	"github.com/mitchellh/go-homedir"
 )
 
-// AddTemplate inserts a new template into the template map.
-func AddTemplate(dataMap map[string]interface{}) {
-	// template alias - what template will be called
+// AddTemplate inserts a new template into templates.
+func AddTemplate(cnf *conf.Conf) {
+	// Template alias is what template will be called.
 	alias := ""
 	survey.AskOne(&survey.Input{
 		Message: "What do you want to call the template?",
@@ -28,7 +30,7 @@ It must be unique, and should not contain whitespaces.`,
 			return fmt.Errorf("alias should not have whitespace")
 		}
 
-		for val := range dataMap {
+		for val := range cnf.GetAll() {
 			if ans.(string) == val {
 				return fmt.Errorf("template with given alias exists")
 			}
@@ -37,7 +39,7 @@ It must be unique, and should not contain whitespaces.`,
 	}))
 
 	// select file containing template code
-	template := make(map[string]interface{})
+	templateMap := make(map[string]interface{})
 	survey.Ask([]*survey.Question{
 		{
 			Name: "codeFile",
@@ -154,25 +156,23 @@ Java ==> 'rm {{.fileNoExt}}' (linux)
 				return err
 			},
 		},
-	}, &template)
-	// write newTemplate to all templates
-	dataMap[alias] = template
-	return
+	}, &templateMap)
+
+	cnf.Set(alias, templateMap)
 }
 
-// RemoveTemplate deletes selected template from template map.
-func RemoveTemplate(dataMap map[string]interface{}) {
-	if len(dataMap) == 0 {
-		color.Red("no templates present")
-		os.Exit(1)
+// RemoveTemplate deletes selected template from templates.
+func RemoveTemplate(cnf *conf.Conf) {
+	if len(cnf.GetAll()) == 0 {
+		color.Yellow("no templates present")
+		os.Exit(0)
 	}
 
 	alias := ""
 	survey.AskOne(&survey.Select{
 		Message: "Which template do you want to delete?",
-		Options: util.ExtractMapKeys(dataMap),
+		Options: util.ExtractMapKeys(cnf.GetAll()),
 	}, &alias)
-	// remove alias named template
-	delete(dataMap, alias)
-	return
+
+	cnf.Erase(alias)
 }
