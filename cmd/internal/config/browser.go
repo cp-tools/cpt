@@ -1,9 +1,13 @@
 package config
 
-import "github.com/AlecAivazis/survey/v2"
+import (
+	"github.com/cp-tools/cpt/packages/conf"
 
-// SetHeadlessBrowser configures headless browser to use
-func SetHeadlessBrowser(dataMap map[string]interface{}) {
+	"github.com/AlecAivazis/survey/v2"
+)
+
+// SetHeadlessBrowser configures headless browser to use.
+func SetHeadlessBrowser(cnf *conf.Conf) {
 	browserMap := make(map[string]interface{})
 	survey.Ask([]*survey.Question{
 		{
@@ -50,6 +54,6 @@ Here are the locations of browser profiles of various browsers:
 			Validate: survey.Required,
 		},
 	}, &browserMap)
-	dataMap["browser"] = browserMap
-	return
+
+	cnf.Set("browser", browserMap)
 }

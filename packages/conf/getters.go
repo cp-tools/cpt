@@ -6,6 +6,11 @@ func (cnf *Conf) Get(key string) interface{} {
 	return cnf.ko.Get(key)
 }
 
+// GetAll returns all configuration values in module.
+func (cnf *Conf) GetAll() map[string]interface{} {
+	return cnf.ko.Raw()
+}
+
 // GetInt returns int value of a given key path,
 // or 0 if key does not exist or is invalid.
 func (cnf *Conf) GetInt(key string) int {

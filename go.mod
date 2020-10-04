@@ -25,3 +25,5 @@ replace github.com/spf13/pflag => github.com/infixint943/pflag v1.0.6-0.20200801
 replace github.com/AlecAivazis/survey/v2 => github.com/infixint943/survey/v2 v2.1.2-0.20201001232057-ad85ff5097a6
 
 replace github.com/mitchellh/go-homedir => github.com/infixint943/go-homedir v1.1.1-0.20200627072908-00f1ec2bf896
+
+replace github.com/knadh/koanf => github.com/infixint943/koanf master

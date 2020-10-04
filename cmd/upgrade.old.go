@@ -1,5 +1,6 @@
 package cmd
 
+/*
 import (
 	"archive/tar"
 	"compress/gzip"
@@ -194,3 +195,4 @@ func getTarball(resp *http.Response) *tar.Reader {
 	defer gzr.Close()
 	return tar.NewReader(gzr)
 }
+*/

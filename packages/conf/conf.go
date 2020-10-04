@@ -22,12 +22,12 @@ func New() *Conf {
 	return cnf
 }
 
-// LoadConf reads and loads data from file at
+// LoadFile reads and loads data from file at
 // given path to the configuration module.
 // Create a file at the given path, if it doesn't exist.
 //
 // Ensure the file at given path is of YAML format.
-func (cnf *Conf) LoadConf(path string) {
+func (cnf *Conf) LoadFile(path string) {
 	// Check if file at given path exists.
 	if file, err := os.Stat(path); os.IsNotExist(err) || file.IsDir() {
 		if _, err := os.Create(path); err != nil {
@@ -41,11 +41,11 @@ func (cnf *Conf) LoadConf(path string) {
 	cnf.koFilePath = path
 }
 
-// WriteConf overwrites data from the configuration module
+// WriteFile overwrites data from the configuration module
 // to the file last loaded using LoadConf().
 //
 // The written data is of YAML format.
-func (cnf *Conf) WriteConf() {
+func (cnf *Conf) WriteFile() {
 	// Create file if it does not exist,
 	// and truncate the file if it does.
 	file, err := os.Create(cnf.koFilePath)

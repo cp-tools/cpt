@@ -6,13 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cp-tools/cpt/packages/conf"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
-
-	"github.com/knadh/koanf"
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/confmap"
-	"github.com/knadh/koanf/providers/file"
 )
 
 var rootCmd = &cobra.Command{
@@ -22,9 +19,9 @@ var rootCmd = &cobra.Command{
 }
 
 var (
-	configDir       string
-	configSettings  *koanf.Koanf
-	configTemplates *koanf.Koanf
+	confDir       string
+	confSettings  *conf.Conf
+	confTemplates *conf.Conf
 )
 
 // Execute adds all child commands to the root command and
@@ -38,63 +35,43 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(
-		initConfigDir,
-		initSettings,
-		initTemplates,
+		initConfDir,
+		initConfSettings,
+		initConfTemplates,
 	)
 
-	// set OnSIGINT function for survey
+	// Set OnSIGINT function for survey module.
 	survey.OnSIGINTFunc = func() {
 		fmt.Println("interrupted")
 		os.Exit(1)
 	}
 }
 
-// determine and set configDir path
-func initConfigDir() {
+// Determine and set configDir path.
+func initConfDir() {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	configDir = filepath.Join(dir, "cp-tools", "cpt")
-	if err := os.MkdirAll(configDir, os.ModePerm); err != nil {
+	confDir = filepath.Join(dir, "cp-tools", "cpt")
+	if err := os.MkdirAll(confDir, os.ModePerm); err != nil {
 		log.Fatalf("error creating config folder: %v", err)
 	}
 }
 
-func initSettings() {
-	configSettings = koanf.New(".")
-	// configure default values
-	configSettings.Load(confmap.Provider(map[string]interface{}{
-		"ui.stdoutColor": true,
-	}, "."), nil)
+func initConfSettings() {
+	confSettings = conf.New()
+	// Configure default values.
+	confSettings.Set("ui.stdoutColor", true)
 
-	configSettingsPath := filepath.Join(configDir, "cpt.yaml")
-	if _, err := os.Stat(configSettingsPath); os.IsNotExist(err) {
-		if _, err := os.Create(configSettingsPath); err != nil {
-			log.Fatalf("error creating settings file: %v", err)
-		}
-	}
-
-	// load YAML settings config.
-	if err := configSettings.Load(file.Provider(configSettingsPath), yaml.Parser()); err != nil {
-		log.Fatalf("error loading settings file: %v", err)
-	}
+	confSettingsPath := filepath.Join(confDir, "cpt.yaml")
+	confSettings.LoadFile(confSettingsPath)
 }
 
-func initTemplates() {
-	configTemplates = koanf.New(".")
+func initConfTemplates() {
+	confTemplates = conf.New()
 
-	configTemplatesPath := filepath.Join(configDir, "templates.yaml")
-	if _, err := os.Stat(configTemplatesPath); os.IsNotExist(err) {
-		if _, err := os.Create(configTemplatesPath); err != nil {
-			log.Fatalf("error creating templates file: %v", err)
-		}
-	}
-
-	// load YAML templates config.
-	if err := configTemplates.Load(file.Provider(configTemplatesPath), yaml.Parser()); err != nil {
-		log.Fatalf("error loading templates file: %v", err)
-	}
+	confTemplatesPath := filepath.Join(confDir, "templates.yaml")
+	confTemplates.LoadFile(confTemplatesPath)
 }

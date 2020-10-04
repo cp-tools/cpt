@@ -1,5 +1,6 @@
 package cmd
 
+/*
 import (
 	"bytes"
 	"context"
@@ -41,20 +42,20 @@ Sample test input/output are auto selected from the current directory, with file
 extensions <i>.in/<i>.out where <i> is a number.
 To specify custom sample test files, use flags --input and --output.
 
-To set time limit (default is 1 second) use the flag --time-limit. 
+To set time limit (default is 1 second) use the flag --time-limit.
 
 Lastly, to run code in custom invocation mode (where input is taken from stdin)
 use the flag --custom-invocation. Input will be taken from stdin. You may need to wait
 till the '--- * --- * --- * ---' line appears, which identifies that you can enter input.
 
 Usage examples:
-cpt test                     
+cpt test
                             The standard, basic testing mode
-cpt test -f a.cpp            
+cpt test -f a.cpp
                             Test file a.cpp against samples
-cpt test -c myesno           
+cpt test -c myesno
                             Use checker 'myesno' for output
-cpt test -C                 
+cpt test -C
                             Run custom invocation mode
 cpt test --input 0.txt,1.in --output 0.out,1.out
                             Test file for [0.txt/0.out] and [1.in/1.out]
@@ -444,3 +445,4 @@ func customInvocation(param map[string]interface{}) {
 	color.Green("---- * ---- * ---- * ----")
 	fmt.Println()
 }
+*/
