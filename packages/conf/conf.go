@@ -53,7 +53,7 @@ func (cnf *Conf) WriteFile() {
 		log.Fatalf("error creating conf file: %v", err)
 	}
 	// Marshal conf to YAML format.
-	data, err := yaml.Parser().Marshal(cnf.ko.All())
+	data, err := yaml.Parser().Marshal(cnf.ko.Raw())
 	if err != nil {
 		log.Fatalf("unexpected error occurred: %v", err)
 	}
