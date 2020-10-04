@@ -2,7 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/cp-tools/cpt/cmd/internal/generate"
+
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +33,16 @@ var generateCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// templateMap :=
+		templateFlag := cmd.Flag("template").Value.String()
+		templateMap := confTemplates.Get(templateFlag)
+
+		// Extract map of template alias.
+		mp, ok := templateMap.(map[string]interface{})
+		if !ok {
+			color.Red("error extracting template data")
+			os.Exit(1)
+		}
+		generate.Generate(mp)
 	},
 }
 
