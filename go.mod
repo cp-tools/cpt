@@ -19,9 +19,10 @@ require (
 	github.com/infixint943/cookiejar v0.1.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/knadh/koanf v0.13.0
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/oleiade/serrure v0.0.0-20160812094227-28794589ac9b
-	github.com/spf13/cobra v1.0.0
+	github.com/spf13/cobra v1.0.1-0.20201004012507-f64bfa1e08c3
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
 )
