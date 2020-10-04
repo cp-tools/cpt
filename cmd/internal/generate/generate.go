@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cp-tools/cpt/packages/conf"
 	"github.com/fatih/color"
 )
 
@@ -19,7 +18,7 @@ import (
 // where <i> is the smallest non-negative number for which no file exists.
 //
 // Spaces in the file name are also replaced with underscore.
-func Generate(cnf *conf.Conf, templateMap map[string]interface{}) {
+func Generate(templateMap map[string]interface{}) {
 	// Read template codeFile to variable.
 	templateData, err := ioutil.ReadFile(templateMap["codeFile"].(string))
 	if err != nil {
