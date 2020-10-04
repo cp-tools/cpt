@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/cp-tools/cpt/packages/conf"
-	"github.com/cp-tools/cpt/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -171,7 +170,7 @@ func RemoveTemplate(cnf *conf.Conf) {
 	alias := ""
 	survey.AskOne(&survey.Select{
 		Message: "Which template do you want to delete?",
-		Options: util.ExtractMapKeys(cnf.GetAll()),
+		Options: cnf.GetMapKeys(""),
 	}, &alias)
 
 	cnf.Erase(alias)

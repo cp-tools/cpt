@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/cp-tools/cpt/util"
 	"github.com/spf13/cobra"
 )
 
@@ -42,7 +41,7 @@ func init() {
 
 	// All custom completions for command flags.
 	generateCmd.RegisterFlagCompletionFunc("template", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		aliases := util.ExtractMapKeys(confTemplates.GetAll())
+		aliases := confTemplates.GetMapKeys("")
 		return aliases, cobra.ShellCompDirectiveDefault
 	})
 }
