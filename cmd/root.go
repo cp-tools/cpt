@@ -13,15 +13,23 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "cpt",
-	Short:   "Lightweight cli tool for competitive programming!",
+	Use:   "cpt",
+	Short: "Lightweight cli tool for competitive programming!",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// Initialize configurations.
+		initConfSettings()
+		initConfTemplates()
+	},
+
 	Version: "v0.12.1",
 }
 
 var (
-	confDir       string
-	confSettings  *conf.Conf
-	confTemplates *conf.Conf
+	rootDir string
+	confDir string
+
+	confSettings  = conf.New()
+	confTemplates = conf.New()
 )
 
 // Execute adds all child commands to the root command and
@@ -34,11 +42,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(
-		initConfDir,
-		initConfSettings,
-		initConfTemplates,
-	)
+	cobra.OnInitialize(initConfDir)
 
 	// Set OnSIGINT function for survey module.
 	survey.OnSIGINTFunc = func() {
@@ -54,14 +58,14 @@ func initConfDir() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	confDir = filepath.Join(dir, "cp-tools", "cpt")
+	rootDir = filepath.Join(dir, "cp-tools")
+	confDir = filepath.Join(rootDir, "cpt")
 	if err := os.MkdirAll(confDir, os.ModePerm); err != nil {
 		log.Fatalf("error creating config folder: %v", err)
 	}
 }
 
 func initConfSettings() {
-	confSettings = conf.New()
 	// Configure default values.
 	confSettings.Set("ui.stdoutColor", true)
 
@@ -70,7 +74,6 @@ func initConfSettings() {
 }
 
 func initConfTemplates() {
-	confTemplates = conf.New()
 
 	confTemplatesPath := filepath.Join(confDir, "templates.yaml")
 	confTemplates.LoadFile(confTemplatesPath)
