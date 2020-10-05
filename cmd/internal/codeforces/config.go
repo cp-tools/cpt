@@ -1,44 +1,43 @@
-package cmd
+package codeforces
 
 import (
-	"github.com/cp-tools/cpt/cmd/internal/config"
-
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt/cmd/internal/config"
+	"github.com/cp-tools/cpt/util"
 	"github.com/spf13/cobra"
 )
 
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Args:  cobra.NoArgs,
-	Short: "Configure global settings",
+	Short: "Configure codeforces settings",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Prompt user for configuration to modify.
 		index := 0
 		survey.AskOne(&survey.Select{
 			Message: "What configuration do you want to perform?",
 			Options: []string{
-				"template - add new",
-				"template - delete existing",
+				"template - set language",
 				"generate - run on 'fetch'",
 				"generate - set default template",
 				"browser - set headless browser",
-				"ui - set stdout colorization",
 			},
 		}, &index)
 
 		switch index {
 		case 0:
-			config.AddTemplate(confSettings)
+			languages := util.ExtractMapKeys(codeforces.LanguageID)
+			config.SetTemplateLanguage(confSettings, languages)
+
 		case 1:
-			config.RemoveTemplate(confSettings)
-		case 2:
 			config.SetGenerateOnFetch(confSettings)
-		case 3:
+
+		case 2:
 			config.SetDefaultTemplate(confSettings)
-		case 4:
+
+		case 3:
 			config.SetHeadlessBrowser(confSettings)
-		case 5:
-			config.SetStdoutColor(confSettings)
 		}
 		// Write file after changes are done.
 		confSettings.WriteFile()

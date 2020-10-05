@@ -10,7 +10,7 @@ var codeforcesCmd = &cobra.Command{
 	Aliases: []string{"cf"},
 	Short:   "Functions exclusive to codeforces",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Load configurations into codeforces local conf.
+		// Load configurations into codeforces confSettings.
 		codeforces.InitConfSettings(confDir, confSettings.GetAll())
 	},
 }

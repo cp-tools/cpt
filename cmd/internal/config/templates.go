@@ -157,12 +157,12 @@ Java ==> 'rm {{.fileNoExt}}' (linux)
 		},
 	}, &templateMap)
 
-	cnf.Set(alias, templateMap)
+	cnf.Set("template."+alias, templateMap)
 }
 
 // RemoveTemplate deletes selected template from templates.
 func RemoveTemplate(cnf *conf.Conf) {
-	if len(cnf.GetAll()) == 0 {
+	if len(cnf.GetMapKeys("template")) == 0 {
 		color.Yellow("no templates present")
 		os.Exit(0)
 	}
@@ -170,8 +170,33 @@ func RemoveTemplate(cnf *conf.Conf) {
 	alias := ""
 	survey.AskOne(&survey.Select{
 		Message: "Which template do you want to delete?",
-		Options: cnf.GetMapKeys(""),
+		Options: cnf.GetMapKeys("template"),
 	}, &alias)
 
-	cnf.Erase(alias)
+	cnf.Erase("template." + alias)
+}
+
+// SetTemplateLanguage configures website exclusive
+// language mapping to an existing template.
+func SetTemplateLanguage(cnf *conf.Conf, languages []string) {
+	// Select template to map language to.
+	alias := ""
+	survey.AskOne(&survey.Select{
+		Message: "Which template do you want to configure?",
+		Options: cnf.GetMapKeys("template"),
+	}, &alias)
+
+	// Select language to map to template.
+	language := ""
+	survey.AskOne(&survey.Select{
+		Message: "Which language does template '" + alias + "' correspond to?",
+		Options: append(languages, ""),
+	}, &language)
+
+	if language == "" {
+		cnf.Erase("template." + alias + ".language")
+		return
+	}
+
+	cnf.Set("template."+alias+".language", language)
 }
