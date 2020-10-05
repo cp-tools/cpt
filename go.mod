@@ -10,6 +10,8 @@ replace github.com/mitchellh/go-homedir => github.com/infixint943/go-homedir v1.
 
 replace github.com/knadh/koanf => github.com/infixint943/koanf v0.13.1-0.20201004095849-78e35835e358
 
+replace github.com/spf13/cobra => github.com/infixint943/cobra v1.0.1-0.20201005220937-2721f1d557c9
+
 require (
 	github.com/AlecAivazis/survey/v2 v2.1.1
 	github.com/cp-tools/cpt-lib v1.5.1

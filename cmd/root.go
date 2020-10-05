@@ -41,6 +41,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfDir)
+	// Set Persistent commands to be queued.
+	cobra.EnablePersistentRunOverride = false
 
 	// Set OnSIGINT function for survey module.
 	survey.OnSIGINTFunc = func() {
