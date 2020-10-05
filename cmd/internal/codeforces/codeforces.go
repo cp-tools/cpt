@@ -21,11 +21,10 @@ func SetParentCmd(parentCmd *cobra.Command) {
 	rootCmd = parentCmd
 }
 
-// InitConfSettings loads configurations from
-// global and local settings.
-func InitConfSettings(confDir string, cnfMap map[string]interface{}) {
-	// Load global configurations into confSettings.
-	confSettings.Load(cnfMap)
+// InitConfSettings merges configurations from global settings.
+func InitConfSettings(confDir string, confMap map[string]interface{}) {
+	// Load global configurations.
+	confSettings.Load(confMap)
 	// Load local configurations (overwrite global values).
 	confSettingsPath := filepath.Join(confDir, "codeforces.yaml")
 	confSettings.LoadFile(confSettingsPath)

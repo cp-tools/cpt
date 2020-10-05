@@ -26,7 +26,7 @@ var generateCmd = &cobra.Command{
 
 		// Check if '--template' value is valid.
 		templateFlag := cmd.Flag("template").Value.String()
-		if confTemplates.Get(templateFlag) == nil {
+		if confSettings.Get("template."+templateFlag) == nil {
 			return fmt.Errorf("invalid flags - template %v not present", templateFlag)
 		}
 		return nil
@@ -34,7 +34,7 @@ var generateCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		templateFlag := cmd.Flag("template").Value.String()
-		templateMap := confTemplates.Get(templateFlag)
+		templateMap := confSettings.Get("template." + templateFlag)
 
 		// Extract map of template alias.
 		mp, ok := templateMap.(map[string]interface{})
@@ -54,7 +54,7 @@ func init() {
 
 	// All custom completions for command flags.
 	generateCmd.RegisterFlagCompletionFunc("template", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		aliases := confTemplates.GetMapKeys("")
+		aliases := confSettings.GetMapKeys("template")
 		return aliases, cobra.ShellCompDirectiveDefault
 	})
 }

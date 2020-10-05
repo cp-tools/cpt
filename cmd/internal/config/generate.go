@@ -18,11 +18,11 @@ func SetGenerateOnFetch(cnf *conf.Conf) {
 }
 
 // SetDefaultTemplate sets 'generate.defaultTemplate'.
-func SetDefaultTemplate(cnf *conf.Conf, aliases []string) {
+func SetDefaultTemplate(cnf *conf.Conf) {
 	alias := ""
 	survey.AskOne(&survey.Select{
 		Message: "Which template do you want to make the default?",
-		Options: append(aliases, ""),
+		Options: append(cnf.GetMapKeys("template"), ""),
 	}, &alias)
 
 	if alias == "" {

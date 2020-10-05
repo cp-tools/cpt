@@ -18,7 +18,6 @@ var rootCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Initialize configurations.
 		initConfSettings()
-		initConfTemplates()
 	},
 
 	Version: "v0.12.1",
@@ -28,8 +27,7 @@ var (
 	rootDir string
 	confDir string
 
-	confSettings  = conf.New()
-	confTemplates = conf.New()
+	confSettings = conf.New()
 )
 
 // Execute adds all child commands to the root command and
@@ -71,10 +69,4 @@ func initConfSettings() {
 
 	confSettingsPath := filepath.Join(confDir, "cpt.yaml")
 	confSettings.LoadFile(confSettingsPath)
-}
-
-func initConfTemplates() {
-
-	confTemplatesPath := filepath.Join(confDir, "templates.yaml")
-	confTemplates.LoadFile(confTemplatesPath)
 }
