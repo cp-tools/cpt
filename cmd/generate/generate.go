@@ -34,24 +34,31 @@ func Generate(templateMap map[string]interface{}) {
 
 	baseFileName := filepath.Base(currentDir)
 	fileExtension := filepath.Ext(templateMap["codeFile"].(string))
-	// Iterate till file name is available.
-	for fileName, i := baseFileName, 0; ; i++ {
-		fullName := fileName + fileExtension
-		if _, err := os.Stat(fullName); os.IsNotExist(err) {
-			file, err := os.Create(fullName)
-			if err != nil {
-				color.Red("error creating code file: %v", err)
-				os.Exit(1)
-			}
-			// Write templateData to created file.
-			if _, err := file.Write(templateData); err != nil {
-				color.Red("error writing to code file: %v", err)
-				os.Exit(1)
-			}
+	fileName := decideFileName(baseFileName, fileExtension)
 
-			color.Green("created code file: %v", fullName)
-			break
+	file, err := os.Create(fileName)
+	if err != nil {
+		color.Red("error creating code file: %v", err)
+		os.Exit(1)
+	}
+
+	// Write templateData to created file.
+	if _, err := file.Write(templateData); err != nil {
+		color.Red("error writing to code file: %v", err)
+		os.Exit(1)
+	}
+
+	color.Green("created code file: %v", fileName)
+}
+
+func decideFileName(baseFileName, fileExtension string) string {
+	for fileName, i := baseFileName, 0; true; i++ {
+		fullName := fileName + fileExtension
+		if file, err := os.Stat(fullName); os.IsNotExist(err) || file.IsDir() {
+			return fullName
 		}
 		fileName = fmt.Sprintf("%v_%d", baseFileName, i)
 	}
+	// Impossible case
+	return ""
 }
