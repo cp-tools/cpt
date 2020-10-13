@@ -12,6 +12,7 @@ import (
 // Conf is the configuration module.
 type Conf struct {
 	ko         *koanf.Koanf
+	koDefault  *koanf.Koanf
 	koFilePath string
 }
 
@@ -19,6 +20,7 @@ type Conf struct {
 func New() *Conf {
 	cnf := new(Conf)
 	cnf.ko = koanf.New(".")
+	cnf.koDefault = koanf.New(".")
 	return cnf
 }
 
@@ -43,6 +45,7 @@ func (cnf *Conf) LoadFile(path string) {
 
 // WriteFile overwrites data from the configuration module
 // to the file last loaded using LoadConf().
+// Values from the default map are not written.
 //
 // The written data is of YAML format.
 func (cnf *Conf) WriteFile() {
@@ -52,6 +55,8 @@ func (cnf *Conf) WriteFile() {
 	if err != nil {
 		log.Fatalf("error creating conf file: %v", err)
 	}
+	defer file.Close()
+
 	// Marshal conf to YAML format.
 	data, err := yaml.Parser().Marshal(cnf.ko.Raw())
 	if err != nil {
