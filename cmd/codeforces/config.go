@@ -1,10 +1,11 @@
 package codeforces
 
 import (
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/cp-tools/cpt-lib/codeforces"
-	"github.com/cp-tools/cpt/cmd/internal/config"
+	"github.com/cp-tools/cpt/cmd/config"
 	"github.com/cp-tools/cpt/util"
+
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
 )
 

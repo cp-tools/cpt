@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/cp-tools/cpt/cmd/internal/codeforces"
+	"github.com/cp-tools/cpt/cmd/codeforces"
 	"github.com/spf13/cobra"
 )
 
@@ -9,9 +9,11 @@ var codeforcesCmd = &cobra.Command{
 	Use:     "codeforces",
 	Aliases: []string{"cf"},
 	Short:   "Functions exclusive to codeforces",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Load configurations into codeforces confSettings.
-		codeforces.InitConfSettings(confDir, confSettings.GetAll())
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Load and initialize conf related settings.
+		codeforces.ConfLoadFile(confDir)
+		codeforces.ConfLoadDefaults(confSettings.GetAll())
+		return nil
 	},
 }
 
