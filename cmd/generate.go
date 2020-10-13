@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cp-tools/cpt/cmd/internal/generate"
+	"github.com/cp-tools/cpt/cmd/generate"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -50,7 +50,7 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 
 	// All flags available to command.
-	generateCmd.Flags().StringP("template", "t", "", `alias name of the template to use`)
+	generateCmd.Flags().StringP("template", "t", "", "alias name of the template to use")
 
 	// All custom completions for command flags.
 	generateCmd.RegisterFlagCompletionFunc("template", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
