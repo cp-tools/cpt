@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/cp-tools/cpt/cmd/internal/config"
+	"github.com/cp-tools/cpt/cmd/config"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"

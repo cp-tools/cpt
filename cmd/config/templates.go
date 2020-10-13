@@ -173,7 +173,7 @@ func RemoveTemplate(cnf *conf.Conf) {
 		Options: cnf.GetMapKeys("template"),
 	}, &alias)
 
-	cnf.Erase("template." + alias)
+	cnf.Delete("template." + alias)
 }
 
 // SetTemplateLanguage configures website exclusive
@@ -194,7 +194,7 @@ func SetTemplateLanguage(cnf *conf.Conf, languages []string) {
 	}, &language)
 
 	if language == "" {
-		cnf.Erase("template." + alias + ".language")
+		cnf.Delete("template." + alias + ".language")
 		return
 	}
 
