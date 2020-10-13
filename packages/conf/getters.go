@@ -1,5 +1,7 @@
 package conf
 
+import "github.com/knadh/koanf/maps"
+
 // Get returns interface{} value of a given key path,
 // or nil if key does not exist or is invalid.
 //
@@ -12,11 +14,12 @@ func (cnf *Conf) Get(key string) interface{} {
 	return cnf.ko.Get(key)
 }
 
-// GetAll returns all configuration values in module.
-//
-// Values from the default map are not returned.
+// GetAll merges the configured values with the default
+// values and returns the data as a map.
 func (cnf *Conf) GetAll() map[string]interface{} {
-	return cnf.ko.Raw()
+	mp := cnf.ko.Raw()
+	maps.Merge(cnf.koDefault.Raw(), mp)
+	return mp
 }
 
 // GetInt returns int value of a given key path,
