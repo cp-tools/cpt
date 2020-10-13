@@ -3,6 +3,8 @@ package codeforces
 import (
 	"path/filepath"
 
+	"github.com/cp-tools/cpt-lib/codeforces"
+
 	"github.com/cp-tools/cpt/packages/conf"
 	"github.com/spf13/cobra"
 )
@@ -30,4 +32,11 @@ func ConfLoadFile(confDir string) {
 // ConfLoadDefaults sets default values in local module.
 func ConfLoadDefaults(confMap map[string]interface{}) {
 	confSettings.LoadDefault(confMap)
+}
+
+func startHeadlessBrowser() {
+	binary := confSettings.GetString("browser.binary")
+	profile := confSettings.GetString("browser.profile")
+	codeforces.Start(true, profile, binary)
+	// todo: Add flags to disable image rendering.
 }
