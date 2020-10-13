@@ -67,7 +67,7 @@ func initConfDir() {
 
 func initConfSettings() {
 	// Configure default values.
-	confSettings.Set("ui.stdoutColor", true)
+	confSettings.SetDefault("ui.stdoutColor", true)
 
 	confSettingsPath := filepath.Join(confDir, "cpt.yaml")
 	confSettings.LoadFile(confSettingsPath)

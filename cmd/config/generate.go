@@ -27,7 +27,7 @@ func SetDefaultTemplate(cnf *conf.Conf) {
 
 	if alias == "" {
 		// Remove default template value.
-		cnf.Erase("generate.defaultTemplate")
+		cnf.Delete("generate.defaultTemplate")
 		return
 	}
 
