@@ -22,7 +22,7 @@ func init() {
 
 	// All flags available to command.
 	testCmd.Flags().StringP("checker", "c", "lcmp", "testlib checker to use")
-	testCmd.Flags().StringP("file", "f", "", "code file to run on tests")
+	testCmd.Flags().StringP("file", "f", "", "code file to run tests on")
 	testCmd.Flags().BoolP("interactive", "i", false, "run with I/O in terminal")
 	testCmd.Flags().DurationP("time-limit", "t", 2*time.Second, "time limit per test")
 
