@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
-
 	"github.com/cp-tools/cpt/packages/conf"
+
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +36,7 @@ func ConfLoadDefaults(confMap map[string]interface{}) {
 
 	// Path structure when 'fetching' problem tests.
 	confSettings.SetDefault("fetch.problemFolderPath", []string{
-		"codeforces", "{{.Contest}}", "{{.Problem}}",
+		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
 	})
 }
 
