@@ -46,6 +46,18 @@ func (cnf *Conf) GetString(key string) string {
 	return cnf.ko.String(key)
 }
 
+// GetStrings returns []string slice value of a given key path,
+// or "" if key does not exist or is invalid.
+//
+// If given key doesn't exist in configuration module,
+// the default data is searched for the same.
+func (cnf *Conf) GetStrings(key string) []string {
+	if !cnf.ko.Exists(key) {
+		return cnf.koDefault.Strings(key)
+	}
+	return cnf.ko.Strings(key)
+}
+
 // GetBool returns bool value of a given key path,
 // or false if key does not exist or is invalid.
 //
