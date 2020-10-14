@@ -1,44 +1,21 @@
 package util
 
 import (
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"reflect"
-	"regexp"
-	"runtime"
-	"strings"
 	"time"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"github.com/gosuri/uitable"
-	"github.com/oleiade/serrure/aes"
-	"github.com/spf13/viper"
 )
 
-func SurveyErr(err error) {
-	if err == terminal.InterruptErr {
-		fmt.Println("Interrupted")
-		os.Exit(1)
-	} else if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func StartCountdown(dur time.Duration, msg string) {
+func RunCountdown(dur time.Duration, msg string) {
 	writer := uilive.New()
 	writer.Start()
 	for ; dur.Seconds() > 0; dur -= time.Second {
 		fmt.Fprintln(writer, msg, dur.String())
 		time.Sleep(time.Second)
 	}
+	fmt.Fprintln(writer, "")
 	writer.Stop()
 }
 
@@ -50,57 +27,7 @@ func ExtractMapKeys(varMap interface{}) (data []string) {
 	return
 }
 
-// DetectSpfr returns specifier and root workspace
-func DetectSpfr(args []string) (string, string) {
-	currDir, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	if len(args) != 0 {
-		return strings.Join(args, " "), currDir
-	}
-
-	tmp := strings.Split(currDir, string(os.PathSeparator))
-	for c := len(tmp) - 1; c >= 0; c-- {
-		if tmp[c] == "codeforces" {
-			spfr, _ := DetectSpfr(tmp[c+1:])
-			return spfr, strings.TrimSuffix(currDir, filepath.Join(tmp[c:]...))
-		}
-	}
-	return "", currDir
-}
-
-func Encrypt(key string, data string) (string, error) {
-	enc, err := aes.NewAES256Encrypter(key, nil)
-	if err != nil {
-		return "", err
-	}
-
-	ed, err := enc.Encrypt([]byte(data))
-	if err != nil {
-		return "", err
-	}
-
-	return hex.EncodeToString(ed), err
-}
-
-func Decrypt(key string, data string) (string, error) {
-	ed, err := hex.DecodeString(data)
-	if err != nil {
-		return "", err
-	}
-
-	dec := aes.NewAES256Decrypter(key)
-	dd, err := dec.Decrypt(ed)
-	if err != nil {
-		return "", err
-	}
-
-	return string(dd), nil
-}
-
+/*
 func FindCodeFiles(file string) (string, error) {
 	// file provided. Check if exists
 	if len(file) != 0 {
@@ -258,3 +185,4 @@ func HeaderCol(data string) string {
 	col := color.New(color.FgBlue).Add(color.Underline)
 	return col.Sprint(data)
 }
+*/
