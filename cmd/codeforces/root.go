@@ -32,6 +32,12 @@ func ConfLoadFile(confDir string) {
 // ConfLoadDefaults sets default values in local module.
 func ConfLoadDefaults(confMap map[string]interface{}) {
 	confSettings.LoadDefault(confMap)
+	// Set local defaults here.
+
+	// Path structure when 'fetching' problem tests.
+	confSettings.SetDefault("fetch.problemFolderPath", []string{
+		"codeforces", "{{.Contest}}", "{{.Problem}}",
+	})
 }
 
 func startHeadlessBrowser() {
