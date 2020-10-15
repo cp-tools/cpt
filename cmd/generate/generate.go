@@ -66,8 +66,11 @@ func Generate(alias string, cnf *conf.Conf) {
 		color.Red("error writing to code file: %v", err)
 		os.Exit(1)
 	}
-	// Write code file details to local conf.
-	cnf.Set("problem.code files."+fileName, alias)
+	// Write generated file details to local conf.
+	generatedFiles := cnf.GetStrings("template." + alias + ".generatedFiles")
+	generatedFiles = append(generatedFiles, fileName)
+
+	cnf.Set("template."+alias+".generatedFiles", generatedFiles)
 	cnf.WriteFile()
 
 	color.Green("created code file: %v", fileName)

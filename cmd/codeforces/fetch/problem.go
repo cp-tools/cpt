@@ -15,25 +15,25 @@ func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) 
 	/*
 		problem:
 			name: XXXX
-			time limit: XXXX
-			memory limit: XXXX
+			timeLimit: XXXX
+			memoryLimit: XXXX
 			arg:
 				Contest: XXXX
 				Problem: XXXX
 				Class: XXXX
 				Group: XXXX
-			input stream: XXXX
-			output stream: XXXX
+			inputStream: XXXX
+			outputStream: XXXX
 			tests:
 				input: [XXXX]
 				output: [XXXX]
 	*/
 	cnf.Set("problem.name", problem.Name)
-	cnf.Set("problem.time limit", problem.TimeLimit)
-	cnf.Set("problem.memory limit", problem.MemoryLimit)
+	cnf.Set("problem.timeLimit", problem.TimeLimit)
+	cnf.Set("problem.memoryLimit", problem.MemoryLimit)
 	cnf.Set("problem.arg", problem.Arg)
-	cnf.Set("problem.input stream", problem.InpStream)
-	cnf.Set("problem.output stream", problem.OutStream)
+	cnf.Set("problem.inputStream", problem.InpStream)
+	cnf.Set("problem.outputStream", problem.OutStream)
 	cnf.Set("problem.tests.input", testInFiles)
 	cnf.Set("problem.tests.output", testOutFiles)
 	cnf.WriteFile()
