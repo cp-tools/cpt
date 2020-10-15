@@ -71,15 +71,14 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 		// Create sample tests files.
 		testInFiles, testOutFiles := createTests(problem)
 		// Create problem configuration (meta.yaml) file.
-		createConf(problem, testInFiles, testOutFiles)
+		problemCnf := createConf(problem, testInFiles, testOutFiles)
+		problemCnf.LoadDefault(cnf.GetAll())
 
 		// Generate template if auto generation set to true.
 		if cnf.GetBool("generate.onFetch") == true {
 			alias := cnf.GetString("generate.defaultTemplate")
-			templateMap := cnf.Get("template." + alias)
-			// Extract map of template alias.
-			if mp, ok := templateMap.(map[string]interface{}); ok {
-				generate.Generate(mp)
+			if alias != "" && cnf.Has("template."+alias) {
+				generate.Generate(alias, problemCnf)
 			}
 		}
 

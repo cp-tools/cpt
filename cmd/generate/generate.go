@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cp-tools/cpt/packages/conf"
+
 	"github.com/fatih/color"
 )
 
@@ -18,9 +20,26 @@ import (
 // where <i> is the smallest non-negative number for which no file exists.
 //
 // Spaces in the file name are also replaced with underscore.
-func Generate(templateMap map[string]interface{}) {
+//
+// Ensure 'cnf' is local (folder) configuration.
+func Generate(alias string, cnf *conf.Conf) {
+	// Extract templateMap from conf.
+	templateMap, ok := cnf.Get("template." + alias).(map[string]interface{})
+	if !ok {
+		fmt.Println(color.RedString("unexpected error occurred:"),
+			"template '"+alias+"' is not of type map[string]interface{}")
+		os.Exit(1)
+	}
+
 	// Read template codeFile to variable.
-	templateData, err := ioutil.ReadFile(templateMap["codeFile"].(string))
+	codeFile, ok := templateMap["codeFile"].(string)
+	if !ok {
+		fmt.Println(color.RedString("unexpected error occurred:"),
+			"field codefile is not of type string")
+		os.Exit(1)
+	}
+
+	templateData, err := ioutil.ReadFile(codeFile)
 	if err != nil {
 		color.Red("error reading template code file: %v", err)
 		os.Exit(1)
@@ -33,7 +52,7 @@ func Generate(templateMap map[string]interface{}) {
 	}
 
 	baseFileName := filepath.Base(currentDir)
-	fileExtension := filepath.Ext(templateMap["codeFile"].(string))
+	fileExtension := filepath.Ext(codeFile)
 	fileName := decideFileName(baseFileName, fileExtension)
 
 	file, err := os.Create(fileName)
@@ -47,6 +66,9 @@ func Generate(templateMap map[string]interface{}) {
 		color.Red("error writing to code file: %v", err)
 		os.Exit(1)
 	}
+	// Write code file details to local conf.
+	cnf.Set("problem.code files."+fileName, alias)
+	cnf.WriteFile()
 
 	color.Green("created code file: %v", fileName)
 }
