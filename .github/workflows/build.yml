@@ -1,6 +1,17 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+    tags-ignore:
+      - 'v*'
+
+  pull_request:
+    branches:
+      - 'master'
+      - 'develop'
 
 jobs:
   build:
