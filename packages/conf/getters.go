@@ -1,6 +1,10 @@
 package conf
 
-import "github.com/knadh/koanf/maps"
+import (
+	"sort"
+
+	"github.com/knadh/koanf/maps"
+)
 
 // Get returns interface{} value of a given key path,
 // or nil if key does not exist or is invalid.
@@ -11,14 +15,22 @@ func (cnf *Conf) Get(key string) interface{} {
 	if !cnf.ko.Exists(key) {
 		return cnf.koDefault.Get(key)
 	}
+	// Merge default and configurations if key is map.
+	if mp1, ok := cnf.koDefault.Get(key).(map[string]interface{}); ok {
+		if mp2, ok := cnf.ko.Get(key).(map[string]interface{}); ok {
+			maps.Merge(mp2, mp1)
+			return mp1
+		}
+	}
+
 	return cnf.ko.Get(key)
 }
 
 // GetAll merges the configured values with the default
 // values and returns the data as a map.
 func (cnf *Conf) GetAll() map[string]interface{} {
-	mp := cnf.ko.Raw()
-	maps.Merge(cnf.koDefault.Raw(), mp)
+	mp := cnf.koDefault.Raw()
+	maps.Merge(cnf.ko.Raw(), mp)
 	return mp
 }
 
@@ -92,5 +104,8 @@ func (cnf *Conf) GetMapKeys(key string) []string {
 	if !cnf.ko.Exists(key) {
 		return cnf.koDefault.MapKeys(key)
 	}
-	return cnf.ko.MapKeys(key)
+	data := cnf.koDefault.MapKeys(key)
+	data = append(data, cnf.ko.MapKeys(key)...)
+	sort.Strings(data)
+	return data
 }

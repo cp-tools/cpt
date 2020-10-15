@@ -13,28 +13,29 @@ func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) 
 	cnf := conf.New()
 	cnf.LoadFile("meta.yaml")
 	/*
-		name: XXXX
-		time limit: XXXX
-		memory limit: XXXX
-		args:
-			contest: XXXX
-			problem: XXXX
-			class: XXXX
-			group: XXXX
-		input stream: XXXX
-		output stream: XXXX
-		tests:
-			input: [XXXX]
-			output: [XXXX]
+		problem:
+			name: XXXX
+			time limit: XXXX
+			memory limit: XXXX
+			args:
+				contest: XXXX
+				problem: XXXX
+				class: XXXX
+				group: XXXX
+			input stream: XXXX
+			output stream: XXXX
+			tests:
+				input: [XXXX]
+				output: [XXXX]
 	*/
-	cnf.Set("name", problem.Name)
-	cnf.Set("time limit", problem.TimeLimit)
-	cnf.Set("memory limit", problem.MemoryLimit)
-	cnf.Set("args", problem.Arg)
-	cnf.Set("input stream", problem.InpStream)
-	cnf.Set("output stream", problem.OutStream)
-	cnf.Set("tests.input", testInFiles)
-	cnf.Set("tests.output", testOutFiles)
+	cnf.Set("problem.name", problem.Name)
+	cnf.Set("problem.time limit", problem.TimeLimit)
+	cnf.Set("problem.memory limit", problem.MemoryLimit)
+	cnf.Set("problem.args", problem.Arg)
+	cnf.Set("problem.input stream", problem.InpStream)
+	cnf.Set("problem.output stream", problem.OutStream)
+	cnf.Set("problem.tests.input", testInFiles)
+	cnf.Set("problem.tests.output", testOutFiles)
 	cnf.WriteFile()
 }
 
