@@ -9,7 +9,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) {
+func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) *conf.Conf {
 	cnf := conf.New()
 	cnf.LoadFile("meta.yaml")
 	/*
@@ -37,6 +37,7 @@ func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) 
 	cnf.Set("problem.tests.input", testInFiles)
 	cnf.Set("problem.tests.output", testOutFiles)
 	cnf.WriteFile()
+	return cnf
 }
 
 func createTests(problem codeforces.Problem) (inFiles, outFiles []string) {

@@ -26,6 +26,15 @@ func (cnf *Conf) Get(key string) interface{} {
 	return cnf.ko.Get(key)
 }
 
+// Has returns true if the given key exists in configuration.
+func (cnf *Conf) Has(key string) bool {
+	// Check if key exists in either.
+	if cnf.ko.Exists(key) || cnf.koDefault.Exists(key) {
+		return true
+	}
+	return false
+}
+
 // GetAll merges the configured values with the default
 // values and returns the data as a map.
 func (cnf *Conf) GetAll() map[string]interface{} {
