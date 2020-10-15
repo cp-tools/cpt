@@ -4,6 +4,7 @@ import (
 	"github.com/cp-tools/cpt/packages/conf"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/mitchellh/go-homedir"
 )
 
 // SetHeadlessBrowser configures headless browser to use.
@@ -51,7 +52,18 @@ Here are the locations of browser profiles of various browsers:
   => 'C:\Users\<username>\AppData\Local\Microsoft\Edge\User Data\' (windows)
 `,
 			},
-			Validate: survey.Required,
+			Validate: func(ans interface{}) error {
+				_, err := homedir.Abs(ans.(string))
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+			Transform: func(ans interface{}) (newAns interface{}) {
+				profilePath, _ := homedir.Abs(ans.(string))
+				return profilePath
+			},
 		},
 	}, &browserMap)
 
