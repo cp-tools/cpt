@@ -8,6 +8,7 @@ import (
 	"github.com/gosuri/uilive"
 )
 
+// RunCountdown runs countdown with a static message.
 func RunCountdown(dur time.Duration, msg string) {
 	writer := uilive.New()
 	writer.Start()
@@ -19,6 +20,7 @@ func RunCountdown(dur time.Duration, msg string) {
 	writer.Stop()
 }
 
+// ExtractMapKeys returns top-level keys of map.
 func ExtractMapKeys(varMap interface{}) (data []string) {
 	keys := reflect.ValueOf(varMap).MapKeys()
 	for _, key := range keys {
