@@ -43,6 +43,7 @@ func ConfLoadDefaults(confMap map[string]interface{}) {
 func startHeadlessBrowser() {
 	binary := confSettings.GetString("browser.binary")
 	profile := confSettings.GetString("browser.profile")
-	codeforces.Start(true, profile, binary)
-	// todo: Add flags to disable image rendering.
+	codeforces.Start(true, profile, binary,
+		[]string{`disable-extensions`},
+	)
 }
