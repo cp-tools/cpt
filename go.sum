@@ -17,6 +17,8 @@ github.com/Netflix/go-expect v0.0.0-20180615182759-c93bf25de8e8/go.mod h1:oX5x61
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/PuerkitoBio/goquery v1.5.1 h1:PSPBGne8NIUWw+/7vFBV+kG2J/5MOjbzc7154OaKCSE=
 github.com/PuerkitoBio/goquery v1.5.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
+github.com/PuerkitoBio/goquery v1.6.0 h1:j7taAbelrdcsOlGeMenZxc2AWXD5fieT1/znArdnx94=
+github.com/PuerkitoBio/goquery v1.6.0/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/andybalholm/cascadia v1.1.0 h1:BuuO6sSfQNFRu1LppgbD25Hr2vLYW25JvxHs5zzsLTo=
@@ -37,6 +39,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cp-tools/cpt-lib v1.5.2-0.20200930211309-1846708cff47 h1:fQq44/sg5H1oh97Dszmw0vLwh8rUSmv3DT5KTOmvTI4=
 github.com/cp-tools/cpt-lib v1.5.2-0.20200930211309-1846708cff47/go.mod h1:YSR626fvZRfRFnfxjlTmDgXI9uyp3W1GN4XmQO8+gso=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201016114157-7864b376769d h1:DxDEdRkXavHDeDxkaGY63DrUXROfXgqaITN9YBni5pg=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201016114157-7864b376769d/go.mod h1:0b20jLBRGvNmQ1dc/1Dj1N3w9h46LqQnBkHT1K+GFc0=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -56,6 +60,8 @@ github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9
 github.com/go-logfmt/logfmt v0.4.0/go.mod h1:3RMwSq7FuexP4Kalkev3ejPJsZTpXXBr9+V4qmtdjCk=
 github.com/go-rod/rod v0.69.1 h1:4LvDASayJNSOYFLEDNgdiuGQZg/KSiWemf/S4iZAy6I=
 github.com/go-rod/rod v0.69.1/go.mod h1:ZTGKdUK0GEsOWF8+5QO3QpXmSc/JRREeknmqglj5YWw=
+github.com/go-rod/rod v0.73.1 h1:HxLbNJRTzkVWToKq4Uh+MXZ5+EdICW5m4SUx7ZcB6jU=
+github.com/go-rod/rod v0.73.1/go.mod h1:9qWt4Ov0hwul4c0YCqNzeIN2EDWS2BbCsNtzeqovCQQ=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.1/go.mod h1:hp+jE20tsWTFYpLwKvXlhS1hjn+gTNwPg2I6zVXpSg4=
@@ -220,9 +226,17 @@ github.com/ysmood/byframe/v2 v2.0.2 h1:6/vQKeuE/DcP4C6rVvR3POVw0nF4rjpMUvcVm312B
 github.com/ysmood/byframe/v2 v2.0.2/go.mod h1:FKUO9W0UUF29zC2oLCYtxoz3UBkFnV16sxKzdGsJ37k=
 github.com/ysmood/goob v0.2.4 h1:XeLvi9UsDclLbr3GkEEJLa19Wf2U1cLV9vD3IDB/ze0=
 github.com/ysmood/goob v0.2.4/go.mod h1:dkazbH9+CMBDUsX5NQhspGbgRWjoWGiqjhP5J96uKoM=
+github.com/ysmood/goob v0.2.8 h1:e2R7qFxVv6eKA8zJ6dKRL3An+Eu/cltn7SMUob79aYw=
+github.com/ysmood/goob v0.2.8/go.mod h1:S3lq113Y91y1UBf1wj1pFOxeahvfKkCk6mTWTWbDdWs=
 github.com/ysmood/got v0.0.1/go.mod h1:pE1l4LOwOBhQg6A/8IAatkGp7uZjnalzrZolnlhhMgY=
+github.com/ysmood/got v0.8.2/go.mod h1:pE1l4LOwOBhQg6A/8IAatkGp7uZjnalzrZolnlhhMgY=
+github.com/ysmood/gotrace v0.1.1/go.mod h1:TzhIG7nHDry5//eYZDYcTzuJLYQIkykJzCRIo4/dzQM=
+github.com/ysmood/gson v0.6.3 h1:4cU+5oOdsyundXHy00t99H0rLXLthuseD3x6W+xmCiU=
+github.com/ysmood/gson v0.6.3/go.mod h1:3Kzs5zDl21g5F/BlLTNcuAGAYLKt2lV5G8D1zF3RNmg=
 github.com/ysmood/leakless v0.5.7 h1:PzcMettftTL8g5ixFTqaJkEeKK27Fb6q+DriW9HhqzM=
 github.com/ysmood/leakless v0.5.7/go.mod h1:GbfZzsfG4FDobk6hJI/L09oqBFDC0bJNdOjR5AKnDjY=
+github.com/ysmood/leakless v0.6.3 h1:blW3g7NYSTkXtRhmV0vq+t4KzWWUJUdd2pB77O0uteQ=
+github.com/ysmood/leakless v0.6.3/go.mod h1:eOWmPkwrQgyJ+JivIgpu5EoJXRN04Wf+wENtR9CUKyE=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
 go.opencensus.io v0.22.0/go.mod h1:+kGneAE2xo2IficOXnaByMWTGM9T73dGwxeWcUqIpI8=
