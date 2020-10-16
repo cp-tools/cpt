@@ -40,7 +40,7 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 			t.AddRow("memory:", sub.Memory)
 			t.AddRow("time:", sub.Time)
 		}
-		fmt.Fprintln(writer, t)
+		fmt.Fprintln(writer, t.String())
 	}
 	writer.Stop()
 }
