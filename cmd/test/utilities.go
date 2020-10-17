@@ -86,7 +86,7 @@ func SelectCodeFile(filePath string, cnf *conf.Conf) (fileName string, alias str
 }
 
 func runShellScript(script string, timeout time.Duration,
-	stdin, stdout, stderr io.ReadWriter) (time.Duration, error) {
+	stdin io.Reader, stdout, stderr io.Writer) (time.Duration, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
