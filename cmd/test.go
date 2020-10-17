@@ -23,7 +23,7 @@ func init() {
 	// All flags available to command.
 	testCmd.Flags().StringP("checker", "c", "lcmp", "testlib checker to use")
 	testCmd.Flags().StringP("file", "f", "", "code file to run tests on")
-	testCmd.Flags().BoolP("interactive", "i", false, "run with I/O in terminal")
+	testCmd.Flags().StringP("mode", "m", "j", "mode to run tests on")
 	testCmd.Flags().DurationP("time-limit", "t", 2*time.Second, "time limit per test")
 
 	// All custom completions for command flags.
@@ -39,5 +39,14 @@ func init() {
 			checkers[0] += fmt.Sprintf("\t%v", desc)
 		}
 		return checkers, cobra.ShellCompDirectiveDefault
+	})
+
+	testCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		modes := []string{
+			"j\tjudge mode",
+			"i\tinteractive mode",
+		}
+
+		return modes, cobra.ShellCompDirectiveDefault
 	})
 }

@@ -13,7 +13,7 @@ import (
 )
 
 // Test tests
-func Test(checker, filePath string, interactive bool, timelimit time.Duration, cnf *conf.Conf) {
+func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Conf) {
 	// Determine code file and template alias to use.
 	//fileName, alias := SelectCodeFile(filePath, cnf)
 	_, alias := SelectCodeFile(filePath, cnf)
@@ -38,6 +38,12 @@ func Test(checker, filePath string, interactive bool, timelimit time.Duration, c
 			fmt.Println(err)
 			os.Exit(0)
 		}
+	}
+
+	switch mode {
+	case "j": // Default judge mode.
+
+	case "i": // Interactive mode.
 	}
 
 	// Run postScript.
