@@ -1,13 +1,19 @@
 package test
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"time"
+
+	"github.com/cp-tools/cpt/packages/conf"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/cp-tools/cpt/packages/conf"
 	"github.com/fatih/color"
+	"github.com/kballard/go-shellquote"
 )
 
 // extractGeneratedFiles returns a map consisting of previously generated
@@ -77,4 +83,27 @@ func SelectCodeFile(filePath string, cnf *conf.Conf) (fileName string, alias str
 	}
 	fileName, alias = filePath, generatedFilesMap[filePath]
 	return
+}
+
+func runShellScript(script string, timeout time.Duration,
+	stdin, stdout, stderr io.ReadWriter) (time.Duration, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	cmds, err := shellquote.Split(script)
+	if err != nil {
+		return 0, err
+	}
+
+	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
+	cmd.Stdin = stdin
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+
+	// time execution of command.
+	start := time.Now()
+	err = cmd.Run()
+	elapsed := time.Since(start)
+
+	return elapsed, err
 }
