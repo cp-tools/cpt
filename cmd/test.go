@@ -29,7 +29,7 @@ func init() {
 	// All custom completions for command flags.
 	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		// Find all executables in cpt-checkers directory.
-		confCheckerPath := filepath.Join(rootDir, "checkers.yaml")
+		confCheckerPath := filepath.Join(rootDir, "cpt-checker", "checkers.yaml")
 		confChecker := conf.New()
 		confChecker.LoadFile(confCheckerPath)
 		// Add description to tab completion.
