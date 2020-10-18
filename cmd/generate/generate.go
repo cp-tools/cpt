@@ -53,13 +53,14 @@ func Generate(alias string, cnf *conf.Conf) {
 
 	baseFileName := filepath.Base(currentDir)
 	fileExtension := filepath.Ext(codeFile)
-	fileName := decideFileName(baseFileName, fileExtension)
+	fileName := DecideFileName(baseFileName, fileExtension)
 
 	file, err := os.Create(fileName)
 	if err != nil {
 		color.Red("error creating code file: %v", err)
 		os.Exit(1)
 	}
+	defer file.Close()
 
 	// Write templateData to created file.
 	if _, err := file.Write(templateData); err != nil {
@@ -76,7 +77,7 @@ func Generate(alias string, cnf *conf.Conf) {
 	color.Green("created code file: %v", fileName)
 }
 
-func decideFileName(baseFileName, fileExtension string) string {
+func DecideFileName(baseFileName, fileExtension string) string {
 	for fileName, i := baseFileName, 0; true; i++ {
 		fullName := fileName + fileExtension
 		if file, err := os.Stat(fullName); os.IsNotExist(err) || file.IsDir() {
