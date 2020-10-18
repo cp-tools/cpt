@@ -14,17 +14,17 @@ var generateCmd = &cobra.Command{
 	Short: "Create file using template",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Handle case where '--template' is not set.
-		if cmd.Flag("template").Value.String() == "" {
+		if cmd.Flags().MustGetString("template") == "" {
 			defaultTemplate := confSettings.GetString("generate.defaultTemplate")
 			if defaultTemplate == "" {
 				return fmt.Errorf("invalid flags - no template value provided")
 			}
 			// Set value of '--template' to defaultTemplate.
-			cmd.Flag("template").Value.Set(defaultTemplate)
+			cmd.Flags().Set("template", defaultTemplate)
 		}
 
 		// Check if '--template' value is valid.
-		templateFlag := cmd.Flag("template").Value.String()
+		templateFlag := cmd.Flags().MustGetString("template")
 		if confSettings.Get("template."+templateFlag) == nil {
 			return fmt.Errorf("invalid flags - template %v not present", templateFlag)
 		}
@@ -37,7 +37,7 @@ var generateCmd = &cobra.Command{
 		problemCnf.LoadFile("meta.yaml")
 		problemCnf.LoadDefault(confSettings.GetAll())
 
-		templateFlag := cmd.Flag("template").Value.String()
+		templateFlag := cmd.Flags().MustGetString("template")
 		generate.Generate(templateFlag, problemCnf)
 	},
 }

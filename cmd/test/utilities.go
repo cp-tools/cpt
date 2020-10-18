@@ -23,12 +23,24 @@ func extractGeneratedFiles(cnf *conf.Conf) map[string]string {
 	// Extract all template aliases.
 	for _, alias := range cnf.GetMapKeys("template") {
 		// Extract and all generated files of alias.
-		generatedFiles := cnf.GetMapKeys("template." + alias + ".generatedFiles")
+		generatedFiles := cnf.GetStrings("template." + alias + ".generatedFiles")
 		for _, fileName := range generatedFiles {
 			data[fileName] = alias
 		}
 	}
 	return data
+}
+
+func extractTestsFiles(cnf *conf.Conf) (inputFiles, expectedFiles []string) {
+	inputFiles = cnf.GetStrings("problem.tests.input")
+	expectedFiles = cnf.GetStrings("problem.tests.output")
+
+	if len(inputFiles) != len(expectedFiles) {
+		// Mismatch in test cases count.
+		fmt.Println(color.RedString("error selecting test files:"), fmt.Sprintf("number of 'inputFiles' [%d] not equals number of 'expectedFiles' [%d]", len(inputFiles), len(expectedFiles)))
+		os.Exit(1)
+	}
+	return
 }
 
 // SelectCodeFile returns file name and template of code file to use, based
