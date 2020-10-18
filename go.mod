@@ -12,7 +12,7 @@ replace github.com/spf13/cobra => github.com/infixint943/cobra v1.0.1-0.20201005
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.1.1
-	github.com/cp-tools/cpt-lib 778b28b
+	github.com/cp-tools/cpt-lib v1.5.2-0.20201018115236-e5a297d28642
 	github.com/fatih/color v1.9.0
 	github.com/gosuri/uilive v0.0.4
 	github.com/gosuri/uitable v0.0.4

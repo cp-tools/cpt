@@ -21,7 +21,7 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 	// Verdict template configurations.
 	tmpltData := map[string]interface{}{}
 	tmplt := template.Must(template.New("").Parse(
-		c("Test") + " #{{.index}}\t" + c("Verdict:") + " {{.verdict}}\t" + c("Time:") + " {{.elapsed}}\n" +
+		c("Test:") + " #{{.index}}\t" + c("Verdict:") + " {{.verdict}}\t" + c("Time:") + " {{.elapsed}}\n" +
 			"{{- if .failLog}}\n" + c("Fail:") + "\n{{.failLog}}{{end}}\n" +
 			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
 			"{{- if .checkerLog}}\n" + c("Checker Log:") + " {{.checkerLog}}{{end}}\n" +
@@ -141,4 +141,5 @@ func interactiveMode(script string) {
 	fmt.Println(color.GreenString("---- * ---- launched ---- * ----"))
 	runShellScript(script, time.Hour, os.Stdin, os.Stdout, os.Stderr)
 	fmt.Println(color.GreenString("---- * ---- finished ---- * ----"))
+	fmt.Println() // Newline for asthetics.
 }
