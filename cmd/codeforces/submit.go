@@ -27,7 +27,7 @@ var submitCmd = &cobra.Command{
 	},
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Check if given file path point to valid file.
-		fileFlag := cmd.Flag("file").Value.String()
+		fileFlag := cmd.Flags().MustGetString("file")
 		if fileFlag != "" {
 			if file, err := os.Stat(fileFlag); os.IsNotExist(err) || file.IsDir() {
 				return fmt.Errorf("invalid flags - %v is not a valid file", fileFlag)

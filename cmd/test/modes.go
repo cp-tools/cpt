@@ -15,20 +15,21 @@ import (
 	"github.com/gosuri/uitable"
 )
 
-func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, checkerPath string) {
+func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, checkerPath string, index int) {
 	// A hacky function to color certain parts of a template.
 	c := color.New(color.FgBlue, color.Bold).SprintFunc()
 	// Verdict template configurations.
 	tmpltData := map[string]interface{}{}
 	tmplt := template.Must(template.New("").Parse(
-		c("TEST #") + "{{.index}}\t" + c("VERDICT:") + " {{.verdict}}\t" + c("TIME:") + " {{.elapsed}}\n" +
-			"{{- if .failLog}}\n" + c("FAIL:") + "\n{{.failLog}}{{end}}\n" +
-			"{{- if .stderr}}\n" + c("STDERR:") + "\n{{.stderr}}{{end}}\n" +
-			"{{- if .checkerLog}}\n" + c("CHECKER LOG:") + " {{.checkerLog}}{{end}}\n" +
-			"{{- if .testDetails}}\n" + c("INPUT:") + "\n{{.input}}\n{{.testDetails}}{{end}}\n",
+		c("Test") + " #{{.index}}\t" + c("Verdict:") + " {{.verdict}}\t" + c("Time:") + " {{.elapsed}}\n" +
+			"{{- if .failLog}}\n" + c("Fail:") + "\n{{.failLog}}{{end}}\n" +
+			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
+			"{{- if .checkerLog}}\n" + c("Checker Log:") + " {{.checkerLog}}{{end}}\n" +
+			"{{- if .testDetails}}\n" + c("Input:") + "\n{{.input}}\n{{.testDetails}}{{end}}\n",
 	))
 
 	defer func() {
+		tmpltData["index"] = index
 		// handle panic; recover.
 		if r := recover(); r != nil {
 			tmpltData["verdict"] = color.RedString("FAIL")
