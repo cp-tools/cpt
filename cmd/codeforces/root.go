@@ -38,6 +38,11 @@ func ConfLoadDefaults(confMap map[string]interface{}) {
 	confSettings.SetDefault("fetch.problemFolderPath", []string{
 		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
 	})
+	// Path structure when 'pulling' problem submissions.
+	confSettings.SetDefault("pull.problemFolderPath", []string{
+		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
+	})
+
 }
 
 func startHeadlessBrowser() {

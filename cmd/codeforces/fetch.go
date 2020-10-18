@@ -14,13 +14,13 @@ var fetchCmd = &cobra.Command{
 	Use:   "fetch [SPECIFIER]",
 	Short: "Fetch and save problem tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		// Load headless browser to use.
-		startHeadlessBrowser()
-
 		// Check if given args is a valid specifier.
 		if _, err := codeforces.Parse(strings.Join(args, "")); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
+
+		// Load headless browser to use.
+		startHeadlessBrowser()
 
 		return nil
 	},

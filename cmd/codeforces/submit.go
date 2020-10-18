@@ -15,24 +15,21 @@ import (
 var submitCmd = &cobra.Command{
 	Use:   "submit [SPECIFIER]",
 	Short: "Submit problem solution to judge",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// Load headless browser to use.
-		startHeadlessBrowser()
-
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Check if given args is a valid specifier.
 		if _, err := codeforces.Parse(strings.Join(args, "")); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
-		return nil
-	},
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		// Check if given file path point to valid file.
+		// Check if given file path points to valid file.
 		fileFlag := cmd.Flags().MustGetString("file")
 		if fileFlag != "" {
 			if file, err := os.Stat(fileFlag); os.IsNotExist(err) || file.IsDir() {
 				return fmt.Errorf("invalid flags - %v is not a valid file", fileFlag)
 			}
 		}
+
+		// Load headless browser to use.
+		startHeadlessBrowser()
 
 		return nil
 	},
