@@ -21,7 +21,7 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 	// Verdict template configurations.
 	tmpltData := map[string]interface{}{}
 	tmplt := template.Must(template.New("").Parse(
-		c("Test:") + " #{{.index}}\t" + c("Verdict:") + " {{.verdict}}\t" + c("Time:") + " {{.elapsed}}\n" +
+		c("Test:") + " #{{.index}}    " + c("Verdict:") + " {{.verdict}}    " + c("Time:") + " {{.elapsed}}\n" +
 			"{{- if .failLog}}\n" + c("Fail:") + "\n{{.failLog}}{{end}}\n" +
 			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
 			"{{- if .checkerLog}}\n" + c("Checker Log:") + " {{.checkerLog}}{{end}}\n" +
@@ -125,11 +125,14 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 			}
 
 			testDetails := uitable.New()
-			testDetails.Separator = "\t|"
+			testDetails.MaxColWidth = 50
+			testDetails.Wrap = true
+			testDetails.Separator = "    |    "
+
 			testDetails.AddRow(c("OUTPUT:"), c("EXPECTED:"))
 			testDetails.AddRow(string(outputBuf), string(expectedBuf))
 
-			tmpltData["testDetails"] = testDetails.String()
+			tmpltData["testDetails"] = testDetails.String() + "\n"
 			tmpltData["input"] = string(inputBuf)
 
 		} else if err != nil {
