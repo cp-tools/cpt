@@ -26,29 +26,34 @@ func New() *Conf {
 
 // LoadFile reads and loads data from file at
 // given path to the configuration module.
-// Create a file at the given path, if it doesn't exist.
+// Does nothing if file doesn't exist.
 //
 // Ensure the file at given path is of YAML format.
 func (cnf *Conf) LoadFile(path string) {
+	cnf.koFilePath = path
 	// Check if file at given path exists.
 	if file, err := os.Stat(path); os.IsNotExist(err) || file.IsDir() {
-		if _, err := os.Create(path); err != nil {
-			log.Fatalf("error creating conf file: %v", err)
-		}
+		return
 	}
 	// Load YAML conf file.
 	if err := cnf.ko.Load(file.Provider(path), yaml.Parser()); err != nil {
 		log.Fatalf("error loading conf file: %v", err)
 	}
-	cnf.koFilePath = path
 }
 
 // WriteFile overwrites data from the configuration module
-// to the file last loaded using LoadConf().
+// to the file last set using LoadConf().
+// Does nothing if configuration data is empty.
 // Values from the default map are not written.
 //
 // The written data is of YAML format.
 func (cnf *Conf) WriteFile() {
+	// Raw data of configuration to write.
+	rawMap := cnf.ko.Raw()
+
+	if len(rawMap) == 0 {
+		return
+	}
 	// Create file if it does not exist,
 	// and truncate the file if it does.
 	file, err := os.Create(cnf.koFilePath)
@@ -58,7 +63,7 @@ func (cnf *Conf) WriteFile() {
 	defer file.Close()
 
 	// Marshal conf to YAML format.
-	data, err := yaml.Parser().Marshal(cnf.ko.Raw())
+	data, err := yaml.Parser().Marshal(rawMap)
 	if err != nil {
 		log.Fatalf("unexpected error occurred: %v", err)
 	}
