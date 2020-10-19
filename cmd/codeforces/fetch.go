@@ -2,10 +2,9 @@ package codeforces
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/fetch"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +14,8 @@ var fetchCmd = &cobra.Command{
 	Short: "Fetch and save problem tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Check if given args is a valid specifier.
-		if _, err := codeforces.Parse(strings.Join(args, "")); err != nil {
+		problemCnf := util.LoadLocalConf(confSettings)
+		if _, err := parseSpecifier(args, problemCnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
 
@@ -26,8 +26,10 @@ var fetchCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// Parse args to specifier.
-		arg, _ := codeforces.Parse(strings.Join(args, ""))
+		// Local (folder) configurations to use.
+		problemCnf := util.LoadLocalConf(confSettings)
+
+		arg, _ := parseSpecifier(args, problemCnf)
 		fetch.Fetch(arg, confSettings)
 	},
 }

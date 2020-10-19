@@ -2,10 +2,9 @@ package codeforces
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/pull"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
 )
@@ -15,9 +14,11 @@ var pullCmd = &cobra.Command{
 	Short: "Pulls submissions to local storage",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Check if given args is a valid specifier.
-		if _, err := codeforces.Parse(strings.Join(args, "")); err != nil {
+		problemCnf := util.LoadLocalConf(confSettings)
+		if _, err := parseSpecifier(args, problemCnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
+
 		// Check if mode flag is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")
 		if modeFlag != "latest" && modeFlag != "latest-ac" &&
@@ -31,12 +32,13 @@ var pullCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// Parse args from specifier.
-		arg, _ := codeforces.Parse(strings.Join(args, ""))
+		// Local (folder) configurations to use.
+		problemCnf := util.LoadLocalConf(confSettings)
 
 		usernameFlag := cmd.Flags().MustGetString("username")
 		modeFlag := cmd.Flags().MustGetString("mode")
 
+		arg, _ := parseSpecifier(args, problemCnf)
 		pull.Pull(arg, modeFlag, usernameFlag, confSettings)
 	},
 }

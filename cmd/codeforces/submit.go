@@ -3,11 +3,9 @@ package codeforces
 import (
 	"fmt"
 	"os"
-	"strings"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/submit"
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
 )
@@ -17,9 +15,11 @@ var submitCmd = &cobra.Command{
 	Short: "Submit problem solution to judge",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Check if given args is a valid specifier.
-		if _, err := codeforces.Parse(strings.Join(args, "")); err != nil {
+		problemCnf := util.LoadLocalConf(confSettings)
+		if _, err := parseSpecifier(args, problemCnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
+
 		// Check if given file path points to valid file.
 		fileFlag := cmd.Flags().MustGetString("file")
 		if fileFlag != "" {
@@ -36,13 +36,11 @@ var submitCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		// Local (folder) configurations to use.
-		problemCnf := conf.New()
-		problemCnf.LoadFile("meta.yaml")
-		problemCnf.LoadDefault(confSettings.GetAll())
+		problemCnf := util.LoadLocalConf(confSettings)
 
 		fileFlag := cmd.Flag("file").Value.String()
-		// Parse args to specifier.
-		arg, _ := codeforces.Parse(strings.Join(args, ""))
+
+		arg, _ := parseSpecifier(args, problemCnf)
 		submit.Submit(arg, fileFlag, problemCnf)
 	},
 }

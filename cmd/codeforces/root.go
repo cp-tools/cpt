@@ -2,10 +2,12 @@ package codeforces
 
 import (
 	"path/filepath"
+	"strings"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/packages/conf"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 )
 
@@ -51,4 +53,17 @@ func startHeadlessBrowser() {
 	codeforces.Start(true, profile, binary,
 		[]string{`disable-extensions`},
 	)
+}
+
+func parseSpecifier(args []string, cnf *conf.Conf) (codeforces.Args, error) {
+	arg, err := codeforces.Parse(strings.Join(args, ""))
+	if err != nil {
+		return arg, err
+	}
+
+	if arg == (codeforces.Args{}) && cnf.Has("problem.arg") {
+		// Parse from configuration.
+		err = mapstructure.Decode(cnf.Get("problem.arg"), &arg)
+	}
+	return arg, err
 }

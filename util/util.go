@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cp-tools/cpt/packages/conf"
+
 	"github.com/gosuri/uilive"
 )
 
@@ -27,6 +29,14 @@ func ExtractMapKeys(varMap interface{}) (data []string) {
 		data = append(data, key.String())
 	}
 	return
+}
+
+// LoadLocalConf returns local folder conf.
+func LoadLocalConf(def *conf.Conf) *conf.Conf {
+	cnf := conf.New()
+	cnf.LoadFile("meta.yaml")
+	cnf.LoadDefault(def.GetAll())
+	return cnf
 }
 
 /*
