@@ -72,8 +72,8 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 		if err != nil {
 			panic(err)
 		}
-		defer outputFile.Close()
-		outputFile.WriteString(output.String())
+		defer os.Remove(outputFile.Name())
+		outputFile.Write(output.Bytes())
 
 		// Run checker to validate output. Shell script to run is:
 		// (<checker> <input-file> <expected-file> <recieved-file>)
@@ -96,8 +96,8 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 			defer input.Close()
 
 			inputBuf := make([]byte, 80)
-			if _, err := input.Read(inputBuf); err == nil {
-				inputBuf = append(inputBuf, []byte("...")...)
+			if n, _ := input.Read(inputBuf); n == len(inputBuf) {
+				inputBuf = append(inputBuf[:n-3], []byte("...")...)
 			}
 
 			// Read expected from file.
@@ -108,14 +108,20 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 			defer expected.Close()
 
 			expectedBuf := make([]byte, 80)
-			if _, err := expected.Read(expectedBuf); err == nil {
-				expectedBuf = append(expectedBuf, []byte("...")...)
+			if n, _ := expected.Read(expectedBuf); n == len(expectedBuf) {
+				expectedBuf = append(expectedBuf[:n-3], []byte("...")...)
 			}
 
 			// Read output from created output file.
+			output, err := os.Open(outputFile.Name())
+			if err != nil {
+				panic(err)
+			}
+			defer output.Close()
+
 			outputBuf := make([]byte, 80)
-			if _, err := outputFile.Read(outputBuf); err == nil {
-				outputBuf = append(outputBuf, []byte("...")...)
+			if n, _ := output.Read(outputBuf); n == len(outputBuf) {
+				outputBuf = append(outputBuf[:n-3], []byte("...")...)
 			}
 
 			testDetails := uitable.New()
