@@ -20,5 +20,6 @@ require (
 	github.com/knadh/koanf v0.14.0
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/mitchellh/mapstructure v1.2.2
 	github.com/spf13/cobra v1.1.0
 )
