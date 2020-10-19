@@ -96,22 +96,22 @@ func Pull(arg codeforces.Args, mode, username string, cnf *conf.Conf) {
 
 func shouldPull(sub codeforces.Submission, mode string, mp map[codeforces.Args]bool) bool {
 	switch mode {
-	case "latest":
+	case "l": // latest
 		if _, ok := mp[sub.Arg]; ok == false {
 			mp[sub.Arg] = true
 			return true
 		}
-	case "latest-ac":
+	case "la": // latest ac
 		if sub.Verdict == "Accepted" {
 			if _, ok := mp[sub.Arg]; ok == false {
 				mp[sub.Arg] = true
 				return true
 			}
 		}
-	case "all":
+	case "a": // all
 		mp[sub.Arg] = true
 		return true
-	case "all-ac":
+	case "aa": // all ac
 		if sub.Verdict == "Accepted" {
 			mp[sub.Arg] = true
 			return true
