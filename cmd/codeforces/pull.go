@@ -21,8 +21,8 @@ var pullCmd = &cobra.Command{
 
 		// Check if mode flag is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")
-		if modeFlag != "latest" && modeFlag != "latest-ac" &&
-			modeFlag != "all" && modeFlag != "all-ac" {
+		if modeFlag != "l" && modeFlag != "la" &&
+			modeFlag != "a" && modeFlag != "aa" {
 			return fmt.Errorf("invalid flags - unknown mode '%v'", modeFlag)
 		}
 
@@ -48,15 +48,15 @@ func init() {
 
 	// All flags available to command.
 	pullCmd.Flags().String("username", "", "user to fetch submissions of")
-	pullCmd.Flags().StringP("mode", "m", "latest-ac", "mode to select submissions to save")
+	pullCmd.Flags().StringP("mode", "m", "la", "mode to select submissions to save")
 
 	// All custom completions for command flags.
 	pullCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		modes := []string{
-			"latest",    // Most recent submission.
-			"latest-ac", // Most recent AC submission.
-			"all",       // All submissions.
-			"all-ac",    // All ac submissions.
+			"l\tlatest",     // Most recent submission.
+			"la\tlatest ac", // Most recent AC submission.
+			"a\tall",        // All submissions.
+			"aa\tall ac",    // All ac submissions.
 		}
 		return modes, cobra.ShellCompDirectiveDefault
 	})
