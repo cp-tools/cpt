@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt/cmd/codeforces/open"
 	"github.com/cp-tools/cpt/cmd/generate"
 	"github.com/cp-tools/cpt/packages/conf"
 	"github.com/cp-tools/cpt/util"
@@ -28,7 +29,9 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 	// Start countdown timer if contest has not started.
 	if countdownDur.Seconds() > 0 {
 		util.RunCountdown(countdownDur, color.BlueString("Contest begins in:"))
-		// Open problems page and dashboard once completed.
+		// Open problems page and dashboard once countdown done.
+		open.Open(arg, "p")
+		open.Open(arg, "d")
 	}
 
 	// Fetch required problems from contest page.
