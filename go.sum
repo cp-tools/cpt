@@ -37,6 +37,12 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cp-tools/cpt-lib v1.5.2-0.20201018152037-dfa97d5d1e89 h1:hFuMxH42rdvQ3YZ9adXzAXmnEabqdPiuMrXe5rBoEvI=
 github.com/cp-tools/cpt-lib v1.5.2-0.20201018152037-dfa97d5d1e89/go.mod h1:0b20jLBRGvNmQ1dc/1Dj1N3w9h46LqQnBkHT1K+GFc0=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201020211603-19290f3a5c2f h1:1TsdGpw40y6nEEyhYs2SxTvM6In9B32FZ83Tc5K2JF4=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201020211603-19290f3a5c2f/go.mod h1:0b20jLBRGvNmQ1dc/1Dj1N3w9h46LqQnBkHT1K+GFc0=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201020214040-2e1edafaea67 h1:l127jWK+j52pxPLDvRyph7CY3iDCvA+hGw7ux08CVUk=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201020214040-2e1edafaea67/go.mod h1:0b20jLBRGvNmQ1dc/1Dj1N3w9h46LqQnBkHT1K+GFc0=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201021134335-435d1c298cec h1:HZ/gtWi0P7HDv6QMNLfFbi6Vk8JHJdcyU1i9Wcv1av0=
+github.com/cp-tools/cpt-lib v1.5.2-0.20201021134335-435d1c298cec/go.mod h1:0b20jLBRGvNmQ1dc/1Dj1N3w9h46LqQnBkHT1K+GFc0=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

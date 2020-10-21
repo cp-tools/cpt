@@ -50,9 +50,7 @@ func ConfLoadDefaults(confMap map[string]interface{}) {
 func startHeadlessBrowser() {
 	binary := confSettings.GetString("browser.binary")
 	profile := confSettings.GetString("browser.profile")
-	codeforces.Start(true, profile, binary,
-		[]string{`disable-extensions`},
-	)
+	codeforces.Start(true, profile, binary)
 }
 
 func parseSpecifier(args []string, cnf *conf.Conf) (codeforces.Args, error) {
