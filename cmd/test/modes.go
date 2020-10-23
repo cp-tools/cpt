@@ -8,11 +8,12 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 	"text/template"
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/gosuri/uitable"
+	"github.com/olekukonko/tablewriter"
 )
 
 func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, checkerPath string, index int) {
@@ -124,15 +125,25 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 				outputBuf = append(outputBuf[:n-3], []byte("...")...)
 			}
 
-			testDetails := uitable.New()
-			testDetails.MaxColWidth = 50
-			testDetails.Wrap = true
-			testDetails.Separator = "    |    "
+			// Temporary color to prettify headers of table.
+			tHeaderCol := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
+			// Table to display output difference.
+			tString := &strings.Builder{}
+			t := tablewriter.NewWriter(tString)
+			t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
+			t.SetHeaderColor(tHeaderCol, tHeaderCol)
+			t.SetCenterSeparator("")
+			t.SetColumnSeparator("")
+			t.SetRowSeparator("")
+			t.SetTablePadding("\t")
+			t.SetBorder(false)
+			t.SetColWidth(50)
 
-			testDetails.AddRow(c("OUTPUT:"), c("EXPECTED:"))
-			testDetails.AddRow(string(outputBuf), string(expectedBuf))
+			t.Append("OUTPUT", "EXPECTED")
+			t.Append(string(outputBuf), string(expectedBuf))
 
-			tmpltData["testDetails"] = testDetails.String() + "\n"
+			t.Render()
+			tmpltData["testDetails"] = tString.String()
 			tmpltData["input"] = string(inputBuf)
 
 		} else if err != nil {

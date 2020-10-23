@@ -3,6 +3,7 @@ package submit
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
 	"github.com/cp-tools/cpt/cmd/test"
@@ -10,7 +11,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"github.com/gosuri/uitable"
+	"github.com/olekukonko/tablewriter"
 )
 
 // Submit submits
@@ -27,20 +28,31 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	}
 	fmt.Println(color.GreenString("submitted successfully"))
 
+	// Table to use to display verdict.
+	tString := &strings.Builder{}
+	t := tablewriter.NewWriter(tString)
+	t.SetCenterSeparator("")
+	t.SetColumnSeparator("")
+	t.SetRowSeparator("")
+	t.SetTablePadding("\t")
+	t.SetBorder(false)
+
 	// Run live verdict till judging completed.
 	writer := uilive.New()
 	writer.Start()
 	for sub := range submission {
-		t := uitable.New()
-		t.Separator = " "
+		t.ClearRows()
+		tString.Reset()
 
-		t.AddRow("verdict:", sub.Verdict)
+		t.Append("VERDICT:", sub.Verdict)
 		if sub.IsJudging == false {
 			// Judging done; add resource data.
-			t.AddRow("memory:", sub.Memory)
-			t.AddRow("time:", sub.Time)
+			t.Append("MEMORY:", sub.Memory)
+			t.Append("TIME:", sub.Time)
 		}
-		fmt.Fprintln(writer, t.String())
+
+		t.Render()
+		fmt.Fprintln(writer, tString.String())
 	}
 	writer.Stop()
 }

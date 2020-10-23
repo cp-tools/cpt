@@ -6,36 +6,42 @@ import (
 	"strings"
 
 	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/olekukonko/tablewriter"
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"github.com/gosuri/uitable"
 )
 
 func contestsMode(arg codeforces.Args, count uint) {
 	// determine number of pages to parse.
-	pageCount := (count-1)/50 + 1
+	pageCount := (count-1)/100 + 1
 
 	chanContests, err := arg.GetContests(pageCount)
 	if err != nil {
 		fmt.Println(color.RedString("error while fetching contest details:"), err)
 		os.Exit(1)
 	}
-	// Temporary color to prettify headers of table.
-	cc := color.New(color.FgBlue, color.Underline).SprintFunc()
 
-	// Create table and set rows headers.
-	t := uitable.New()
-	t.Separator = " | "
-	t.MaxColWidth = 30
-	t.Wrap = true
-	t.AddRow(cc("ID"), cc("NAME"), cc("WRITERS"), cc("TIMINGS"), cc("REGISTRATION"))
+	// Create table to use.
+	tString := &strings.Builder{}
+	t := tablewriter.NewWriter(tString)
+	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
+	t.SetCenterSeparator("|")
+	t.SetBorder(false)
+	t.SetColWidth(30)
+
+	// Temporary color to prettify headers of table.
+	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
+	t.SetHeader("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION")
+	t.SetHeaderColor(col, col, col, col, col)
 
 	// Set live updater writer.
 	writer := uilive.New()
 	writer.Start()
 
 	for contests := range chanContests {
+		tString.Reset()
+
 		for _, contest := range contests {
 			// We have to only print count rows of data.
 			if count == 0 {
@@ -62,7 +68,7 @@ func contestsMode(arg codeforces.Args, count uint) {
 				registrationStatus = color.HiYellowString("NA")
 			}
 
-			t.AddRow(
+			t.Append(
 				contest.Arg.Contest,                 // Contest ID
 				contest.Name,                        // Contest name
 				strings.Join(contest.Writers, ", "), // Contest writers
@@ -72,7 +78,9 @@ func contestsMode(arg codeforces.Args, count uint) {
 			// Added one more row to the table. Decrease count.
 			count--
 		}
-		fmt.Fprintln(writer, t.String())
+
+		t.Render()
+		fmt.Fprintln(writer, tString.String())
 	}
 
 	writer.Stop()
