@@ -1,6 +1,8 @@
 package list
 
-import "github.com/cp-tools/cpt-lib/v2/codeforces"
+import (
+	"github.com/cp-tools/cpt-lib/v2/codeforces"
+)
 
 // List lists
 func List(arg codeforces.Args, mode, username string, count uint) {
@@ -10,5 +12,6 @@ func List(arg codeforces.Args, mode, username string, count uint) {
 	case "d": // dashboard
 		dashboardMode(arg)
 	case "s": // submissions
+		submissionsMode(arg, username, count)
 	}
 }

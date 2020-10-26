@@ -23,6 +23,7 @@ func contestsMode(arg codeforces.Args, count uint) {
 
 	// Set live updater writer.
 	writer := uilive.New()
+	writer.Start()
 
 	// Create table to use.
 	t := tablewriter.NewWriter(writer)
@@ -35,8 +36,6 @@ func contestsMode(arg codeforces.Args, count uint) {
 	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
 	t.SetHeader("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION")
 	t.SetHeaderColor(col, col, col, col, col)
-
-	writer.Start()
 
 	for contests := range chanContests {
 		for _, contest := range contests {
@@ -126,4 +125,56 @@ func dashboardMode(arg codeforces.Args) {
 	}
 	fmt.Println()
 	t.Render()
+}
+
+func submissionsMode(arg codeforces.Args, handle string, count uint) {
+	// Anything more than 1 page (50 rows) makes no sense.
+	chanSubmissions, err := arg.GetSubmissions(handle, 1)
+	if err != nil {
+		fmt.Println(color.RedString("error while fetching submission details:"), err)
+		os.Exit(1)
+	}
+
+	// Set live updater writer.
+	writer := uilive.New()
+	writer.Start()
+
+	// Create table to use.
+	t := tablewriter.NewWriter(writer)
+	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
+	t.SetCenterSeparator("|")
+	t.SetBorder(false)
+	t.SetColWidth(30)
+
+	// Temporary color to prettify headers of table.
+	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
+	t.SetHeader("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY")
+	t.SetHeaderColor(col, col, col, col, col, col)
+	t.SetColumnAlignment(
+		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER,
+		tablewriter.ALIGN_RIGHT, tablewriter.ALIGN_RIGHT,
+	)
+
+	for submissions := range chanSubmissions {
+		for _, submission := range submissions {
+			// We have to only print count rows of data.
+			if count == 0 {
+				continue
+			}
+
+			t.Append(
+				submission.ID,       // Submission ID
+				submission.Problem,  // Problem name
+				submission.Language, // Submission language
+				submission.Verdict,  // Submission verdict
+				submission.Time,     // Time taken
+				submission.Memory,   // Memory taken
+			)
+
+			count--
+		}
+		t.Render()
+	}
+	writer.Stop()
 }
