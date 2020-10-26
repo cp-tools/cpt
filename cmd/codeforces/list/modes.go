@@ -163,14 +163,18 @@ func submissionsMode(arg codeforces.Args, handle string, count uint) {
 				continue
 			}
 
-			t.Append(
+			verdict, color := CompressVerdicts(submission.Verdict)
+			t.Rich([]string{
 				submission.ID,       // Submission ID
 				submission.Problem,  // Problem name
 				submission.Language, // Submission language
-				submission.Verdict,  // Submission verdict
+				verdict,             // Submission verdict
 				submission.Time,     // Time taken
 				submission.Memory,   // Memory taken
-			)
+
+			}, []tablewriter.Colors{
+				nil, nil, nil, color, nil, nil,
+			})
 
 			count--
 		}

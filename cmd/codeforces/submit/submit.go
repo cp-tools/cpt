@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
+	"github.com/cp-tools/cpt/cmd/codeforces/list"
 	"github.com/cp-tools/cpt/cmd/test"
 	"github.com/cp-tools/cpt/packages/conf"
 
@@ -44,7 +45,8 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 		t.ClearRows()
 		tString.Reset()
 
-		t.Append("VERDICT:", sub.Verdict)
+		verdict, color := list.CompressVerdicts(sub.Verdict)
+		t.Rich([]string{"VERDICT:", verdict}, []tablewriter.Colors{nil, color})
 		if sub.IsJudging == false {
 			// Judging done; add resource data.
 			t.Append("MEMORY:", sub.Memory)
