@@ -29,16 +29,17 @@ func New() *Conf {
 // Does nothing if file doesn't exist.
 //
 // Ensure the file at given path is of YAML format.
-func (cnf *Conf) LoadFile(path string) {
+func (cnf *Conf) LoadFile(path string) *Conf {
 	cnf.koFilePath = path
 	// Check if file at given path exists.
 	if file, err := os.Stat(path); os.IsNotExist(err) || file.IsDir() {
-		return
+		return cnf
 	}
 	// Load YAML conf file.
 	if err := cnf.ko.Load(file.Provider(path), yaml.Parser()); err != nil {
 		log.Fatalf("error loading conf file: %v", err)
 	}
+	return cnf
 }
 
 // WriteFile overwrites data from the configuration module
@@ -47,12 +48,12 @@ func (cnf *Conf) LoadFile(path string) {
 // Values from the default map are not written.
 //
 // The written data is of YAML format.
-func (cnf *Conf) WriteFile() {
+func (cnf *Conf) WriteFile() *Conf {
 	// Raw data of configuration to write.
 	rawMap := cnf.ko.Raw()
 
 	if len(rawMap) == 0 {
-		return
+		return cnf
 	}
 	// Create file if it does not exist,
 	// and truncate the file if it does.
@@ -71,4 +72,5 @@ func (cnf *Conf) WriteFile() {
 	if _, err := file.Write(data); err != nil {
 		log.Fatalf("error writing to conf file: %v", err)
 	}
+	return cnf
 }
