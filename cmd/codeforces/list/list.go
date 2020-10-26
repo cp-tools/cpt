@@ -1,6 +1,6 @@
 package list
 
-import "github.com/cp-tools/cpt-lib/codeforces"
+import "github.com/cp-tools/cpt-lib/v2/codeforces"
 
 // List lists
 func List(arg codeforces.Args, mode, username string, count uint) {

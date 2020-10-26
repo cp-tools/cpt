@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt-lib/v2/codeforces"
 
 	"github.com/fatih/color"
 )

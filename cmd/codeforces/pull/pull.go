@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/generate"
 	"github.com/cp-tools/cpt/packages/conf"
 

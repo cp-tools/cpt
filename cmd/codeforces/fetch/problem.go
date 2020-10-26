@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/packages/conf"
 	"github.com/fatih/color"
 )

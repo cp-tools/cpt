@@ -45,7 +45,7 @@ func init() {
 	cobra.EnablePersistentRunOverride = false
 
 	// Set OnSIGINT function for survey module.
-	survey.OnSIGINTFunc = func() {
+	survey.OnInterrupt = func() {
 		fmt.Println("interrupted")
 		os.Exit(1)
 	}

@@ -1,7 +1,7 @@
 package codeforces
 
 import (
-	"github.com/cp-tools/cpt-lib/codeforces"
+	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/config"
 	"github.com/cp-tools/cpt/util"
 
