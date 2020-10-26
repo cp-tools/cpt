@@ -1,8 +1,6 @@
 package conf
 
 import (
-	"sort"
-
 	"github.com/knadh/koanf/maps"
 )
 
@@ -10,36 +8,71 @@ import (
 // or nil if key does not exist or is invalid.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) Get(key string) interface{} {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.Get(key)
-	}
-	// Merge default and configurations if key is map.
-	if mp1, ok := cnf.koDefault.Get(key).(map[string]interface{}); ok {
-		if mp2, ok := cnf.ko.Get(key).(map[string]interface{}); ok {
-			maps.Merge(mp2, mp1)
-			return mp1
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			// Found conf with given key.
+			break
 		}
+
+		rootCnf = rootCnf.parentCnf
 	}
 
-	return cnf.ko.Get(key)
+	if rootCnf == nil {
+		// key does not exist.
+		return nil
+	}
+
+	// Recursively merge data if is map.
+	if mp, ok := rootCnf.ko.Get(key).(map[string]interface{}); ok {
+		rootCnf = rootCnf.parentCnf
+		for rootCnf != nil {
+			if mp1, ok := rootCnf.ko.Get(key).(map[string]interface{}); ok {
+				maps.Merge(mp, mp1)
+				mp = mp1
+			} else {
+				break
+			}
+
+			rootCnf = rootCnf.parentCnf
+		}
+
+		return mp
+	}
+	// Not map, return value.
+	return rootCnf.ko.Get(key)
 }
 
 // Has returns true if the given key exists in configuration.
 func (cnf *Conf) Has(key string) bool {
-	// Check if key exists in either.
-	if cnf.ko.Exists(key) || cnf.koDefault.Exists(key) {
-		return true
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			return true
+		}
+
+		rootCnf = rootCnf.parentCnf
 	}
+
 	return false
 }
 
 // GetAll merges the configured values with the default
 // values and returns the data as a map.
 func (cnf *Conf) GetAll() map[string]interface{} {
-	mp := cnf.koDefault.Raw()
-	maps.Merge(cnf.ko.Raw(), mp)
+	mp := make(map[string]interface{})
+
+	rootCnf := cnf
+	for rootCnf != nil {
+		mp1 := rootCnf.ko.Raw()
+		maps.Merge(mp, mp1)
+		mp = mp1
+
+		rootCnf = rootCnf.parentCnf
+	}
+
 	return mp
 }
 
@@ -47,74 +80,106 @@ func (cnf *Conf) GetAll() map[string]interface{} {
 // or 0 if key does not exist or is invalid.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) GetInt(key string) int {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.Int(key)
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			return rootCnf.ko.Int(key)
+		}
+
+		rootCnf = rootCnf.parentCnf
 	}
-	return cnf.ko.Int(key)
+
+	return 0
 }
 
 // GetString returns string value of a given key path,
 // or "" if key does not exist or is invalid.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) GetString(key string) string {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.String(key)
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			return rootCnf.ko.String(key)
+		}
+
+		rootCnf = rootCnf.parentCnf
 	}
-	return cnf.ko.String(key)
+
+	return ""
 }
 
 // GetStrings returns []string slice value of a given key path,
 // or "" if key does not exist or is invalid.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) GetStrings(key string) []string {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.Strings(key)
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			return rootCnf.ko.Strings(key)
+		}
+
+		rootCnf = rootCnf.parentCnf
 	}
-	return cnf.ko.Strings(key)
+
+	return []string{}
 }
 
 // GetBool returns bool value of a given key path,
 // or false if key does not exist or is invalid.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) GetBool(key string) bool {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.Bool(key)
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			return rootCnf.ko.Bool(key)
+		}
+
+		rootCnf = rootCnf.parentCnf
 	}
-	return cnf.ko.Bool(key)
+
+	return false
 }
 
 // GetFloat64 returns float64 value of a given key path,
 // or 0 if key does not exist or is invalid.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) GetFloat64(key string) float64 {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.Float64(key)
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.ko.Exists(key) {
+			return rootCnf.ko.Float64(key)
+		}
+
+		rootCnf = rootCnf.parentCnf
 	}
-	return cnf.ko.Float64(key)
+
+	return 0
 }
 
-// GetMapKeys returns a sorted string list of keys in a map
-// addressed by the given path. If the path is not a map,
-// an empty string slice is returned.
+// GetMapKeys returns a string list of keys in a map addressed
+// by the given path. If the path is not a map, an empty
+// string slice is returned.
 //
 // If given key doesn't exist in configuration module,
-// the default data is searched for the same.
+// the chained parent data is searched for the same.
 func (cnf *Conf) GetMapKeys(key string) []string {
-	if !cnf.ko.Exists(key) {
-		return cnf.koDefault.MapKeys(key)
+	data := make([]string, 0)
+
+	if mp, ok := cnf.Get(key).(map[string]interface{}); ok {
+		for key := range mp {
+			data = append(data, key)
+		}
 	}
-	data := cnf.koDefault.MapKeys(key)
-	data = append(data, cnf.ko.MapKeys(key)...)
-	sort.Strings(data)
+
 	return data
 }

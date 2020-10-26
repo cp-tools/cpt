@@ -11,16 +11,34 @@ import (
 
 // Conf is the configuration module.
 type Conf struct {
-	ko         *koanf.Koanf
-	koDefault  *koanf.Koanf
-	koFilePath string
+	name   string
+	ko     *koanf.Koanf
+	koFile string
+
+	parentCnf *Conf
 }
 
 // New returns a new instance of Conf.
-func New() *Conf {
+func New(name string) *Conf {
 	cnf := new(Conf)
+	cnf.name = name
 	cnf.ko = koanf.New(".")
-	cnf.koDefault = koanf.New(".")
+
+	return cnf
+}
+
+// Parent sets the parent conf.
+func (cnf *Conf) Parent(parentCnf *Conf) *Conf {
+	cnf.parentCnf = parentCnf
+	// Check for conf name clash.
+	rootCnf := cnf.parentCnf
+	for rootCnf != nil {
+		if cnf.name == rootCnf.name {
+			panic("name clash occurred")
+		}
+		rootCnf = rootCnf.parentCnf
+	}
+
 	return cnf
 }
 
@@ -30,7 +48,7 @@ func New() *Conf {
 //
 // Ensure the file at given path is of YAML format.
 func (cnf *Conf) LoadFile(path string) *Conf {
-	cnf.koFilePath = path
+	cnf.koFile = path
 	// Check if file at given path exists.
 	if file, err := os.Stat(path); os.IsNotExist(err) || file.IsDir() {
 		return cnf
@@ -57,7 +75,7 @@ func (cnf *Conf) WriteFile() *Conf {
 	}
 	// Create file if it does not exist,
 	// and truncate the file if it does.
-	file, err := os.Create(cnf.koFilePath)
+	file, err := os.Create(cnf.koFile)
 	if err != nil {
 		log.Fatalf("error creating conf file: %v", err)
 	}
