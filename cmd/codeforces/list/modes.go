@@ -13,18 +13,18 @@ import (
 )
 
 func contestsMode(arg codeforces.Args, count uint) {
-	// determine number of pages to parse.
-	pageCount := (count-1)/100 + 1
-
-	chanContests, err := arg.GetContests(pageCount)
+	// Anything more than 1 page (100 rows) makes no sense.
+	chanContests, err := arg.GetContests(1)
 	if err != nil {
 		fmt.Println(color.RedString("error while fetching contest details:"), err)
 		os.Exit(1)
 	}
 
+	// Set live updater writer.
+	writer := uilive.New()
+
 	// Create table to use.
-	tString := &strings.Builder{}
-	t := tablewriter.NewWriter(tString)
+	t := tablewriter.NewWriter(writer)
 	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
 	t.SetCenterSeparator("|")
 	t.SetBorder(false)
@@ -35,13 +35,9 @@ func contestsMode(arg codeforces.Args, count uint) {
 	t.SetHeader("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION")
 	t.SetHeaderColor(col, col, col, col, col)
 
-	// Set live updater writer.
-	writer := uilive.New()
 	writer.Start()
 
 	for contests := range chanContests {
-		tString.Reset()
-
 		for _, contest := range contests {
 			// We have to only print count rows of data.
 			if count == 0 {
@@ -78,10 +74,7 @@ func contestsMode(arg codeforces.Args, count uint) {
 			// Added one more row to the table. Decrease count.
 			count--
 		}
-
-		t.Render()
-		fmt.Fprintln(writer, tString.String())
 	}
-
+	t.Render()
 	writer.Stop()
 }

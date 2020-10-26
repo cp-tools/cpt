@@ -25,6 +25,11 @@ var listCmd = &cobra.Command{
 			return fmt.Errorf("invalid flags - unknown mode '%v'", modeFlag)
 		}
 
+		// Check if count is not greater than 100.
+		if cmd.Flags().MustGetUint("count") > 100 {
+			return fmt.Errorf("invalid flags - flag 'count' must not be greater than 100")
+		}
+
 		// Flag username value is defined.
 		if cmd.Flags().Changed("username") &&
 			modeFlag != "s" {
