@@ -34,8 +34,8 @@ func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) 
 	cnf.Set("problem.arg", problem.Arg)
 	cnf.Set("problem.inputStream", problem.InpStream)
 	cnf.Set("problem.outputStream", problem.OutStream)
-	cnf.Set("problem.tests.input", testInFiles)
-	cnf.Set("problem.tests.output", testOutFiles)
+	cnf.Set("problem.test.input", testInFiles)
+	cnf.Set("problem.test.output", testOutFiles)
 	cnf.WriteFile()
 	return cnf
 }

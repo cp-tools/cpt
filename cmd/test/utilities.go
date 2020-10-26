@@ -32,8 +32,8 @@ func extractGeneratedFiles(cnf *conf.Conf) map[string]string {
 }
 
 func extractTestsFiles(cnf *conf.Conf) (inputFiles, expectedFiles []string) {
-	inputFiles = cnf.GetStrings("problem.tests.input")
-	expectedFiles = cnf.GetStrings("problem.tests.output")
+	inputFiles = cnf.GetStrings("problem.test.input")
+	expectedFiles = cnf.GetStrings("problem.test.output")
 
 	if len(inputFiles) != len(expectedFiles) {
 		// Mismatch in test cases count.
