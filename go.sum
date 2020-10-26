@@ -37,8 +37,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cornfeedhobo/pflag v1.0.2 h1:IjSe1CSlZeyvu35MojSSkOy0KT2D9o3/GkqXkYe+Ufw=
 github.com/cornfeedhobo/pflag v1.0.2/go.mod h1:52HSr+TtbhOmAXFt941ErpwRFt+yJBCDDsZdW/kD/JM=
-github.com/cp-tools/cpt-lib/v2 v2.0.0 h1:OiTUVdir0HVEMRwAoE/CfRjbJp4JfnNNJo0iuvPvQek=
-github.com/cp-tools/cpt-lib/v2 v2.0.0/go.mod h1:0lDOtVTGhb53F1vSMlAjstQGwOWiiAt2i7J4BAS1rzE=
+github.com/cp-tools/cpt-lib/v2 v2.0.1 h1:8AVwq4+KRpBs8VSYtyHppmXzpWIf1Jbsp+I0ETdeWvU=
+github.com/cp-tools/cpt-lib/v2 v2.0.1/go.mod h1:k5w8CwUeMh9eLaKC0fjinJLXyHYFgNJr3tAtNr1R/e0=
 github.com/cp-tools/tablewriter v0.0.5-0.20201023100503-251d3d206cd0 h1:65KXev4HFQZBxlxfb7YDXm4W9bYD9pNdZzPRz4jx604=
 github.com/cp-tools/tablewriter v0.0.5-0.20201023100503-251d3d206cd0/go.mod h1:zq6QwlOf5SlnkVbMSr5EoBv3636FWnp+qbPhuoO21uA=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -58,8 +58,8 @@ github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
 github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9GBnD5lWE=
 github.com/go-logfmt/logfmt v0.4.0/go.mod h1:3RMwSq7FuexP4Kalkev3ejPJsZTpXXBr9+V4qmtdjCk=
-github.com/go-rod/rod v0.76.0 h1:xU0fqOXD9axVWGglV8mm3e2IL2sBzGOVm2Yjx1KTdL8=
-github.com/go-rod/rod v0.76.0/go.mod h1:XEc4dRYDxlKw+SFG3ZpWTZ8k4vosgg5IDUHKYPMzVSI=
+github.com/go-rod/rod v0.76.1 h1:oIwQMIJ+xsMErQbSyaG21UW7T8ZpXu/46OogLAcqCZU=
+github.com/go-rod/rod v0.76.1/go.mod h1:XEc4dRYDxlKw+SFG3ZpWTZ8k4vosgg5IDUHKYPMzVSI=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.1/go.mod h1:hp+jE20tsWTFYpLwKvXlhS1hjn+gTNwPg2I6zVXpSg4=

@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.1.1
-	github.com/cp-tools/cpt-lib/v2 v2.0.0
+	github.com/cp-tools/cpt-lib/v2 v2.0.1
 	github.com/fatih/color v1.9.0
 	github.com/gosuri/uilive v0.0.4
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
