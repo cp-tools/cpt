@@ -3,6 +3,7 @@ package list
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
@@ -77,4 +78,52 @@ func contestsMode(arg codeforces.Args, count uint) {
 	}
 	t.Render()
 	writer.Stop()
+}
+
+func dashboardMode(arg codeforces.Args) {
+	dashboard, err := arg.GetDashboard()
+	if err != nil {
+		fmt.Println(color.RedString("error while fetching dashboard details:"), err)
+		os.Exit(1)
+	}
+
+	// A hacky function to color certain parts of a template.
+	c := color.New(color.FgBlue, color.Bold).SprintFunc()
+
+	fmt.Println(c("Contest name:"), dashboard.Name)
+	if dashboard.Countdown > 0 {
+		fmt.Println(c("Contest ends in:"), dashboard.Countdown)
+	}
+
+	t := tablewriter.NewWriter(os.Stdout)
+	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
+	t.SetCenterSeparator("|")
+	t.SetColWidth(30)
+
+	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
+	t.SetHeader("#", "Name", "Status", "Solved")
+	t.SetHeaderColor(col, col, col, col)
+	t.SetColumnAlignment(tablewriter.ALIGN_DEFAULT, tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_RIGHT)
+
+	for _, problem := range dashboard.Problem {
+		status := ""
+		switch problem.SolveStatus {
+		case codeforces.SolveAccepted:
+			status = color.HiGreenString("AC")
+		case codeforces.SolveRejected:
+			status = color.HiRedString("WA")
+		case codeforces.SolveNotAttempted:
+			status = "NA"
+		}
+
+		t.Append(
+			problem.Arg.Problem,
+			problem.Name,
+			status,
+			strconv.Itoa(problem.SolveCount),
+		)
+	}
+	fmt.Println()
+	t.Render()
 }

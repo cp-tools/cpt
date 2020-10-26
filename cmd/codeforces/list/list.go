@@ -8,6 +8,7 @@ func List(arg codeforces.Args, mode, username string, count uint) {
 	case "c": // contests
 		contestsMode(arg, count)
 	case "d": // dashboard
+		dashboardMode(arg)
 	case "s": // submissions
 	}
 }
