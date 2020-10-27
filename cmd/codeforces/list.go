@@ -13,9 +13,10 @@ var listCmd = &cobra.Command{
 	Use:   "list [SPECIFIER]",
 	Short: "Lists specified data in tabular form",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		util.LoadLocalConf(cnf)
+
 		// Check if given args is a valid specifier.
-		problemCnf := util.LoadLocalConf(confSettings)
-		if _, err := parseSpecifier(args, problemCnf); err != nil {
+		if _, err := parseSpecifier(args, cnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
 
@@ -34,14 +35,12 @@ var listCmd = &cobra.Command{
 		}
 
 		// Flag username value is defined.
-		if cmd.Flags().Changed("username") &&
-			modeFlag != "s" {
+		if cmd.Flags().Changed("username") && modeFlag != "s" {
 			// Username flag doesn't match with given mode.
 			return fmt.Errorf("invalid flags - flag 'username' not applicable for mode '%v'", modeFlag)
 		}
 
-		if cmd.Flags().Changed("count") &&
-			modeFlag != "c" && modeFlag != "s" {
+		if cmd.Flags().Changed("count") && modeFlag != "c" && modeFlag != "s" {
 			// Count flag doesn't match with given mode.
 			return fmt.Errorf("invalid flags - flag 'count' not applicable for mode '%v'", modeFlag)
 		}
@@ -53,14 +52,11 @@ var listCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// Local (folder) configurations to use.
-		problemCnf := util.LoadLocalConf(confSettings)
-
 		usernameFlag := cmd.Flags().MustGetString("username")
 		modeFlag := cmd.Flags().MustGetString("mode")
 		countFlag := cmd.Flags().MustGetUint("count")
 
-		arg, _ := parseSpecifier(args, problemCnf)
+		arg, _ := parseSpecifier(args, cnf)
 		list.List(arg, modeFlag, usernameFlag, countFlag)
 	},
 }

@@ -13,9 +13,10 @@ var pullCmd = &cobra.Command{
 	Use:   "pull [SPECIFIER]",
 	Short: "Pulls submissions to local storage",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		util.LoadLocalConf(cnf)
+
 		// Check if given args is a valid specifier.
-		problemCnf := util.LoadLocalConf(confSettings)
-		if _, err := parseSpecifier(args, problemCnf); err != nil {
+		if _, err := parseSpecifier(args, cnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
 
@@ -31,15 +32,13 @@ var pullCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		// Local (folder) configurations to use.
-		problemCnf := util.LoadLocalConf(confSettings)
 
+	Run: func(cmd *cobra.Command, args []string) {
 		usernameFlag := cmd.Flags().MustGetString("username")
 		modeFlag := cmd.Flags().MustGetString("mode")
 
-		arg, _ := parseSpecifier(args, problemCnf)
-		pull.Pull(arg, modeFlag, usernameFlag, confSettings)
+		arg, _ := parseSpecifier(args, cnf)
+		pull.Pull(arg, modeFlag, usernameFlag, cnf)
 	},
 }
 

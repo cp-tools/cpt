@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/cp-tools/cpt/cmd/test"
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/util"
+
 	"github.com/spf13/cobra"
 )
 
@@ -15,6 +16,8 @@ var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Run code file against sample tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		util.LoadLocalConf(cnf)
+
 		// Check if mode is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")
 		if modeFlag != "j" && modeFlag != "i" {
@@ -45,18 +48,14 @@ var testCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		// Local (folder) configurations to use.
-		problemCnf := conf.New()
-		problemCnf.LoadFile("meta.yaml")
-		problemCnf.LoadDefault(confSettings.GetAll())
 
+	Run: func(cmd *cobra.Command, args []string) {
 		checker := cmd.Flags().MustGetString("checker")
 		filePath := cmd.Flags().MustGetString("file")
 		mode := cmd.Flags().MustGetString("mode")
 		timelimit := cmd.Flags().MustGetDuration("timelimit")
 
-		test.Test(checker, filePath, mode, timelimit, problemCnf)
+		test.Test(checker, filePath, mode, timelimit, cnf)
 	},
 }
 
@@ -71,17 +70,10 @@ func init() {
 
 	// All custom completions for command flags.
 	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		// Find all executables in cpt-checkers directory.
-		confCheckerPath := filepath.Join(rootDir, "cpt-checker", "checkers.yaml")
-		confChecker := conf.New()
-		confChecker.LoadFile(confCheckerPath)
-		// Read checkers config file and add description.
-		checkersData := confChecker.Get("checkers").([]map[string]string)
-
-		checkers := make([]string, 0)
-		for _, cc := range checkersData {
-			cmplt := fmt.Sprintf("%v\t%v", cc["name"], cc["desc"])
-			checkers = append(checkers, cmplt)
+		checkers := cnf.GetMapKeys("checker")
+		for i := range checkers {
+			desc := cnf.GetString("checker." + checkers[i] + ".desc")
+			checkers[i] = fmt.Sprintf("%v\t%v", checkers[i], desc)
 		}
 
 		return checkers, cobra.ShellCompDirectiveDefault

@@ -14,9 +14,10 @@ var submitCmd = &cobra.Command{
 	Use:   "submit [SPECIFIER]",
 	Short: "Submit problem solution to judge",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		util.LoadLocalConf(cnf)
+
 		// Check if given args is a valid specifier.
-		problemCnf := util.LoadLocalConf(confSettings)
-		if _, err := parseSpecifier(args, problemCnf); err != nil {
+		if _, err := parseSpecifier(args, cnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
 
@@ -35,13 +36,10 @@ var submitCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// Local (folder) configurations to use.
-		problemCnf := util.LoadLocalConf(confSettings)
-
 		fileFlag := cmd.Flag("file").Value.String()
 
-		arg, _ := parseSpecifier(args, problemCnf)
-		submit.Submit(arg, fileFlag, problemCnf)
+		arg, _ := parseSpecifier(args, cnf)
+		submit.Submit(arg, fileFlag, cnf)
 	},
 }
 

@@ -12,9 +12,10 @@ var openCmd = &cobra.Command{
 	Use:   "open [SPECIFIER]",
 	Short: "open required page in default browser",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		util.LoadLocalConf(cnf)
+
 		// Check if given args is a valid specifier.
-		problemCnf := util.LoadLocalConf(confSettings)
-		if _, err := parseSpecifier(args, problemCnf); err != nil {
+		if _, err := parseSpecifier(args, cnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)
 		}
 
@@ -26,13 +27,11 @@ var openCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		// Local (folder) configurations to use.
-		problemCnf := util.LoadLocalConf(confSettings)
 
+	Run: func(cmd *cobra.Command, args []string) {
 		modeFlag := cmd.Flags().MustGetString("mode")
 
-		arg, _ := parseSpecifier(args, problemCnf)
+		arg, _ := parseSpecifier(args, cnf)
 		open.Open(arg, modeFlag)
 	},
 }
@@ -52,5 +51,4 @@ func init() {
 		}
 		return modes, cobra.ShellCompDirectiveDefault
 	})
-
 }

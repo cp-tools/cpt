@@ -26,22 +26,23 @@ var configCmd = &cobra.Command{
 			},
 		}, &index)
 
+		rootCnf := cnf.GetParent("codeforces")
 		switch index {
 		case 0:
 			languages := util.ExtractMapKeys(codeforces.LanguageID)
-			config.SetTemplateLanguage(confSettings, languages)
+			config.SetTemplateLanguage(rootCnf, languages)
 
 		case 1:
-			config.SetGenerateOnFetch(confSettings)
+			config.SetGenerateOnFetch(rootCnf)
 
 		case 2:
-			config.SetDefaultTemplate(confSettings)
+			config.SetDefaultTemplate(rootCnf)
 
 		case 3:
-			config.SetHeadlessBrowser(confSettings)
+			config.SetHeadlessBrowser(rootCnf)
 		}
 		// Write file after changes are done.
-		confSettings.WriteFile()
+		rootCnf.WriteFile()
 	},
 }
 
