@@ -4,6 +4,22 @@ import (
 	"github.com/knadh/koanf/maps"
 )
 
+// GetParent returns parent of conf with given name.
+// Returns nil if no parent of given name exists.
+func (cnf *Conf) GetParent(name string) *Conf {
+	rootCnf := cnf
+	for rootCnf != nil {
+		if rootCnf.name == name {
+			// Found it. Break.
+			break
+		}
+
+		rootCnf = rootCnf.parentCnf
+	}
+
+	return rootCnf
+}
+
 // Get returns interface{} value of a given key path,
 // or nil if key does not exist or is invalid.
 //

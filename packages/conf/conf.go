@@ -27,8 +27,8 @@ func New(name string) *Conf {
 	return cnf
 }
 
-// Parent sets the parent conf.
-func (cnf *Conf) Parent(parentCnf *Conf) *Conf {
+// SetParent sets the parent conf.
+func (cnf *Conf) SetParent(parentCnf *Conf) *Conf {
 	cnf.parentCnf = parentCnf
 	// Check for conf name clash.
 	rootCnf := cnf.parentCnf
