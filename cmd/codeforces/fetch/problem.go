@@ -10,7 +10,7 @@ import (
 )
 
 func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) *conf.Conf {
-	cnf := conf.New()
+	cnf := conf.New("problem")
 	cnf.LoadFile("meta.yaml")
 	/*
 		problem:

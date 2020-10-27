@@ -74,8 +74,7 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 		// Create sample tests files.
 		testInFiles, testOutFiles := createTests(problem)
 		// Create problem configuration (meta.yaml) file.
-		problemCnf := createConf(problem, testInFiles, testOutFiles)
-		problemCnf.LoadDefault(cnf.GetAll())
+		problemCnf := createConf(problem, testInFiles, testOutFiles).SetParent(cnf)
 
 		// Generate template if auto generation set to true.
 		if cnf.GetBool("generate.onFetch") == true {

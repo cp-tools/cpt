@@ -25,7 +25,7 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 	verdictTmpltData := map[string]interface{}{}
 	tmplt := template.Must(template.New("verdict").Parse(
 		c("Test:") + " #{{.index}}    " + c("Verdict:") + " {{.verdict}}    " + c("Time:") + " {{.elapsed}}\n" +
-			"{{- if .failLog}}\n" + c("Fail:") + "\n{{.failLog}}{{end}}\n" +
+			"{{- if .failLog}}\n" + c("Fail:") + "{{.failLog}}{{end}}\n" +
 			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
 			"{{- if .checkerLog}}\n" + c("Checker Log:") + " {{.checkerLog}}{{end}}\n" +
 			"{{- if .testDetails}}\n" + c("Input:") + "\n{{.input}}\n{{.testDetails}}{{end}}\n",
@@ -96,8 +96,8 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 
 		// Set template field data.
 		verdictTmpltData["checkerLog"] = checkerStderr.String()
-		if _, ok := err.(*exec.ExitError); ok {
-			// Checker ended with non-zero error code.
+		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
+			// Checker ended with error code 1.
 			// Verdict is thus wrong answer.
 			verdictTmpltData["verdict"] = color.RedString("WA")
 
@@ -142,23 +142,19 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 			// Table to display output difference.
 			tString := &strings.Builder{}
 			t := tablewriter.NewWriter(tString)
-			t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-			t.SetHeaderColor(tHeaderCol, tHeaderCol)
-			t.SetCenterSeparator("")
-			t.SetColumnSeparator("")
-			t.SetRowSeparator("")
-			t.SetTablePadding("\t")
 			t.SetBorder(false)
 			t.SetColWidth(50)
 
-			t.Append("OUTPUT", "EXPECTED")
+			t.SetHeader("OUTPUT", "EXPECTED")
+			t.SetHeaderColor(tHeaderCol, tHeaderCol)
+
 			t.Append(string(outputBuf), string(expectedBuf))
 
 			t.Render()
 			verdictTmpltData["testDetails"] = tString.String()
 			verdictTmpltData["input"] = string(inputBuf)
 
-		} else if err != nil {
+		} else if ok {
 			// Unknown error; Panic.
 			panic(err)
 		} else {
