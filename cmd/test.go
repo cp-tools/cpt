@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/cp-tools/cpt/cmd/test"
@@ -26,16 +25,8 @@ var testCmd = &cobra.Command{
 
 		// Check if checker is valid.
 		checkerFlag := cmd.Flags().MustGetString("checker")
-		// First check if checker exists in relative directory.
-		if file, err := os.Stat(checkerFlag); os.IsNotExist(err) || file.IsDir() {
-			// Checker doesn't exist in relative path. Search in cpt-checker folder.
-			checkerPath := filepath.Join(rootDir, "cpt-checker", checkerFlag)
-			if file, err := os.Stat(checkerPath); os.IsNotExist(err) || file.IsDir() {
-				// Checker specified is invalid.
-				return fmt.Errorf("invalid flags - checker '%v' doesn't exist", checkerFlag)
-			}
-			// Update checker variable.
-			cmd.Flags().Set("checker", checkerPath)
+		if !cnf.Has("checker." + checkerFlag) {
+			return fmt.Errorf("invalid flags - checker '%v' not configured", checkerFlag)
 		}
 
 		// Check if given file path point to valid file.

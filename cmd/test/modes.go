@@ -16,12 +16,14 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, checkerPath string, index int) {
+func judgeMode(script, checkerTmplt string, timelimit time.Duration,
+	inputFile, expectedFile string, index int) {
 	// A hacky function to color certain parts of a template.
 	c := color.New(color.FgBlue, color.Bold).SprintFunc()
+
 	// Verdict template configurations.
-	tmpltData := map[string]interface{}{}
-	tmplt := template.Must(template.New("").Parse(
+	verdictTmpltData := map[string]interface{}{}
+	tmplt := template.Must(template.New("verdict").Parse(
 		c("Test:") + " #{{.index}}    " + c("Verdict:") + " {{.verdict}}    " + c("Time:") + " {{.elapsed}}\n" +
 			"{{- if .failLog}}\n" + c("Fail:") + "\n{{.failLog}}{{end}}\n" +
 			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
@@ -29,15 +31,23 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 			"{{- if .testDetails}}\n" + c("Input:") + "\n{{.input}}\n{{.testDetails}}{{end}}\n",
 	))
 
+	// Checker template configurations.
+	checkerTmpltData := map[string]interface{}{
+		"inputFile":    inputFile,
+		"expectedFile": expectedFile,
+	}
+	template.Must(tmplt.New("checker").Parse(checkerTmplt))
+
+	// handle panic.
 	defer func() {
-		tmpltData["index"] = index
+		verdictTmpltData["index"] = index
 		// handle panic; recover.
 		if r := recover(); r != nil {
-			tmpltData["verdict"] = color.RedString("FAIL")
-			tmpltData["failLog"] = r.(error)
+			verdictTmpltData["verdict"] = color.RedString("FAIL")
+			verdictTmpltData["failLog"] = r.(error)
 		}
 		// Print verdict data to stdout.
-		tmplt.Execute(os.Stdout, tmpltData)
+		tmplt.ExecuteTemplate(os.Stdout, "verdict", verdictTmpltData)
 	}()
 
 	// Read input from file.
@@ -51,18 +61,18 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 	var output, stderr bytes.Buffer
 	elapsed, err := runShellScript(script, timelimit, input, &output, &stderr)
 	// Common to all template values to write.
-	tmpltData["elapsed"] = elapsed.Truncate(time.Millisecond)
-	tmpltData["stderr"] = stderr.String()
+	verdictTmpltData["elapsed"] = elapsed.Truncate(time.Millisecond)
+	verdictTmpltData["stderr"] = stderr.String()
 
 	// Determine verdicts.
 	switch {
 	case errors.Is(err, context.DeadlineExceeded):
 		// It's a time limit exceeded case.
-		tmpltData["verdict"] = color.YellowString("TLE")
+		verdictTmpltData["verdict"] = color.YellowString("TLE")
 
 	case err != nil:
 		// It's a runtime error case.
-		tmpltData["verdict"] = color.RedString("RTE")
+		verdictTmpltData["verdict"] = color.RedString("RTE")
 
 	default:
 		// Output recieved, and program exited normally.
@@ -76,18 +86,20 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 		defer os.Remove(outputFile.Name())
 		outputFile.Write(output.Bytes())
 
-		// Run checker to validate output. Shell script to run is:
-		// (<checker> <input-file> <expected-file> <recieved-file>)
-		var checkerStderr bytes.Buffer
-		checkerScript := fmt.Sprintf("%v %v %v %v", checkerPath, inputFile, outputFile.Name(), expectedFile)
-		_, err = runShellScript(checkerScript, time.Minute, nil, nil, &checkerStderr)
-		// Set template field data.
-		tmpltData["checkerLog"] = checkerStderr.String()
+		// Run checker to validate output.
+		var checkerScript strings.Builder
+		checkerTmpltData["outputFile"] = outputFile.Name()
+		tmplt.ExecuteTemplate(&checkerScript, "checker", checkerTmpltData)
 
+		var checkerStderr bytes.Buffer
+		_, err = runShellScript(checkerScript.String(), time.Minute, nil, nil, &checkerStderr)
+
+		// Set template field data.
+		verdictTmpltData["checkerLog"] = checkerStderr.String()
 		if _, ok := err.(*exec.ExitError); ok {
 			// Checker ended with non-zero error code.
 			// Verdict is thus wrong answer.
-			tmpltData["verdict"] = color.RedString("WA")
+			verdictTmpltData["verdict"] = color.RedString("WA")
 
 			// Read input from file.
 			input, err := os.Open(inputFile)
@@ -143,15 +155,15 @@ func judgeMode(script string, timelimit time.Duration, inputFile, expectedFile, 
 			t.Append(string(outputBuf), string(expectedBuf))
 
 			t.Render()
-			tmpltData["testDetails"] = tString.String()
-			tmpltData["input"] = string(inputBuf)
+			verdictTmpltData["testDetails"] = tString.String()
+			verdictTmpltData["input"] = string(inputBuf)
 
 		} else if err != nil {
 			// Unknown error; Panic.
 			panic(err)
 		} else {
 			// Solution produced correct answer.
-			tmpltData["verdict"] = color.GreenString("AC")
+			verdictTmpltData["verdict"] = color.GreenString("AC")
 		}
 	}
 }
