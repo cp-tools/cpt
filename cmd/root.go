@@ -18,7 +18,6 @@ var rootCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Initialize global configurations.
 		initGlobalConf()
-		initCheckerConf()
 	},
 
 	Version: "v0.12.1",
@@ -67,17 +66,17 @@ func initConfDir() {
 }
 
 func initGlobalConf() {
+	// Load global configuration.
 	cnf = conf.New("global")
 	cnf.Set("ui.stdoutColor", true)
 
 	cnfFilePath := filepath.Join(confDir, "cpt.yaml")
 	cnf.LoadFile(cnfFilePath)
-}
 
-func initCheckerConf() {
+	// Load checker configuration.
 	cnf = conf.New("checker").SetParent(cnf)
 
-	cnfFilePath := filepath.Join(rootDir, "cpt-checker", "checker.yaml")
+	cnfFilePath = filepath.Join(rootDir, "cpt-checker", "checker.yaml")
 	cnf.LoadFile(cnfFilePath)
 }
 

@@ -11,8 +11,7 @@ var codeforcesCmd = &cobra.Command{
 	Short:   "Functions exclusive to codeforces",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Load and initialize conf related settings.
-		codeforces.ConfLoadFile(confDir)
-		codeforces.ConfLoadDefaults(confSettings.GetAll())
+		codeforces.InitModuleConf(cnf, confDir)
 		return nil
 	},
 }

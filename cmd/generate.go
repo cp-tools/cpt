@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cp-tools/cpt/cmd/generate"
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/spf13/cobra"
 )
@@ -13,9 +13,11 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Create file using template",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		util.LoadLocalConf(cnf)
+
 		// Handle case where '--template' is not set.
 		if cmd.Flags().MustGetString("template") == "" {
-			defaultTemplate := confSettings.GetString("generate.defaultTemplate")
+			defaultTemplate := cnf.GetString("generate.defaultTemplate")
 			if defaultTemplate == "" {
 				return fmt.Errorf("invalid flags - no template value provided")
 			}
@@ -25,20 +27,15 @@ var generateCmd = &cobra.Command{
 
 		// Check if '--template' value is valid.
 		templateFlag := cmd.Flags().MustGetString("template")
-		if confSettings.Get("template."+templateFlag) == nil {
+		if cnf.Get("template."+templateFlag) == nil {
 			return fmt.Errorf("invalid flags - template %v not present", templateFlag)
 		}
 		return nil
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// Local (folder) configurations to use.
-		problemCnf := conf.New()
-		problemCnf.LoadFile("meta.yaml")
-		problemCnf.LoadDefault(confSettings.GetAll())
-
 		templateFlag := cmd.Flags().MustGetString("template")
-		generate.Generate(templateFlag, problemCnf)
+		generate.Generate(templateFlag, cnf)
 	},
 }
 
@@ -50,7 +47,7 @@ func init() {
 
 	// All custom completions for command flags.
 	generateCmd.RegisterFlagCompletionFunc("template", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		aliases := confSettings.GetMapKeys("template")
+		aliases := cnf.GetMapKeys("template")
 		return aliases, cobra.ShellCompDirectiveDefault
 	})
 }

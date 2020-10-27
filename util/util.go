@@ -32,9 +32,9 @@ func ExtractMapKeys(varMap interface{}) (data []string) {
 }
 
 // LoadLocalConf returns local folder conf.
-func LoadLocalConf(def *conf.Conf) *conf.Conf {
-	cnf := conf.New()
+func LoadLocalConf(cnf *conf.Conf) *conf.Conf {
+	cnf = conf.New("local").SetParent(cnf)
 	cnf.LoadFile("meta.yaml")
-	cnf.LoadDefault(def.GetAll())
+
 	return cnf
 }

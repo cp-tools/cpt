@@ -14,7 +14,7 @@ import (
 var rootCmd = &cobra.Command{}
 
 var (
-	confSettings = conf.New()
+	cnf *conf.Conf
 )
 
 // SetParentCmd sets parent command of all subcommands
@@ -25,43 +25,36 @@ func SetParentCmd(parentCmd *cobra.Command) {
 	rootCmd = parentCmd
 }
 
-// ConfLoadFile loads codeforces.yaml from specified directory.
-func ConfLoadFile(confDir string) {
-	confSettingsPath := filepath.Join(confDir, "codeforces.yaml")
-	confSettings.LoadFile(confSettingsPath)
-}
-
-// ConfLoadDefaults sets default values in local module.
-func ConfLoadDefaults(confMap map[string]interface{}) {
-	confSettings.LoadDefault(confMap)
-	// Set local defaults here.
-
-	// Path structure when 'fetching' problem tests.
-	confSettings.SetDefault("fetch.problemFolderPath", []string{
+// InitModuleConf sets codeforces configurations.
+func InitModuleConf(rootCnf *conf.Conf, confDir string) {
+	// Set default values here.
+	cnf = conf.New("codeforces").SetParent(rootCnf)
+	cnf.Set("fetch.problemFolderPath", []string{
 		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
 	})
-	// Path structure when 'pulling' problem submissions.
-	confSettings.SetDefault("pull.problemFolderPath", []string{
+	cnf.Set("pull.problemFolderPath", []string{
 		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
 	})
 
+	cnfFilePath := filepath.Join(confDir, "codeforces.yaml")
+	cnf.LoadFile(cnfFilePath)
 }
 
 func startHeadlessBrowser() {
-	binary := confSettings.GetString("browser.binary")
-	profile := confSettings.GetString("browser.profile")
+	binary := cnf.GetString("browser.binary")
+	profile := cnf.GetString("browser.profile")
 	codeforces.Start(true, profile, binary)
 }
 
-func parseSpecifier(args []string, cnf *conf.Conf) (codeforces.Args, error) {
+func parseSpecifier(args []string, rootCnf *conf.Conf) (codeforces.Args, error) {
 	arg, err := codeforces.Parse(strings.Join(args, ""))
 	if err != nil {
 		return arg, err
 	}
 
-	if arg == (codeforces.Args{}) && cnf.Has("problem.arg") {
+	if arg == (codeforces.Args{}) && rootCnf.Has("problem.arg") {
 		// Parse from configuration.
-		err = mapstructure.Decode(cnf.Get("problem.arg"), &arg)
+		err = mapstructure.Decode(rootCnf.Get("problem.arg"), &arg)
 	}
 	return arg, err
 }
