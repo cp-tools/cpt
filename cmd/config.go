@@ -26,22 +26,24 @@ var configCmd = &cobra.Command{
 			},
 		}, &index)
 
+		// We are editing global config here.
+		rootCnf := cnf.GetParent("global")
 		switch index {
 		case 0:
-			config.AddTemplate(confSettings)
+			config.AddTemplate(rootCnf)
 		case 1:
-			config.RemoveTemplate(confSettings)
+			config.RemoveTemplate(rootCnf)
 		case 2:
-			config.SetGenerateOnFetch(confSettings)
+			config.SetGenerateOnFetch(rootCnf)
 		case 3:
-			config.SetDefaultTemplate(confSettings)
+			config.SetDefaultTemplate(rootCnf)
 		case 4:
-			config.SetHeadlessBrowser(confSettings)
+			config.SetHeadlessBrowser(rootCnf)
 		case 5:
-			config.SetStdoutColor(confSettings)
+			config.SetStdoutColor(rootCnf)
 		}
 		// Write file after changes are done.
-		confSettings.WriteFile()
+		rootCnf.WriteFile()
 	},
 }
 

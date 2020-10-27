@@ -16,8 +16,9 @@ var rootCmd = &cobra.Command{
 	Use:   "cpt",
 	Short: "Lightweight cli tool for competitive programming!",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Initialize configurations.
-		initConfSettings()
+		// Initialize global configurations.
+		initGlobalConf()
+		initCheckerConf()
 	},
 
 	Version: "v0.12.1",
@@ -27,7 +28,7 @@ var (
 	rootDir string
 	confDir string
 
-	confSettings = conf.New()
+	cnf *conf.Conf
 )
 
 // Execute adds all child commands to the root command and
@@ -65,10 +66,26 @@ func initConfDir() {
 	}
 }
 
-func initConfSettings() {
-	// Configure default values.
-	confSettings.SetDefault("ui.stdoutColor", true)
+func initGlobalConf() {
+	cnf = conf.New("global")
+	cnf.Set("ui.stdoutColor", true)
 
-	confSettingsPath := filepath.Join(confDir, "cpt.yaml")
-	confSettings.LoadFile(confSettingsPath)
+	cnfFilePath := filepath.Join(confDir, "cpt.yaml")
+	cnf.LoadFile(cnfFilePath)
 }
+
+func initCheckerConf() {
+	cnf = conf.New("checker").SetParent(cnf)
+
+	cnfFilePath := filepath.Join(rootDir, "cpt-checker", "checker.yaml")
+	cnf.LoadFile(cnfFilePath)
+}
+
+/*
+First comes global conf.
+Next comes all global, non main confs.
+Then sub module (codeforces, atcoder) conf.
+Lastly, local (folder) conf.
+
+global --> checker -->  .... --> local
+*/
