@@ -13,7 +13,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Create file using template",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		util.LoadLocalConf(cnf)
+		cnf = util.LoadLocalConf(cnf)
 
 		// Handle case where '--template' is not set.
 		if cmd.Flags().MustGetString("template") == "" {

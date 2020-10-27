@@ -12,7 +12,7 @@ var openCmd = &cobra.Command{
 	Use:   "open [SPECIFIER]",
 	Short: "open required page in default browser",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		util.LoadLocalConf(cnf)
+		cnf = util.LoadLocalConf(cnf)
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {

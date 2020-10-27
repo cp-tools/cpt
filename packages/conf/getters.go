@@ -48,8 +48,6 @@ func (cnf *Conf) Get(key string) interface{} {
 			if mp1, ok := rootCnf.ko.Get(key).(map[string]interface{}); ok {
 				maps.Merge(mp, mp1)
 				mp = mp1
-			} else {
-				break
 			}
 
 			rootCnf = rootCnf.parentCnf

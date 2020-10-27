@@ -13,7 +13,7 @@ var pullCmd = &cobra.Command{
 	Use:   "pull [SPECIFIER]",
 	Short: "Pulls submissions to local storage",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		util.LoadLocalConf(cnf)
+		cnf = util.LoadLocalConf(cnf)
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {

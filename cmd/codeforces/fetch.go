@@ -13,7 +13,7 @@ var fetchCmd = &cobra.Command{
 	Use:   "fetch [SPECIFIER]",
 	Short: "Fetch and save problem tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		util.LoadLocalConf(cnf)
+		cnf = util.LoadLocalConf(cnf)
 
 		if _, err := parseSpecifier(args, cnf); err != nil {
 			return fmt.Errorf("invalid args - %v", err)

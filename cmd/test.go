@@ -15,7 +15,7 @@ var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Run code file against sample tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		util.LoadLocalConf(cnf)
+		cnf = util.LoadLocalConf(cnf)
 
 		// Check if mode is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")

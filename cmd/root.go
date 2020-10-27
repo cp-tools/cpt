@@ -76,7 +76,7 @@ func initGlobalConf() {
 	// Load checker configuration.
 	cnf = conf.New("checker").SetParent(cnf)
 
-	cnfFilePath = filepath.Join(rootDir, "cpt-checker", "checker.yaml")
+	cnfFilePath = filepath.Join(rootDir, "cpt-checker", "checkers.yaml")
 	cnf.LoadFile(cnfFilePath)
 }
 

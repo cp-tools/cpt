@@ -14,7 +14,7 @@ var submitCmd = &cobra.Command{
 	Use:   "submit [SPECIFIER]",
 	Short: "Submit problem solution to judge",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		util.LoadLocalConf(cnf)
+		cnf = util.LoadLocalConf(cnf)
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {
