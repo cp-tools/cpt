@@ -52,19 +52,19 @@ var listCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		usernameFlag := cmd.Flags().MustGetString("username")
-		modeFlag := cmd.Flags().MustGetString("mode")
-		countFlag := cmd.Flags().MustGetUint("count")
+		username := cmd.Flags().MustGetString("username")
+		mode := cmd.Flags().MustGetString("mode")
+		count := cmd.Flags().MustGetUint("count")
 
 		arg, _ := parseSpecifier(args, cnf)
 
-		switch modeFlag {
+		switch mode {
 		case "c":
-			list.ContestsMode(arg, countFlag)
+			list.ContestsMode(arg, count)
 		case "d":
 			list.DashboardMode(arg)
 		case "s":
-			list.SubmissionsMode(arg, usernameFlag, countFlag)
+			list.SubmissionsMode(arg, username, count)
 		}
 	},
 }

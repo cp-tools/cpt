@@ -42,11 +42,11 @@ var testCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		checker := cmd.Flags().MustGetString("checker")
-		filePath := cmd.Flags().MustGetString("file")
+		file := cmd.Flags().MustGetString("file")
 		mode := cmd.Flags().MustGetString("mode")
 		timelimit := cmd.Flags().MustGetDuration("timelimit")
 
-		test.Test(checker, filePath, mode, timelimit, cnf)
+		test.Test(checker, file, mode, timelimit, cnf)
 	},
 }
 

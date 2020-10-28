@@ -29,10 +29,10 @@ var openCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		modeFlag := cmd.Flags().MustGetString("mode")
+		mode := cmd.Flags().MustGetString("mode")
 
 		arg, _ := parseSpecifier(args, cnf)
-		open.Open(arg, modeFlag)
+		open.Open(arg, mode)
 	},
 }
 

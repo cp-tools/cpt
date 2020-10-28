@@ -36,10 +36,10 @@ var submitCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fileFlag := cmd.Flag("file").Value.String()
+		file := cmd.Flag("file").Value.String()
 
 		arg, _ := parseSpecifier(args, cnf)
-		submit.Submit(arg, fileFlag, cnf)
+		submit.Submit(arg, file, cnf)
 	},
 }
 

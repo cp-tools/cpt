@@ -34,8 +34,8 @@ var generateCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		templateFlag := cmd.Flags().MustGetString("template")
-		generate.Generate(templateFlag, cnf)
+		template := cmd.Flags().MustGetString("template")
+		generate.Generate(template, cnf)
 	},
 }
 

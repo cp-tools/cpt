@@ -34,11 +34,11 @@ var pullCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		usernameFlag := cmd.Flags().MustGetString("username")
-		modeFlag := cmd.Flags().MustGetString("mode")
+		username := cmd.Flags().MustGetString("username")
+		mode := cmd.Flags().MustGetString("mode")
 
 		arg, _ := parseSpecifier(args, cnf)
-		pull.Pull(arg, modeFlag, usernameFlag, cnf)
+		pull.Pull(arg, mode, username, cnf)
 	},
 }
 
