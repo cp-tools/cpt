@@ -57,7 +57,15 @@ var listCmd = &cobra.Command{
 		countFlag := cmd.Flags().MustGetUint("count")
 
 		arg, _ := parseSpecifier(args, cnf)
-		list.List(arg, modeFlag, usernameFlag, countFlag)
+
+		switch modeFlag {
+		case "c":
+			list.ContestsMode(arg, countFlag)
+		case "d":
+			list.DashboardMode(arg)
+		case "s":
+			list.SubmissionsMode(arg, usernameFlag, countFlag)
+		}
 	},
 }
 

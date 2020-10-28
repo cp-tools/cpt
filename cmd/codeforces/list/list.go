@@ -3,22 +3,10 @@ package list
 import (
 	"strings"
 
-	"github.com/cp-tools/cpt-lib/v2/codeforces"
-
 	"github.com/fatih/color"
 )
 
-// List lists
-func List(arg codeforces.Args, mode, username string, count uint) {
-	switch mode {
-	case "c": // contests
-		contestsMode(arg, count)
-	case "d": // dashboard
-		dashboardMode(arg)
-	case "s": // submissions
-		submissionsMode(arg, username, count)
-	}
-}
+// Refer respective mode files for their implementation.
 
 // CompressVerdicts compresses and returns color to use.
 func CompressVerdicts(verdict string) string {
