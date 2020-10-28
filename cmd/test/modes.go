@@ -142,10 +142,16 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 			// Table to display output difference.
 			tString := &strings.Builder{}
 			t := tablewriter.NewWriter(tString)
+			t.SetCenterSeparator("")
+			t.SetColumnSeparator("")
+			t.SetRowSeparator("")
+			t.SetNoWhiteSpace(true)
+			t.SetTablePadding("\t")
+			t.SetHeaderLine(false)
 			t.SetBorder(false)
-			t.SetColWidth(50)
 
 			t.SetHeader("OUTPUT", "EXPECTED")
+			t.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
 			t.SetHeaderColor(tHeaderCol, tHeaderCol)
 
 			t.Append(string(outputBuf), string(expectedBuf))

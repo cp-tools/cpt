@@ -35,6 +35,7 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	t.SetCenterSeparator("")
 	t.SetColumnSeparator("")
 	t.SetRowSeparator("")
+	t.SetNoWhiteSpace(true)
 	t.SetTablePadding("\t")
 	t.SetBorder(false)
 
