@@ -25,7 +25,7 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 	verdictTmpltData := map[string]interface{}{}
 	tmplt := template.Must(template.New("verdict").Parse(
 		c("Test:") + " #{{.index}}    " + c("Verdict:") + " {{.verdict}}    " + c("Time:") + " {{.elapsed}}\n" +
-			"{{- if .failLog}}\n" + c("Fail:") + "{{.failLog}}{{end}}\n" +
+			"{{- if .failLog}}\n" + c("Fail:") + " {{.failLog}}{{end}}\n" +
 			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
 			"{{- if .checkerLog}}\n" + c("Checker Log:") + " {{.checkerLog}}{{end}}\n" +
 			"{{- if .testDetails}}\n" + c("Input:") + "\n{{.input}}\n{{.testDetails}}{{end}}\n",
@@ -160,7 +160,7 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 			verdictTmpltData["testDetails"] = tString.String()
 			verdictTmpltData["input"] = string(inputBuf)
 
-		} else if ok {
+		} else if err != nil {
 			// Unknown error; Panic.
 			panic(err)
 		} else {

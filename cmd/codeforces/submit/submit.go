@@ -27,7 +27,7 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 		fmt.Println(color.RedString("error submitting solution:"), err)
 		os.Exit(1)
 	}
-	fmt.Println(color.GreenString("submitted successfully"))
+	fmt.Println(color.GreenString("Submitted successfully!"))
 
 	// Table to use to display verdict.
 	tString := &strings.Builder{}
