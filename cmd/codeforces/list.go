@@ -72,9 +72,9 @@ func init() {
 	// All custom completions for command flags.
 	listCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		modes := []string{
-			"c\tcontests data",
-			"d\tdashboard data",
-			"s\tsubmissions data",
+			"c\tcontests",
+			"d\tdashboard",
+			"s\tsubmissions",
 		}
 		return modes, cobra.ShellCompDirectiveDefault
 	})

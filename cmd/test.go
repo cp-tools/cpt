@@ -72,8 +72,8 @@ func init() {
 
 	testCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		modes := []string{
-			"j\tjudge mode",
-			"i\tinteractive mode",
+			"j\tjudge",
+			"i\tinteractive",
 		}
 
 		return modes, cobra.ShellCompDirectiveDefault

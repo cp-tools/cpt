@@ -45,9 +45,9 @@ func init() {
 	// All custom completions for command flags.
 	openCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		modes := []string{
-			"p\tproblem page",
-			"d\tdashboard page",
-			"s\tsubmission page",
+			"p\tproblem",
+			"d\tdashboard",
+			"s\tsubmission",
 		}
 		return modes, cobra.ShellCompDirectiveDefault
 	})
