@@ -60,11 +60,11 @@ var listCmd = &cobra.Command{
 
 		switch mode {
 		case "c":
-			list.ContestsMode(arg, count)
+			list.Contests(arg, count)
 		case "d":
-			list.DashboardMode(arg)
+			list.Dashboard(arg)
 		case "s":
-			list.SubmissionsMode(arg, username, count)
+			list.Submissions(arg, username, count)
 		}
 	},
 }

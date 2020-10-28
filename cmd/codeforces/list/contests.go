@@ -12,8 +12,8 @@ import (
 	"github.com/gosuri/uitable"
 )
 
-// ContestsMode displays tabular contest data.
-func ContestsMode(arg codeforces.Args, count uint) {
+// Contests displays tabular contest data.
+func Contests(arg codeforces.Args, count uint) {
 	// Anything more than 1 page (100 rows) makes no sense.
 	chanContests, err := arg.GetContests(1)
 	if err != nil {

@@ -11,8 +11,8 @@ import (
 	"github.com/gosuri/uitable"
 )
 
-// DashboardMode displays tabulated dashboard data.
-func DashboardMode(arg codeforces.Args) {
+// Dashboard displays tabulated dashboard data.
+func Dashboard(arg codeforces.Args) {
 	dashboard, err := arg.GetDashboard()
 	if err != nil {
 		fmt.Println(color.RedString("error while fetching dashboard details:"), err)
