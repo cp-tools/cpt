@@ -27,7 +27,8 @@ func contestsMode(arg codeforces.Args, count uint) {
 	t.MaxColWidth = 30
 	t.Wrap = true
 
-	t.AddRow(util.ColorSetBlueBold("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION"))
+	hdr := util.ColorHeaderFormat("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION")
+	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4])
 
 	for contests := range chanContests {
 		for _, contest := range contests {
@@ -87,7 +88,8 @@ func dashboardMode(arg codeforces.Args) {
 	t.MaxColWidth = 40
 	t.Wrap = true
 
-	t.AddRow(util.ColorSetBlueBold("#", "NAME", "STATUS", "SOLVED"))
+	hdr := util.ColorHeaderFormat("#", "NAME", "STATUS", "SOLVED")
+	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3])
 
 	for _, problem := range dashboard.Problem {
 		status := ""
@@ -129,7 +131,8 @@ func submissionsMode(arg codeforces.Args, handle string, count uint) {
 	t.MaxColWidth = 30
 	t.Wrap = true
 
-	t.AddRow(util.ColorSetBlueBold("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY"))
+	hdr := util.ColorHeaderFormat("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY")
+	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4], hdr[5])
 
 	for submissions := range chanSubmissions {
 		for _, submission := range submissions {

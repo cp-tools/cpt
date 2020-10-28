@@ -145,7 +145,9 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 			t.MaxColWidth = 50
 			t.Wrap = true
 
-			t.AddRow(util.ColorSetBlueBold("OUTPUT", "EXPECTED"))
+			hdr := util.ColorHeaderFormat("OUTPUT", "EXPECTED")
+			t.AddRow(hdr[0], hdr[1])
+
 			t.AddRow(string(outputBuf), string(expectedBuf))
 
 			verdictTmpltData["testDetails"] = t.String()

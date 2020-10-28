@@ -40,10 +40,10 @@ func LoadLocalConf(cnf *conf.Conf) *conf.Conf {
 	return cnf
 }
 
-// ColorSetBlueBold sets color (for headers mostly).
-func ColorSetBlueBold(str ...string) []string {
+// ColorHeaderFormat sets color (for headers mostly).
+func ColorHeaderFormat(str ...string) []string {
 	for i := range str {
-		str[i] = color.New(color.FgBlue).Sprint(str[i])
+		str[i] = color.New(color.FgBlue, color.Bold, color.Underline).Sprint(str[i])
 	}
 	return str
 }

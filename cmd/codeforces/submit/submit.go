@@ -8,7 +8,6 @@ import (
 	"github.com/cp-tools/cpt/cmd/codeforces/list"
 	"github.com/cp-tools/cpt/cmd/test"
 	"github.com/cp-tools/cpt/packages/conf"
-	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
@@ -42,11 +41,11 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 
 		verdict := list.CompressVerdicts(sub.Verdict)
 
-		t.AddRow(util.ColorSetBlueBold("Verdict:"), verdict)
+		t.AddRow(color.BlueString("Verdict:"), verdict)
 		if sub.IsJudging == false {
 			// Judging done; add resource data.
-			t.AddRow(util.ColorSetBlueBold("Memory:"), sub.Memory)
-			t.AddRow(util.ColorSetBlueBold("Time:"), sub.Time)
+			t.AddRow(color.BlueString("Memory:"), sub.Memory)
+			t.AddRow(color.BlueString("Time:"), sub.Time)
 		}
 
 		fmt.Fprintln(writer, t.String())
