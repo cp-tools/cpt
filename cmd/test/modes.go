@@ -12,8 +12,10 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/cp-tools/cpt/util"
+
 	"github.com/fatih/color"
-	"github.com/olekukonko/tablewriter"
+	"github.com/gosuri/uitable"
 )
 
 func judgeMode(script, checkerTmplt string, timelimit time.Duration,
@@ -137,27 +139,16 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 				outputBuf = append(outputBuf[:n-3], []byte("...")...)
 			}
 
-			// Temporary color to prettify headers of table.
-			tHeaderCol := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
 			// Table to display output difference.
-			tString := &strings.Builder{}
-			t := tablewriter.NewWriter(tString)
-			t.SetCenterSeparator("")
-			t.SetColumnSeparator("")
-			t.SetRowSeparator("")
-			t.SetNoWhiteSpace(true)
-			t.SetTablePadding("\t")
-			t.SetHeaderLine(false)
-			t.SetBorder(false)
+			t := uitable.New()
+			t.Separator = " | "
+			t.MaxColWidth = 50
+			t.Wrap = true
 
-			t.SetHeader("OUTPUT", "EXPECTED")
-			t.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-			t.SetHeaderColor(tHeaderCol, tHeaderCol)
+			t.AddRow(util.ColorSetBlueBold("OUTPUT", "EXPECTED"))
+			t.AddRow(string(outputBuf), string(expectedBuf))
 
-			t.Append(string(outputBuf), string(expectedBuf))
-
-			t.Render()
-			verdictTmpltData["testDetails"] = tString.String()
+			verdictTmpltData["testDetails"] = t.String()
 			verdictTmpltData["input"] = string(inputBuf)
 
 		} else if err != nil {

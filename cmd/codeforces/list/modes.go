@@ -3,14 +3,14 @@ package list
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
-	"github.com/olekukonko/tablewriter"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
+	"github.com/gosuri/uitable"
 )
 
 func contestsMode(arg codeforces.Args, count uint) {
@@ -21,21 +21,13 @@ func contestsMode(arg codeforces.Args, count uint) {
 		os.Exit(1)
 	}
 
-	// Set live updater writer.
-	writer := uilive.New()
-	writer.Start()
-
 	// Create table to use.
-	t := tablewriter.NewWriter(writer)
-	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-	t.SetCenterSeparator("|")
-	t.SetBorder(false)
-	t.SetColWidth(30)
+	t := uitable.New()
+	t.Separator = " | "
+	t.MaxColWidth = 30
+	t.Wrap = true
 
-	// Temporary color to prettify headers of table.
-	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
-	t.SetHeader("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION")
-	t.SetHeaderColor(col, col, col, col, col)
+	t.AddRow(util.ColorSetBlueBold("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION"))
 
 	for contests := range chanContests {
 		for _, contest := range contests {
@@ -64,19 +56,18 @@ func contestsMode(arg codeforces.Args, count uint) {
 				registrationStatus = color.HiYellowString("NA")
 			}
 
-			t.Append(
+			t.AddRow(
 				contest.Arg.Contest,                 // Contest ID
 				contest.Name,                        // Contest name
 				strings.Join(contest.Writers, ", "), // Contest writers
 				timings,                             // Contest timings
 				registrationStatus,                  // Registration status
 			)
-			// Added one more row to the table. Decrease count.
+
 			count--
 		}
 	}
-	t.Render()
-	writer.Stop()
+	fmt.Println(t.String())
 }
 
 func dashboardMode(arg codeforces.Args) {
@@ -86,24 +77,17 @@ func dashboardMode(arg codeforces.Args) {
 		os.Exit(1)
 	}
 
-	// A hacky function to color certain parts of a template.
-	c := color.New(color.FgBlue, color.Bold).SprintFunc()
-
-	fmt.Println(c("Contest name:"), dashboard.Name)
+	fmt.Println(color.BlueString("Contest name:"), dashboard.Name)
 	if dashboard.Countdown > 0 {
-		fmt.Println(c("Contest ends in:"), dashboard.Countdown)
+		fmt.Println(color.BlueString("Contest ends in:"), dashboard.Countdown)
 	}
 
-	t := tablewriter.NewWriter(os.Stdout)
-	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-	t.SetCenterSeparator("|")
-	t.SetColWidth(30)
+	t := uitable.New()
+	t.Separator = " | "
+	t.MaxColWidth = 40
+	t.Wrap = true
 
-	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
-	t.SetHeader("#", "Name", "Status", "Solved")
-	t.SetHeaderColor(col, col, col, col)
-	t.SetColumnAlignment(tablewriter.ALIGN_DEFAULT, tablewriter.ALIGN_DEFAULT,
-		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_RIGHT)
+	t.AddRow(util.ColorSetBlueBold("#", "NAME", "STATUS", "SOLVED"))
 
 	for _, problem := range dashboard.Problem {
 		status := ""
@@ -116,15 +100,15 @@ func dashboardMode(arg codeforces.Args) {
 			status = "NA"
 		}
 
-		t.Append(
-			problem.Arg.Problem,
-			problem.Name,
-			status,
-			strconv.Itoa(problem.SolveCount),
+		t.AddRow(
+			problem.Arg.Problem, // Problem ID
+			problem.Name,        // Problem name
+			status,              // Solved status
+			problem.SolveCount,  // Solve count
 		)
+
 	}
-	fmt.Println()
-	t.Render()
+	fmt.Println(t.String())
 }
 
 func submissionsMode(arg codeforces.Args, handle string, count uint) {
@@ -140,21 +124,12 @@ func submissionsMode(arg codeforces.Args, handle string, count uint) {
 	writer.Start()
 
 	// Create table to use.
-	t := tablewriter.NewWriter(writer)
-	t.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
-	t.SetCenterSeparator("|")
-	t.SetBorder(false)
-	t.SetColWidth(30)
+	t := uitable.New()
+	t.Separator = " | "
+	t.MaxColWidth = 30
+	t.Wrap = true
 
-	// Temporary color to prettify headers of table.
-	col := tablewriter.Color(tablewriter.FgBlueColor, tablewriter.Bold)
-	t.SetHeader("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY")
-	t.SetHeaderColor(col, col, col, col, col, col)
-	t.SetColumnAlignment(
-		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_DEFAULT,
-		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_RIGHT, tablewriter.ALIGN_RIGHT,
-	)
+	t.AddRow(util.ColorSetBlueBold("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY"))
 
 	for submissions := range chanSubmissions {
 		for _, submission := range submissions {
@@ -163,22 +138,20 @@ func submissionsMode(arg codeforces.Args, handle string, count uint) {
 				continue
 			}
 
-			verdict, color := CompressVerdicts(submission.Verdict)
-			t.Rich([]string{
+			verdict := CompressVerdicts(submission.Verdict)
+
+			t.AddRow(
 				submission.ID,       // Submission ID
 				submission.Problem,  // Problem name
 				submission.Language, // Submission language
 				verdict,             // Submission verdict
-				submission.Time,     // Time taken
-				submission.Memory,   // Memory taken
-
-			}, []tablewriter.Colors{
-				nil, nil, nil, color, nil, nil,
-			})
+				submission.Time,     // Time consumed
+				submission.Memory,   // Memory consumed
+			)
 
 			count--
 		}
-		t.Render()
+		fmt.Fprintln(writer, t.String())
 	}
 	writer.Stop()
 }

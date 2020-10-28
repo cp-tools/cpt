@@ -7,6 +7,7 @@ import (
 
 	"github.com/cp-tools/cpt/packages/conf"
 
+	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 )
 
@@ -18,7 +19,7 @@ func RunCountdown(dur time.Duration, msg string) {
 		fmt.Fprintln(writer, msg, dur.String())
 		time.Sleep(time.Second)
 	}
-	fmt.Fprintln(writer, "")
+	fmt.Fprint(writer)
 	writer.Stop()
 }
 
@@ -37,4 +38,12 @@ func LoadLocalConf(cnf *conf.Conf) *conf.Conf {
 	cnf.LoadFile("meta.yaml")
 
 	return cnf
+}
+
+// ColorSetBlueBold sets color (for headers mostly).
+func ColorSetBlueBold(str ...string) []string {
+	for i := range str {
+		str[i] = color.New(color.FgBlue).Sprint(str[i])
+	}
+	return str
 }

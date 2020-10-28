@@ -3,16 +3,16 @@ package submit
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/list"
 	"github.com/cp-tools/cpt/cmd/test"
 	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"github.com/olekukonko/tablewriter"
+	"github.com/gosuri/uitable"
 )
 
 // Submit submits
@@ -30,32 +30,27 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	fmt.Println(color.GreenString("Submitted successfully!"))
 
 	// Table to use to display verdict.
-	tString := &strings.Builder{}
-	t := tablewriter.NewWriter(tString)
-	t.SetCenterSeparator("")
-	t.SetColumnSeparator("")
-	t.SetRowSeparator("")
-	t.SetNoWhiteSpace(true)
-	t.SetTablePadding("\t")
-	t.SetBorder(false)
+	t := uitable.New()
+	t.Separator = "\t"
 
 	// Run live verdict till judging completed.
 	writer := uilive.New()
 	writer.Start()
-	for sub := range submission {
-		t.ClearRows()
-		tString.Reset()
 
-		verdict, color := list.CompressVerdicts(sub.Verdict)
-		t.Rich([]string{"VERDICT:", verdict}, []tablewriter.Colors{nil, color})
+	for sub := range submission {
+		t.Rows = nil
+
+		verdict := list.CompressVerdicts(sub.Verdict)
+
+		t.AddRow(util.ColorSetBlueBold("Verdict:"), verdict)
 		if sub.IsJudging == false {
 			// Judging done; add resource data.
-			t.Append("MEMORY:", sub.Memory)
-			t.Append("TIME:", sub.Time)
+			t.AddRow(util.ColorSetBlueBold("Memory:"), sub.Memory)
+			t.AddRow(util.ColorSetBlueBold("Time:"), sub.Time)
 		}
 
-		t.Render()
-		fmt.Fprintln(writer, tString.String())
+		fmt.Fprintln(writer, t.String())
 	}
+
 	writer.Stop()
 }
