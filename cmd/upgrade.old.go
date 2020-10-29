@@ -162,37 +162,4 @@ func upgrade(lflags *pflag.FlagSet) {
 		color.Green("Upgraded cli app successfully!")
 	}
 }
-
-func getReleases(releasesURL string) []string {
-	// fetch data of all releases
-	resp, err := http.Get(releasesURL)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	var allReleases []string
-	for _, tag := range gjson.GetBytes(body, "#.tag_name").Array() {
-		allReleases = append(allReleases, tag.String())
-	}
-	return allReleases
-}
-
-func getTarball(resp *http.Response) *tar.Reader {
-	gzr, err := gzip.NewReader(resp.Body)
-	if err != nil {
-		color.Red("Could not read tarball")
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer gzr.Close()
-	return tar.NewReader(gzr)
-}
 */
