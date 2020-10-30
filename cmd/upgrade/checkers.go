@@ -85,14 +85,14 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 				os.Exit(1)
 			}
 
-			checkerMap[hdr.Name] = checkerFile
+			checkerMap[strings.TrimSuffix(hdr.Name, filepath.Ext(hdr.Name))] = checkerFile
 			fmt.Println(color.GreenString("Checker"), hdr.Name, color.GreenString("saved successfully!"))
 		}
 	}
 
 	for k, v := range checkerMap {
 		script := tmpCnf.GetString("checker.checkers." + k + ".script")
-		script = strings.ReplaceAll(script, "FILEPATH", v)
+		script = strings.ReplaceAll(script, "$FILEPATH", v)
 		tmpCnf.Set("checker.checkers."+k+".script", script)
 	}
 
