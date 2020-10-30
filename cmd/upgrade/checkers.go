@@ -86,7 +86,7 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 			}
 
 			checkerMap[hdr.Name] = checkerFile
-			fmt.Println(color.GreenString("Checker"), hdr.Name, "saved successfully!")
+			fmt.Println(color.GreenString("Checker"), hdr.Name, color.GreenString("saved successfully!"))
 		}
 	}
 

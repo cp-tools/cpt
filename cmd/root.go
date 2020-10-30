@@ -24,8 +24,9 @@ var rootCmd = &cobra.Command{
 }
 
 var (
-	rootDir string
-	confDir string
+	rootDir    string
+	confDir    string
+	checkerDir string
 
 	cnf *conf.Conf
 )
@@ -59,9 +60,15 @@ func initConfDir() {
 		os.Exit(1)
 	}
 	rootDir = filepath.Join(dir, "cp-tools")
+
 	confDir = filepath.Join(rootDir, "cpt")
 	if err := os.MkdirAll(confDir, os.ModePerm); err != nil {
 		log.Fatalf("error creating config folder: %v", err)
+	}
+
+	checkerDir = filepath.Join(rootDir, "cpt-checker")
+	if err := os.MkdirAll(checkerDir, os.ModePerm); err != nil {
+		log.Fatalf("error creating checker folder: %v", err)
 	}
 }
 
@@ -76,7 +83,7 @@ func initGlobalConf() {
 	// Load checker configuration.
 	cnf = conf.New("checker").SetParent(cnf)
 
-	cnfFilePath = filepath.Join(rootDir, "cpt-checker", "checkers.yaml")
+	cnfFilePath = filepath.Join(checkerDir, "checkers.yaml")
 	cnf.LoadFile(cnfFilePath)
 }
 

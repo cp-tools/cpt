@@ -16,6 +16,7 @@ require (
 	github.com/mitchellh/mapstructure v1.3.3
 	github.com/spf13/cobra v1.1.1
 	golang.org/x/mod v0.1.0
+	gopkg.in/yaml.v2 v2.2.8
 )
 
 replace github.com/spf13/pflag => github.com/cornfeedhobo/pflag v1.0.2

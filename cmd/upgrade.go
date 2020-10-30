@@ -27,7 +27,7 @@ var upgradeCmd = &cobra.Command{
 		case "s":
 			upgrade.Self(rootCmd.Version)
 		case "c":
-
+			upgrade.Checkers(checkerDir, cnf)
 		}
 	},
 }
