@@ -25,7 +25,7 @@ var testCmd = &cobra.Command{
 
 		// Check if checker is valid.
 		checkerFlag := cmd.Flags().MustGetString("checker")
-		if !cnf.Has("checker." + checkerFlag) {
+		if !cnf.Has("checker.checkers." + checkerFlag) {
 			return fmt.Errorf("invalid flags - checker '%v' not configured", checkerFlag)
 		}
 
@@ -61,9 +61,9 @@ func init() {
 
 	// All custom completions for command flags.
 	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		checkers := cnf.GetMapKeys("checker")
+		checkers := cnf.GetMapKeys("checker.checkers")
 		for i := range checkers {
-			desc := cnf.GetString("checker." + checkers[i] + ".desc")
+			desc := cnf.GetString("checker.checkers." + checkers[i] + ".desc")
 			checkers[i] = fmt.Sprintf("%v\t%v", checkers[i], desc)
 		}
 

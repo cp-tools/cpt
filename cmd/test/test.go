@@ -48,7 +48,7 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 
 		switch mode {
 		case "j": // Default judge mode.
-			checkerTmplt := cnf.GetString("checker." + checker + ".script")
+			checkerTmplt := cnf.GetString("checker.checkers." + checker + ".script")
 
 			inputFiles, expectedFiles := extractTestsFiles(cnf)
 			for i := 0; i < len(inputFiles); i++ {
