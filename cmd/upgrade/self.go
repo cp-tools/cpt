@@ -35,11 +35,15 @@ func Self(currentVersion string) {
 
 	// Download release tarball from GitHub.
 	releaseTarballLink := fmt.Sprintf("https://github.com/cp-tools/cpt/releases/download/%v/cpt_%v_%v.tar.gz", latestVersion, runtime.GOOS, runtime.GOARCH)
-	trFile := getReleaseTarball(releaseTarballLink)
+	trRdr := getReleaseTarball(releaseTarballLink)
+	if _, err := trRdr.Next(); err != nil {
+		fmt.Println(color.RedString("error while extracting tarball:"), err)
+		os.Exit(1)
+	}
 	// Tarball MUST contain exactly 1 file, the executable.
 
 	// Overwrite current binary with downloaded binary.
-	if err := update.Apply(trFile, update.Options{}); err != nil {
+	if err := update.Apply(trRdr, update.Options{}); err != nil {
 		fmt.Println(color.RedString("error while upgrading to latest version:"), err)
 		// Failed to update binary. Rollback to current version.
 		if err := update.RollbackError(err); err != nil {

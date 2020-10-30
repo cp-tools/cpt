@@ -43,7 +43,6 @@ func getReleaseTarball(releaseTarballLink string) *tar.Reader {
 		fmt.Println(color.RedString("error while downloading release:"), err)
 		os.Exit(1)
 	}
-	// resp.Body.Close()
 
 	gzr, err := gzip.NewReader(resp.Body)
 	if err != nil {
@@ -52,11 +51,5 @@ func getReleaseTarball(releaseTarballLink string) *tar.Reader {
 	}
 	defer gzr.Close()
 
-	trFile := tar.NewReader(gzr)
-	if _, err := trFile.Next(); err != nil {
-		fmt.Println(color.RedString("error while extracting tarball:"), err)
-		os.Exit(1)
-	}
-
-	return trFile
+	return tar.NewReader(gzr)
 }
