@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"sort"
+
 	"github.com/knadh/koanf/maps"
 )
 
@@ -27,7 +29,7 @@ func (cnf *Conf) GetParent(name string) *Conf {
 // the chained parent data is searched for the same.
 func (cnf *Conf) Get(key string) interface{} {
 	rootCnf := cnf
-	for rootCnf != nil {
+	for rootCnf != nil && key != "" {
 		if rootCnf.ko.Exists(key) {
 			// Found conf with given key.
 			break
@@ -195,5 +197,6 @@ func (cnf *Conf) GetMapKeys(key string) []string {
 		}
 	}
 
+	sort.Strings(data)
 	return data
 }
