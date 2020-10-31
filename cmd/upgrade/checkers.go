@@ -90,6 +90,12 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 				os.Exit(1)
 			}
 
+			// Set file permissions to make it executable.
+			if err := file.Chmod(os.ModePerm); err != nil {
+				fmt.Println(color.RedString("unexpected error occurred:"), err)
+				os.Exit(1)
+			}
+
 			checkerMap[strings.TrimSuffix(fileName, filepath.Ext(fileName))] = checkerFile
 			fmt.Println(color.GreenString("Checker"), fileName, color.GreenString("saved successfully!"))
 		}
