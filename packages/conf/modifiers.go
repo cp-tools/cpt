@@ -1,12 +1,14 @@
 package conf
 
 import (
+	"github.com/knadh/koanf/maps"
 	"github.com/knadh/koanf/providers/confmap"
 )
 
 // Load merges given map into configuration data.
 func (cnf *Conf) Load(val map[string]interface{}) *Conf {
-	cnf.ko.Load(confmap.Provider(val, "."), nil)
+	maps.IntfaceKeysToStrings(val)
+	cnf.ko.Load(confmap.Provider(val, ""), nil)
 	return cnf
 }
 

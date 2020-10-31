@@ -65,14 +65,19 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 			os.Exit(1)
 		}
 
-		if hdr.Name == "meta.yaml" {
+		fileName := filepath.Clean(hdr.Name)
+		if fileName == "meta.yaml" {
 			// meta file of configurations.
 			dataMap := make(map[string]interface{})
-			yaml.Unmarshal(buf, &dataMap)
+			if err := yaml.Unmarshal(buf, &dataMap); err != nil {
+				fmt.Println(color.RedString("unexpected error occurred:"), err)
+				os.Exit(1)
+			}
+
 			tmpCnf.Load(dataMap)
-		} else {
+		} else if fileName != "." {
 			// checker file (executable).
-			checkerFile := filepath.Join(checkerDir, hdr.Name)
+			checkerFile := filepath.Join(checkerDir, fileName)
 			file, err := os.Create(checkerFile)
 			if err != nil {
 				fmt.Println(color.RedString("error while saving checker executable:"), err)
@@ -85,8 +90,8 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 				os.Exit(1)
 			}
 
-			checkerMap[strings.TrimSuffix(hdr.Name, filepath.Ext(hdr.Name))] = checkerFile
-			fmt.Println(color.GreenString("Checker"), hdr.Name, color.GreenString("saved successfully!"))
+			checkerMap[strings.TrimSuffix(fileName, filepath.Ext(fileName))] = checkerFile
+			fmt.Println(color.GreenString("Checker"), fileName, color.GreenString("saved successfully!"))
 		}
 	}
 
