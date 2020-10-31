@@ -28,6 +28,24 @@ var testMap2 = map[string]interface{}{
 	"bottom": true,
 }
 
+var testMap3 = map[string]interface{}{
+	"int":     420,
+	"bool":    true,
+	"float":   3.14,
+	"string":  "where banana",
+	"strings": []string{"cat", "dog"},
+	"map": map[string]interface{}{
+		"int":     910,
+		"bool":    false,
+		"float":   2.71,
+		"string":  "banana there",
+		"strings": []string{"zebra", "goat"},
+		"map": map[string]interface{}{
+			"exists": true,
+		},
+	},
+}
+
 func TestSetParent(t *testing.T) {
 	cnf := conf.New("root")
 	cnf.Load(testMap1)
