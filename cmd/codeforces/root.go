@@ -29,10 +29,10 @@ func SetParentCmd(parentCmd *cobra.Command) {
 func InitModuleConf(rootCnf *conf.Conf, confDir string) {
 	// Set default values here.
 	cnf = conf.New("codeforces").SetParent(rootCnf)
-	cnf.Set("fetch.problemFolderPath", []string{
+	cnf.SetDefault("fetch.problemFolderPath", []string{
 		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
 	})
-	cnf.Set("pull.problemFolderPath", []string{
+	cnf.SetDefault("pull.problemFolderPath", []string{
 		"codeforces", "{{.Arg.Contest}}", "{{.Arg.Problem}}",
 	})
 

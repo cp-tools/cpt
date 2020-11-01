@@ -75,7 +75,7 @@ func initConfDir() {
 func initGlobalConf() {
 	// Load global configuration.
 	cnf = conf.New("global")
-	cnf.Set("ui.stdoutColor", true)
+	cnf.SetDefault("ui.stdoutColor", true)
 
 	cnfFilePath := filepath.Join(confDir, "cpt.yaml")
 	cnf.LoadFile(cnfFilePath)
