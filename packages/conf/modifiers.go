@@ -22,6 +22,17 @@ func (cnf *Conf) Set(key string, val interface{}) *Conf {
 	return cnf
 }
 
+// SetDefault is like Set, but only updates the value at the given key,
+// if the specified key does not exist.
+//
+// The key should be a flattened path, with '.' as the delim.
+func (cnf *Conf) SetDefault(key string, val interface{}) *Conf {
+	if !cnf.Has(key) {
+		cnf.Set(key, val)
+	}
+	return cnf
+}
+
 // Delete deletes the given key from configuration module.
 //
 // The key should be a flattened path, with '.' as the delim.
