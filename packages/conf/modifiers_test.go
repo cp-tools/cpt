@@ -31,6 +31,20 @@ func TestSet(t *testing.T) {
 	assert.Equal(t, nil, cnf.Get("key.val"))
 }
 
+func TestSetDefault(t *testing.T) {
+	cnf := conf.New("conf")
+	cnf.Load(testMap1)
+
+	cnf.SetDefault("top", 954)
+	assert.Equal(t, true, cnf.Get("top"))
+
+	cnf.SetDefault("bottom", "testing")
+	assert.Equal(t, "testing", cnf.Get("bottom"))
+
+	cnf.SetDefault("bottom", "new string")
+	assert.Equal(t, "testing", cnf.Get("bottom"))
+}
+
 func TestDelete(t *testing.T) {
 	cnf := conf.New("conf")
 
