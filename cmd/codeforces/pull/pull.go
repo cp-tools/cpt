@@ -56,7 +56,7 @@ func Pull(arg codeforces.Args, mode, username string, cnf *conf.Conf) {
 			// Determine folder path to parse problem submission to.
 			var problemDirBuf strings.Builder
 			folderPathTmplt.Execute(&problemDirBuf, sub)
-			problemDir := problemDirBuf.String()
+			problemDir := filepath.Clean(problemDirBuf.String())
 			// Create folder and check for errors.
 			if err := os.MkdirAll(problemDir, os.ModePerm); err != nil {
 				fmt.Println(color.RedString("error occurred while creating problem folder:"), err)
