@@ -37,8 +37,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cornfeedhobo/pflag v1.0.2 h1:IjSe1CSlZeyvu35MojSSkOy0KT2D9o3/GkqXkYe+Ufw=
 github.com/cornfeedhobo/pflag v1.0.2/go.mod h1:52HSr+TtbhOmAXFt941ErpwRFt+yJBCDDsZdW/kD/JM=
-github.com/cp-tools/cpt-lib/v2 v2.1.0 h1:RAqpIM8gBr0IjTQHwZFhrCuLudww9hzWis4bvHJw/78=
-github.com/cp-tools/cpt-lib/v2 v2.1.0/go.mod h1:k5w8CwUeMh9eLaKC0fjinJLXyHYFgNJr3tAtNr1R/e0=
+github.com/cp-tools/cpt-lib/v2 v2.1.1 h1:YdqrOzzfL3nr97cnWG8+yubmCgy8g3Y5ROEdKyHPFHA=
+github.com/cp-tools/cpt-lib/v2 v2.1.1/go.mod h1:k5w8CwUeMh9eLaKC0fjinJLXyHYFgNJr3tAtNr1R/e0=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
