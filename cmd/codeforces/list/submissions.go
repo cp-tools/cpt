@@ -15,8 +15,8 @@ import (
 
 // Submissions displays tabular submission data.
 func Submissions(arg codeforces.Args, username string, count uint) {
-	// Anything more than 1 page (50 rows) makes no sense.
-	chanSubmissions, err := arg.GetSubmissions(username, 1)
+	pageCount := (count-1)/50 + 1
+	chanSubmissions, err := arg.GetSubmissions(username, pageCount)
 	if err != nil {
 		fmt.Println(color.RedString("error while fetching submission details:"), err)
 		os.Exit(1)
@@ -29,17 +29,16 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 	// Create table to use.
 	t := uitable.New()
 	t.Separator = " | "
-	t.MaxColWidth = 30
-	t.Wrap = true
 
 	hdr := util.ColorHeaderFormat("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY")
 	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4], hdr[5])
 
 	for submissions := range chanSubmissions {
-		for _, submission := range submissions {
+		for i, submission := range submissions {
 			// We have to only print count rows of data.
-			if count == 0 {
-				continue
+			if (pageCount == 1 && uint(i) >= count) ||
+				(pageCount > 1 && count == 0) {
+				break
 			}
 
 			verdict := CompressVerdicts(submission.Verdict)
@@ -53,10 +52,21 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 				submission.Memory,   // Memory consumed
 			)
 
-			count--
+			if pageCount > 1 {
+				count--
+			}
 		}
-		fmt.Fprintln(writer, t.String())
+		if pageCount == 1 {
+			// Continuous rendering when pageCount
+			// is 1. Else, render all rows at once,
+			// after all required rows are parsed.
+			fmt.Fprintln(writer, t.String())
+			// Clear the table and add the header (again).
+			t.Rows = nil
+			t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4], hdr[5])
+		}
 	}
+	fmt.Fprintln(writer, t.String())
 	writer.Stop()
 }
 

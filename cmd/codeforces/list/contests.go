@@ -14,8 +14,8 @@ import (
 
 // Contests displays tabular contest data.
 func Contests(arg codeforces.Args, count uint) {
-	// Anything more than 1 page (100 rows) makes no sense.
-	chanContests, err := arg.GetContests(1)
+	pageCount := (count-1)/100 + 1
+	chanContests, err := arg.GetContests(pageCount)
 	if err != nil {
 		fmt.Println(color.RedString("error while fetching contest details:"), err)
 		os.Exit(1)
