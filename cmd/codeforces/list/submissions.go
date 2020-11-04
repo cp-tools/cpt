@@ -3,7 +3,6 @@ package list
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/util"
@@ -41,7 +40,7 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 				break
 			}
 
-			verdict := CompressVerdicts(submission.Verdict)
+			verdict := ColorVerdict(submission)
 
 			t.AddRow(
 				submission.ID,       // Submission ID
@@ -66,27 +65,35 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 			t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4], hdr[5])
 		}
 	}
-	fmt.Fprintln(writer, t.String())
+	if pageCount > 1 {
+		fmt.Fprintln(writer, t.String())
+	}
+
 	writer.Stop()
 }
 
-// CompressVerdicts compresses and returns color to use.
-func CompressVerdicts(verdict string) string {
-	ccMap := [][]interface{}{
-		{"Accepted", "Accepted", color.FgHiGreen},
-		{"Partial result", "PR", color.FgHiGreen},
-		{"Compilation error", "CE", color.FgHiYellow},
-		{"Wrong answer", "WA", color.FgHiRed},
-		{"Runtime error", "RTE", color.FgHiRed},
-		{"Time limit exceeded", "TLE", color.FgHiYellow},
+// ColorVerdict returns color coded verdict of submission.
+func ColorVerdict(sub codeforces.Submission) string {
+	ccMap := map[int]color.Attribute{
+		codeforces.VerdictAC:          color.FgHiGreen,
+		codeforces.VerdictPretestPass: color.FgHiGreen,
+
+		codeforces.VerdictWA:   color.FgHiRed,
+		codeforces.VerdictRTE:  color.FgHiRed,
+		codeforces.VerdictDOJ:  color.FgHiRed,
+		codeforces.VerdictHack: color.FgHiRed,
+
+		codeforces.VerdictCE:  color.FgHiYellow,
+		codeforces.VerdictTLE: color.FgHiYellow,
+		codeforces.VerdictMLE: color.FgHiYellow,
+		codeforces.VerdictILE: color.FgHiYellow,
+
+		codeforces.VerdictSkip: color.FgHiCyan,
 	}
 
-	for _, val := range ccMap {
-		if key := val[0].(string); strings.Contains(verdict, key) {
-			// Clean text; update color; return
-			verdict = strings.ReplaceAll(verdict, key, val[1].(string))
-			return color.New(val[2].(color.Attribute)).Sprint(verdict)
-		}
+	if col, ok := ccMap[sub.VerdictStatus]; ok {
+		return color.New(col).Sprint(sub.Verdict)
 	}
-	return verdict
+
+	return sub.Verdict
 }

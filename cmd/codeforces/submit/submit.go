@@ -39,7 +39,7 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	for sub := range submission {
 		t.Rows = nil
 
-		verdict := list.CompressVerdicts(sub.Verdict)
+		verdict := list.ColorVerdict(sub)
 
 		t.AddRow(color.BlueString("Verdict:"), verdict)
 		if sub.IsJudging == false {
