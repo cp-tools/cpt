@@ -9,6 +9,7 @@ import (
 	"github.com/cp-tools/cpt/packages/conf"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +19,8 @@ var rootCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Initialize global configurations.
 		initGlobalConf()
+		// Set verbose text coloring.
+		color.NoColor = !cnf.GetBool("ui.stdoutColor")
 	},
 
 	Version: "v0.12.1",
