@@ -9,6 +9,10 @@ Written in [GO](https://golang.org), the compiled executable is cross platform, 
 
 Don't forget to star :star:the project if you found it useful. :smile:
 
+
+
+![](assets/demo.gif)
+
 # Table of Contents
 
 - [Overview](#overview)
