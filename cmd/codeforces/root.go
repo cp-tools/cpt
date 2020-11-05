@@ -1,12 +1,15 @@
 package codeforces
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/packages/conf"
 
+	"github.com/fatih/color"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 )
@@ -43,7 +46,10 @@ func InitModuleConf(rootCnf *conf.Conf, confDir string) {
 func startHeadlessBrowser() {
 	binary := cnf.GetString("browser.binary")
 	profile := cnf.GetString("browser.profile")
-	codeforces.Start(true, profile, binary)
+	if err := codeforces.Start(true, profile, binary); err != nil {
+		fmt.Println(color.RedString("error launching automated browser:"), err)
+		os.Exit(1)
+	}
 }
 
 func parseSpecifier(args []string, rootCnf *conf.Conf) (codeforces.Args, error) {
