@@ -5,7 +5,7 @@ Short for competitive programming tool, `cpt` is an extensively configurable, fe
 
 > Built by CP'ers, built for CP'ers!
 
-Written in [GO](https://golang.org), the compiled executable is cross platform, standalone (no external dependencies) and minisculine in size.
+Written in [GO](https://golang.org), the compiled executable is cross platform, standalone (no external dependencies) and minuscule in size.
 
 Don't forget to star :star:the project if you found it useful. :smile:
 
@@ -26,7 +26,7 @@ Don't forget to star :star:the project if you found it useful. :smile:
 
 Started as a casual fork of [xalanq/cf-tool](https://github.com/xalanq/cf-tool), and with heavy inspiration from [online-judge-tools/oj](https://github.com/online-judge-tools/oj), this project was brought to life. The project follows the *[KISS](https://en.wikipedia.org/wiki/KISS_principle)* principle, making the user experience as smooth as possible.
 
-Uses [cp-tools/cpt-lib](https://github.com/cp-tools/cpt-lib) as the backend to handle and process website related tasks. **The backend uses the currently active browser session, doing away with any account setup related hassles.**
+Uses [cp-tools/cpt-lib](https://github.com/cp-tools/cpt-lib) as the back end to handle and process website related tasks. **The back end uses the currently active browser session, doing away with any account setup related hassles.**
 
 A non-exhaustive list of notable features of this project are:
 
@@ -45,9 +45,6 @@ This list is severely incomplete, and the best way to acquaint yourself with all
 
 # Getting Started
 
-*:warning: Comprehensive documentation is underway (coming soon). :warning:*
-**:mega: Please contribute in making the documentation better!**
-
 ## Installation
 
 *The following instructions are only for first time users. Existing users can use `cpt upgrade` to upgrade the tool to the latest GitHub released version.*
@@ -63,83 +60,12 @@ go build -ldflags "-s -w"
 
 ---
 
-You will also require *checkers* to test (with the command `cpt test`) your solution code against. A set of default *testlib* checkers (maintained at [cp-tools/cpt-checker](https://github.com/cp-tools/cpt-checker)) can be downloaded and installed using the command `cpt upgrade -mc`. 
+You will also require *checkers* to test (with the command `cpt test`) your solution code against. A set of default *testlib* checkers (maintained at [cp-tools/cpt-checker](https://github.com/cp-tools/cpt-checker)) can be downloaded and installed using the command `cpt upgrade -mc`.
 
 ## Usage
 
-Run the following command to bring up the main help menu:
-
-```bash
-cpt --help
-```
-
-```
-Lightweight cli tool for competitive programming!
-
-Usage:
-  cpt [command]
-
-Available Commands:
-  codeforces  Functions exclusive to codeforces
-  config      Configure global settings
-  generate    Create file using template
-  help        Help about any command
-  test        Run code file against sample tests
-  upgrade     Upgrade cli to latest version
-
-Flags:
-  -h, --help      help for cpt
-  -v, --version   version for cpt
-
-Use "cpt [command] --help" for more information about a command.
-```
-
-Each sub command has a dedicated help menu, that can be accessed in a similar fashion.
-
-```bash
-cpt codeforces --help
-```
-```
-Functions exclusive to codeforces
-
-Usage:
-  cpt codeforces [command]
-
-Aliases:
-  codeforces, cf
-
-Available Commands:
-  config      Configure codeforces settings
-  fetch       Fetch and save problem tests
-  list        Lists specified data in tabular form
-  open        Open required page in default browser
-  pull        Pulls submissions to local storage
-  submit      Submit problem solution to judge
-
-Flags:
-  -h, --help   help for codeforces
-
-Use "cpt codeforces [command] --help" for more information about a command.
-```
-
-Many commands also have command flags, which can also be viewed in the help menu.
-
-```bash
-cpt test --help
-```
-```
-Run code file against sample tests
-
-Usage:
-  cpt test [flags]
-
-Flags:
-  -c, --checker string       testlib checker to use (default "lcmp")
-  -f, --file string          code file to run tests on
-  -h, --help                 help for test
-  -m, --mode string          mode to run tests on (default "j")
-  -t, --timelimit duration   timelimit per test (default 2s)
-```
+*:warning: Comprehensive documentation is underway (coming soon). :warning:*
+**:mega: Please contribute in making the documentation better!**
 
 # FAQ
 
