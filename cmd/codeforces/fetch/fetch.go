@@ -80,7 +80,7 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 		if cnf.GetBool("generate.onFetch") == true {
 			alias := cnf.GetString("generate.defaultTemplate")
 			if alias != "" && cnf.Has("template."+alias) {
-				generate.Generate(alias, problemCnf)
+				generate.Generate(alias, problemCnf, problemCnf.GetAll())
 			}
 		}
 

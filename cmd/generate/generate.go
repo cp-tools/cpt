@@ -22,7 +22,7 @@ import (
 // Spaces in the file name are also replaced with underscore.
 //
 // Ensure 'cnf' is local (folder) configuration.
-func Generate(alias string, cnf *conf.Conf) {
+func Generate(alias string, cnf *conf.Conf, dataMap map[string]interface{}) {
 	// Extract templateMap from conf.
 	templateMap, ok := cnf.Get("template." + alias).(map[string]interface{})
 	if !ok {
@@ -44,6 +44,7 @@ func Generate(alias string, cnf *conf.Conf) {
 		color.Red("error reading template code file: %v", err)
 		os.Exit(1)
 	}
+	templateData = updatePlaceholders(templateData, dataMap)
 
 	// Extract base name of the current directory.
 	currentDir, err := os.Getwd()
@@ -75,16 +76,4 @@ func Generate(alias string, cnf *conf.Conf) {
 	cnf.WriteFile()
 
 	color.Green("created code file: %v", fileName)
-}
-
-func DecideFileName(baseFileName, fileExtension string) string {
-	for fileName, i := baseFileName, 0; true; i++ {
-		fullName := fileName + fileExtension
-		if file, err := os.Stat(fullName); os.IsNotExist(err) || file.IsDir() {
-			return fullName
-		}
-		fileName = fmt.Sprintf("%v_%d", baseFileName, i)
-	}
-	// Impossible case
-	return ""
 }
