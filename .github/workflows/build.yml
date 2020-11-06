@@ -2,11 +2,9 @@ name: Build
 
 on:
   push:
-    branches:
-    - master
+    branches: [master]
   pull_request:
-    branches:
-    - master
+    branches: [master]
 
 jobs:
   build:
@@ -27,6 +25,14 @@ jobs:
         id: go
 
       - uses: actions/checkout@v2
+
+      - name: Cache Dependencies
+        uses: actions/cache@v1.2.0
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Build
         run: go build -v .

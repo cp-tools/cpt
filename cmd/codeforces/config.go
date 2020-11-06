@@ -1,7 +1,9 @@
-package cmd
+package codeforces
 
 import (
+	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/config"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -10,37 +12,34 @@ import (
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Args:  cobra.NoArgs,
-	Short: "Configure global settings",
+	Short: "Configure codeforces settings",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Prompt user for configuration to modify.
 		index := 0
 		survey.AskOne(&survey.Select{
 			Message: "What configuration do you want to perform?",
 			Options: []string{
-				"template - add new",
-				"template - delete existing",
+				"template - set language",
 				"generate - run on 'fetch'",
 				"generate - set default template",
 				"browser - set headless browser",
-				"ui - set stdout colorization",
 			},
 		}, &index)
 
-		// We are editing global config here.
-		rootCnf := cnf.GetParent("global")
+		rootCnf := cnf.GetParent("codeforces")
 		switch index {
 		case 0:
-			config.AddTemplate(rootCnf)
+			languages := util.ExtractMapKeys(codeforces.LanguageID)
+			config.SetTemplateLanguage(rootCnf, languages)
+
 		case 1:
-			config.RemoveTemplate(rootCnf)
-		case 2:
 			config.SetGenerateOnFetch(rootCnf)
-		case 3:
+
+		case 2:
 			config.SetDefaultTemplate(rootCnf)
-		case 4:
+
+		case 3:
 			config.SetHeadlessBrowser(rootCnf)
-		case 5:
-			config.SetStdoutColor(rootCnf)
 		}
 		// Write file after changes are done.
 		rootCnf.WriteFile()
