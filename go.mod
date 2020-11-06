@@ -3,7 +3,7 @@ module github.com/cp-tools/cpt
 go 1.14
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.2.0
+	github.com/AlecAivazis/survey/v2 v2.2.2
 	github.com/cp-tools/cpt-lib/v2 v2.1.2
 	github.com/fatih/color v1.10.0
 	github.com/gosuri/uilive v0.0.4
