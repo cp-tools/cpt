@@ -35,7 +35,7 @@ var generateCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		template := cmd.Flags().MustGetString("template")
-		generate.Generate(template, cnf)
+		generate.Generate(template, cnf, cnf.GetAll())
 	},
 }
 
