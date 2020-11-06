@@ -19,14 +19,14 @@ Don't forget to star :star:the project if you found it useful. :smile:
 - [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Usage](#usage)
-- [Contributing](#contributing)
+- [Contributing](CONTRIBUTING.md)
 - [FAQ](#faq)
 
 # Overview
 
 Started as a casual fork of [xalanq/cf-tool](https://github.com/xalanq/cf-tool), and with heavy inspiration from [online-judge-tools/oj](https://github.com/online-judge-tools/oj), this project was brought to life. The project follows the *[KISS](https://en.wikipedia.org/wiki/KISS_principle)* principle, making the user experience as smooth as possible.
 
-Uses [cp-tools/cpt-lib](https://github.com/cp-tools/cpt-lib) as the back end to handle and process website related tasks. **The back end uses the currently active browser session, doing away with any account setup related hassles.**
+Uses [cp-tools/cpt-lib](https://github.com/cp-tools/cpt-lib) as the back end to handle and process website related tasks. **The back end uses browser automation with the current browser session, doing away with any account setup related hassles.**
 
 A non-exhaustive list of notable features of this project are:
 
