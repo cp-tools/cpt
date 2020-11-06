@@ -65,7 +65,8 @@ You will also require *checkers* to test (with the command `cpt test`) your solu
 ## Usage
 
 *:warning: Comprehensive documentation is underway (coming soon). :warning:*
-**:mega: Please contribute in making the documentation better!**
+
+**:mega: Please contribute in making the [wiki](https://github.com/cp-tools/cpt/wiki) documentation better!**
 
 # FAQ
 
