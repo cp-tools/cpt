@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
-	"text/template"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/open"
@@ -43,8 +41,7 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 
 	// Template to use to specify folder path for each fetched problem.
 	folderPath := filepath.Join(cnf.GetStrings("fetch.problemFolderPath")...)
-	folderPathTmplt, err := template.New("template").Parse(folderPath)
-	if err != nil {
+	if _, err := util.CleanTemplate(folderPath, nil); err != nil {
 		fmt.Println(color.RedString("error occurred while parsing 'folderPath' template:"), err)
 		os.Exit(1)
 	}
@@ -57,9 +54,8 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 
 	for _, problem := range problems {
 		// Determine folder path to parse problem to.
-		var problemDirBuf strings.Builder
-		folderPathTmplt.Execute(&problemDirBuf, problem)
-		problemDir := filepath.Clean(problemDirBuf.String())
+		problemDir, _ := util.CleanTemplate(folderPath, problem)
+		problemDir = filepath.Clean(problemDir)
 		// Create folder and check for errors.
 		if err := os.MkdirAll(problemDir, os.ModePerm); err != nil {
 			fmt.Println(color.RedString("error occurred while creating problem folder:"), err)

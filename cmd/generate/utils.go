@@ -1,11 +1,11 @@
 package generate
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"text/template"
 	"time"
+
+	"github.com/cp-tools/cpt/util"
 )
 
 func DecideFileName(baseFileName, fileExtension string) string {
@@ -25,10 +25,6 @@ func updatePlaceholders(str []byte, dataMap map[string]interface{}) []byte {
 	dataMap["date"] = time.Now().Format("02.01.2006")
 	dataMap["time"] = time.Now().Format("15:04")
 
-	var out bytes.Buffer
-	tmplt := template.New("")
-	tmplt.Parse(string(str))
-	tmplt.Execute(&out, dataMap)
-
-	return out.Bytes()
+	out, _ := util.CleanTemplate(string(str), dataMap)
+	return []byte(out)
 }

@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"text/template"
 	"time"
 
 	"github.com/cp-tools/cpt/util"
@@ -18,38 +17,55 @@ import (
 	"github.com/gosuri/uitable"
 )
 
-func judgeMode(script, checkerTmplt string, timelimit time.Duration,
+func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 	inputFile, expectedFile string, index int) {
-	// A hacky function to color certain parts of a template.
-	c := color.New(color.FgBlue, color.Bold).SprintFunc()
-
 	// Verdict template configurations.
-	verdictTmpltData := map[string]interface{}{}
-	tmplt := template.Must(template.New("verdict").Parse(
-		c("Test:") + " #{{.index}}    " + c("Verdict:") + " {{.verdict}}    " + c("Time:") + " {{.elapsed}}\n" +
-			"{{- if .failLog}}\n" + c("Fail:") + " {{.failLog}}{{end}}\n" +
-			"{{- if .stderr}}\n" + c("Stderr:") + "\n{{.stderr}}{{end}}\n" +
-			"{{- if .checkerLog}}\n" + c("Checker Log:") + " {{.checkerLog}}{{end}}\n" +
-			"{{- if .testDetails}}\n" + c("Input:") + "\n{{.input}}\n{{.testDetails}}{{end}}\n",
-	))
-
-	// Checker template configurations.
-	checkerTmpltData := map[string]interface{}{
-		"inputFile":    inputFile,
-		"expectedFile": expectedFile,
+	var verdictData struct {
+		Index      int
+		Verdict    string
+		Elapsed    time.Duration
+		FailLog    error
+		Stderr     string
+		CheckerLog string
+		Input      string
+		Compare    string
 	}
-	template.Must(tmplt.New("checker").Parse(checkerTmplt))
 
-	// handle panic.
+	// handle panic; print verdict.
 	defer func() {
-		verdictTmpltData["index"] = index
+		verdictData.Index = index
 		// handle panic; recover.
 		if r := recover(); r != nil {
-			verdictTmpltData["verdict"] = color.RedString("FAIL")
-			verdictTmpltData["failLog"] = r.(error)
+			verdictData.Verdict = color.RedString("FAIL")
+			verdictData.FailLog = r.(error)
 		}
-		// Print verdict data to stdout.
-		tmplt.ExecuteTemplate(os.Stdout, "verdict", verdictTmpltData)
+
+		// Verdict format is as follows:
+
+		c := color.New(color.FgBlue, color.Bold).SprintFunc()
+		out, _ := util.CleanTemplate(strings.Join([]string{
+			// Test: #4    Verdict: WA    Time: 32ms
+			c("Test:") + " #{{.Index}}" + "\t" + c("Verdict:") + " {{.Verdict}}" + "\t" + c("Time:") + " {{.Elapsed}}",
+			// Fail: Could not execute checker
+			"{{- if .FailLog}}\n" + c("Fail:") + " {{.FailLog}}" + "{{end}}",
+			// Stderr:
+			// 1 2 3
+			// a b c
+			"{{- if .Stderr}}\n" + c("Stderr:") + "\n{{.Stderr}}" + "{{end}}",
+			// Checker Log: Wrong answer, expected 3, found 4.
+			"{{- if .CheckerLog}}\n" + c("Checker Log:") + " {{.CheckerLog}}" + "{{end}}",
+			// Input:
+			// 5 3
+			// 1 2 3 4 5
+			//
+			// OUTPUT | EXPECTED
+			// 4      | 3
+			// 1      | 1
+			"{{- if .Compare}}\n" + c("Input:") + "\n{{.Input}}" + "\n{{.Compare}}" + "{{end}}",
+		}, "\n"), verdictData)
+
+		fmt.Println()
+		fmt.Println(strings.TrimSpace(out))
 	}()
 
 	// Read input from file.
@@ -61,20 +77,20 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 
 	// Run code against test case.
 	var output, stderr bytes.Buffer
-	elapsed, err := runShellScript(script, timelimit, input, &output, &stderr)
-	// Common to all template values to write.
-	verdictTmpltData["elapsed"] = elapsed.Truncate(time.Millisecond)
-	verdictTmpltData["stderr"] = stderr.String()
+	elapsed, err := runShellScript(runScript, timelimit, input, &output, &stderr)
+
+	verdictData.Elapsed = elapsed.Truncate(time.Millisecond)
+	verdictData.Stderr = stderr.String()
 
 	// Determine verdicts.
 	switch {
 	case errors.Is(err, context.DeadlineExceeded):
 		// It's a time limit exceeded case.
-		verdictTmpltData["verdict"] = color.YellowString("TLE")
+		verdictData.Verdict = color.YellowString("TLE")
 
 	case err != nil:
 		// It's a runtime error case.
-		verdictTmpltData["verdict"] = color.RedString("RTE")
+		verdictData.Verdict = color.RedString("RTE")
 
 	default:
 		// Output recieved, and program exited normally.
@@ -89,19 +105,24 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 		outputFile.Write(output.Bytes())
 
 		// Run checker to validate output.
-		var checkerScript strings.Builder
-		checkerTmpltData["outputFile"] = outputFile.Name()
-		tmplt.ExecuteTemplate(&checkerScript, "checker", checkerTmpltData)
+		checkerScript, err := util.CleanTemplate(checkerTmplt, map[string]string{
+			"inputFile":    inputFile,
+			"outputFile":   outputFile.Name(),
+			"expectedFile": expectedFile,
+		})
+		if err != nil {
+			panic(err)
+		}
 
 		var checkerStderr bytes.Buffer
-		_, err = runShellScript(checkerScript.String(), time.Minute, nil, nil, &checkerStderr)
+		_, err = runShellScript(checkerScript, time.Minute, nil, nil, &checkerStderr)
 
-		// Set template field data.
-		verdictTmpltData["checkerLog"] = checkerStderr.String()
+		verdictData.CheckerLog = checkerStderr.String()
+
 		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
 			// Checker ended with error code 1.
 			// Verdict is thus wrong answer.
-			verdictTmpltData["verdict"] = color.RedString("WA")
+			verdictData.Verdict = color.RedString("WA")
 
 			// Read input from file.
 			input, err := os.Open(inputFile)
@@ -150,23 +171,23 @@ func judgeMode(script, checkerTmplt string, timelimit time.Duration,
 
 			t.AddRow(string(outputBuf), string(expectedBuf))
 
-			verdictTmpltData["testDetails"] = t.String()
-			verdictTmpltData["input"] = string(inputBuf)
+			verdictData.Compare = t.String()
+			verdictData.Input = string(inputBuf)
 
 		} else if err != nil {
 			// Unknown error; Panic.
 			panic(err)
 		} else {
 			// Solution produced correct answer.
-			verdictTmpltData["verdict"] = color.GreenString("AC")
+			verdictData.Verdict = color.GreenString("AC")
 		}
 	}
 }
 
 func interactiveMode(script string) {
 	// It doesn't get any simpler, does it?
+	fmt.Println() // Newline for asthetics.
 	fmt.Println(color.GreenString("---- * ---- launched ---- * ----"))
 	runShellScript(script, time.Hour, os.Stdin, os.Stdout, os.Stderr)
 	fmt.Println(color.GreenString("---- * ---- finished ---- * ----"))
-	fmt.Println() // Newline for asthetics.
 }

@@ -3,11 +3,10 @@ package test
 import (
 	"fmt"
 	"os"
-	"strings"
-	"text/template"
 	"time"
 
 	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
 )
@@ -20,31 +19,21 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 	tmpltData := map[string]interface{}{
 		"file": fileName,
 	}
-	// Load all scripts into template (check if correctly formed).
-	preScript := cnf.GetString("template." + alias + ".preScript")
-	runScript := cnf.GetString("template." + alias + ".runScript")
-	postScript := cnf.GetString("template." + alias + ".postScript")
 
 	// Run preScript.
-	if preScript != "" {
-		var script strings.Builder
-		tmplt := template.Must(template.New("").Parse(preScript))
-		tmplt.Execute(&script, tmpltData)
-		fmt.Println(color.BlueString("prescript:"), script.String())
+	if preScript := cnf.GetString("template." + alias + ".preScript"); preScript != "" {
+		script, _ := util.CleanTemplate(preScript, tmpltData)
+		fmt.Println(color.BlueString("prescript:"), script)
 
-		if _, err := runShellScript(script.String(), time.Minute,
-			os.Stdin, os.Stdout, os.Stderr); err != nil {
+		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {
 			fmt.Println(err)
 			os.Exit(0)
 		}
-		fmt.Println()
 	}
 
 	// Run script for tests.
-	if runScript != "" {
-		var script strings.Builder
-		tmplt := template.Must(template.New("").Parse(runScript))
-		tmplt.Execute(&script, tmpltData)
+	if runScript := cnf.GetString("template." + alias + ".runScript"); runScript != "" {
+		script, _ := util.CleanTemplate(runScript, tmpltData)
 
 		switch mode {
 		case "j": // Default judge mode.
@@ -52,23 +41,21 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 
 			inputFiles, expectedFiles := extractTestsFiles(cnf)
 			for i := 0; i < len(inputFiles); i++ {
-				judgeMode(script.String(), checkerTmplt, timelimit, inputFiles[i], expectedFiles[i], i)
+				judgeMode(script, checkerTmplt, timelimit, inputFiles[i], expectedFiles[i], i)
 			}
 
 		case "i": // Interactive mode.
-			interactiveMode(script.String())
+			interactiveMode(script)
 		}
 	}
 
 	// Run postScript.
-	if postScript != "" {
-		var script strings.Builder
-		tmplt := template.Must(template.New("").Parse(postScript))
-		tmplt.Execute(&script, tmpltData)
-		fmt.Println(color.BlueString("postscript:"), script.String())
+	if postScript := cnf.GetString("template." + alias + ".postScript"); postScript != "" {
+		script, _ := util.CleanTemplate(postScript, tmpltData)
+		fmt.Println()
+		fmt.Println(color.BlueString("postscript:"), script)
 
-		if _, err := runShellScript(script.String(), time.Minute,
-			os.Stdin, os.Stdout, os.Stderr); err != nil {
+		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {
 			fmt.Println(err)
 			os.Exit(0)
 		}
