@@ -117,5 +117,10 @@ func runShellScript(script string, timeout time.Duration,
 	err = cmd.Run()
 	elapsed := time.Since(start)
 
+	if ctx.Err() == context.DeadlineExceeded {
+		// Timeout took place.
+		return elapsed, ctx.Err()
+	}
+
 	return elapsed, err
 }
