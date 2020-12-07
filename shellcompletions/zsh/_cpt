@@ -1,0 +1,77 @@
+#compdef _cpt cpt
+
+# Designed for the current latest cp-tools/cpt
+
+_cpt() {
+
+	local line
+
+	_arguments \
+		'1: :(\
+		codeforces \
+		cf \
+		config \
+		generate \
+		help \
+		test \
+		upgrade \
+		)' \
+		'*::arg:->args' \
+		'-h[Show the help information]' \
+		'--help[Show the help information]' \
+		'-v[Show the version]' \
+		'--version[Show the version]'
+
+	case $line[1] in
+		codeforces|cf)
+			_cpt_cf ;;
+		generate)
+			_cpt_generate ;;
+		help)
+			_cpt_help ;;
+		test)
+			_cpt_test ;;
+		upgrade)
+			_cpt_upgrade ;;
+
+	esac
+
+}
+
+_cpt_cf() {
+	_arguments  '1: :(config fetch list open pull submit)'
+}
+
+_cpt_generate() {
+	_arguments  \
+		'-t[specify alias name of template to use]' \
+		'--template[specify alias name of template to use]' \
+		'-h[help for generate]' \
+		'--help[help for generate]'
+}
+ _cpt_help() {
+	 _arguments \
+		 '1: :(codeforces config generate help test upgrade)'
+ }
+
+_cpt_test() {
+	_arguments \
+		'-c[testlib checker to use (default: lcmp)]' \
+		'--checker[testlib checker to use (default: lcmp)]' \
+		'-f[code file to run tests on]' \
+		'--file[code file to run tests on]' \
+		'-h[help for test]' \
+		'--help[help for test]' \
+		'-m[mode to run tests on (default: j)]' \
+		'--mode[mode to run tests on (default: j)]' \
+		'-t[timelimit per test (default: 2s)]' \
+		'--timelimit[timelimit per test (default: 2s)]' \
+}
+
+_cpt_upgrade() {
+	_arguments \
+		'-h[help for upgrade]' \
+		'--help[help for upgrade]' \
+		'-m[package to be upgraded (default: s)]' \
+		'--mode[package to be upgraded (default: s)]' \
+}
