@@ -8,7 +8,7 @@ import (
 )
 
 var upgradeCmd = &cobra.Command{
-	Use:   "upgrade",
+	Use:   "upgrade [-m s|-m c]",
 	Args:  cobra.NoArgs,
 	Short: "Upgrade cli to latest version",
 	PreRunE: func(cmd *cobra.Command, args []string) error {

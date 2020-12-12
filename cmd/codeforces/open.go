@@ -9,7 +9,7 @@ import (
 )
 
 var openCmd = &cobra.Command{
-	Use:   "open [SPECIFIER]",
+	Use:   "open [SPECIFIER] [-m p|-m d|-m s]",
 	Short: "Open required page in default browser",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)

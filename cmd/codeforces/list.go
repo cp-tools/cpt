@@ -10,7 +10,7 @@ import (
 )
 
 var listCmd = &cobra.Command{
-	Use:   "list [SPECIFIER]",
+	Use:   "list [SPECIFIER] [-m c|-m d|-m s]",
 	Short: "Lists specified data in tabular form",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)

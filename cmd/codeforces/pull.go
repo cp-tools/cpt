@@ -10,7 +10,7 @@ import (
 )
 
 var pullCmd = &cobra.Command{
-	Use:   "pull [SPECIFIER]",
+	Use:   "pull [SPECIFIER] [-m l|-m la|-m a|-m aa]",
 	Short: "Pulls submissions to local storage",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)

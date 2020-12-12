@@ -12,7 +12,7 @@ import (
 )
 
 var testCmd = &cobra.Command{
-	Use:   "test",
+	Use:   "test [-m i|-m j]",
 	Short: "Run code file against sample tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)
