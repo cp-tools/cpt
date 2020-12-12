@@ -78,3 +78,13 @@ There are 2 configurations that need to be done, in order to use all functionali
 - **Template** - Run `cpt config` - select `template - add new` - follow the template generation wizard to complete setting up the template. Also, to map the template to a language on a website, run `cpt <website> config` - select `template - set language` - select the corresponding template and set the language name (on the website) that it corresponds to.
 
 With these configurations done, all provided functionalities are usable.
+
+### How do I configure tab autocompletion?
+
+Run the below command and follow the instructions to enable it.
+```
+cpt completion --help
+```
+Windows (powershell) users may refer to [this](https://github.com/spf13/cobra/blob/master/powershell_completions.md) for installation instructions.
+
+Note that, the tab completion must be configured every time a new command is added.
