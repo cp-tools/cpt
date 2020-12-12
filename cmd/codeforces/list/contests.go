@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
-	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
-	"github.com/gosuri/uitable"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // Contests displays tabular contest data.
@@ -22,13 +22,21 @@ func Contests(arg codeforces.Args, count uint) {
 	}
 
 	// Create table to use.
-	t := uitable.New()
-	t.Separator = " | "
-	t.MaxColWidth = 30
-	t.Wrap = true
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.Style().Options.DrawBorder = false
 
-	hdr := util.ColorHeaderFormat("ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION")
-	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4])
+	headerColor := text.Colors{text.FgBlue, text.Bold}
+	t.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignRight, WidthMax: 8},
+		{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 30},
+		{Number: 3, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignCenter, WidthMax: 25},
+		{Number: 4, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignCenter, WidthMax: 30},
+		{Number: 5, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignCenter, WidthMax: 14},
+	})
+	t.Style().Options.SeparateRows = true
+
+	t.AppendHeader(table.Row{"ID", "NAME", "WRITERS", "TIMINGS", "REGISTRATION"})
 
 	for contests := range chanContests {
 		for _, contest := range contests {
@@ -39,7 +47,7 @@ func Contests(arg codeforces.Args, count uint) {
 			// Pretty format timings data.
 			var timings string
 			timings += fmt.Sprintf("Begins: %v\n", contest.StartTime.Local().Format("Jan/02/2006 15:04"))
-			timings += fmt.Sprintf("Length: %v\n", contest.Duration.String())
+			timings += fmt.Sprintf("Length: %v", contest.Duration.String())
 
 			// @todo Hyperlink registration status text
 			// @body Make hyperlink to registration page if registration is open.
@@ -57,16 +65,16 @@ func Contests(arg codeforces.Args, count uint) {
 				registrationStatus = color.HiYellowString("NA")
 			}
 
-			t.AddRow(
-				contest.Arg.Contest,                 // Contest ID
-				contest.Name,                        // Contest name
-				strings.Join(contest.Writers, ", "), // Contest writers
-				timings,                             // Contest timings
-				registrationStatus,                  // Registration status
-			)
+			t.AppendRow(table.Row{
+				contest.Arg.Contest,                // Contest ID
+				contest.Name,                       // Contest name
+				strings.Join(contest.Writers, " "), // Contest writers
+				timings,                            // Contest timings
+				registrationStatus,                 // Registration status
+			})
 
 			count--
 		}
 	}
-	fmt.Println(t.String())
+	fmt.Println(t.Render())
 }

@@ -11,7 +11,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"github.com/gosuri/uitable"
+	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 // Submit submits
@@ -29,26 +29,26 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	fmt.Println(color.GreenString("Submitted successfully!"))
 
 	// Table to use to display verdict.
-	t := uitable.New()
-	t.Separator = "\t"
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.Style().Options.DrawBorder = false
+	t.Style().Box.PaddingRight = "\t"
 
 	// Run live verdict till judging completed.
 	writer := uilive.New()
 	writer.Start()
 
 	for sub := range submission {
-		t.Rows = nil
+		t.ResetRows()
 
-		verdict := list.ColorVerdict(sub)
-
-		t.AddRow(color.BlueString("Verdict:"), verdict)
+		t.AppendRow(table.Row{color.BlueString("Verdict:"), list.ColorVerdict(sub)})
 		if sub.IsJudging == false {
 			// Judging done; add resource data.
-			t.AddRow(color.BlueString("Memory:"), sub.Memory)
-			t.AddRow(color.BlueString("Time:"), sub.Time)
+			t.AppendRow(table.Row{color.BlueString("Memory:"), sub.Memory})
+			t.AppendRow(table.Row{color.BlueString("Time:"), sub.Time})
 		}
 
-		fmt.Fprintln(writer, t.String())
+		fmt.Fprintln(writer, t.Render())
 	}
 
 	writer.Stop()

@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
-	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
-	"github.com/gosuri/uitable"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // Submissions displays tabular submission data.
@@ -26,11 +26,21 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 	writer.Start()
 
 	// Create table to use.
-	t := uitable.New()
-	t.Separator = " | "
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.Style().Options.DrawBorder = false
 
-	hdr := util.ColorHeaderFormat("ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY")
-	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4], hdr[5])
+	headerColor := text.Colors{text.FgBlue, text.Bold}
+	t.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignRight, WidthMax: 11},
+		{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 30},
+		{Number: 3, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignCenter, WidthMax: 15},
+		{Number: 4, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignCenter, WidthMax: 15},
+		{Number: 5, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignRight, WidthMax: 12},
+		{Number: 6, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignRight, WidthMax: 12},
+	})
+
+	t.AppendHeader(table.Row{"ID", "PROBLEM", "LANG", "VERDICT", "TIME", "MEMORY"})
 
 	for submissions := range chanSubmissions {
 		for i, submission := range submissions {
@@ -42,14 +52,14 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 
 			verdict := ColorVerdict(submission)
 
-			t.AddRow(
+			t.AppendRow(table.Row{
 				submission.ID,       // Submission ID
 				submission.Problem,  // Problem name
 				submission.Language, // Submission language
 				verdict,             // Submission verdict
 				submission.Time,     // Time consumed
 				submission.Memory,   // Memory consumed
-			)
+			})
 
 			if pageCount > 1 {
 				count--
@@ -59,14 +69,13 @@ func Submissions(arg codeforces.Args, username string, count uint) {
 			// Continuous rendering when pageCount
 			// is 1. Else, render all rows at once,
 			// after all required rows are parsed.
-			fmt.Fprintln(writer, t.String())
+			fmt.Fprintln(writer, t.Render())
 			// Clear the table and add the header (again).
-			t.Rows = nil
-			t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3], hdr[4], hdr[5])
+			t.ResetRows()
 		}
 	}
 	if pageCount > 1 {
-		fmt.Fprintln(writer, t.String())
+		fmt.Fprintln(writer, t.Render())
 	}
 
 	writer.Stop()

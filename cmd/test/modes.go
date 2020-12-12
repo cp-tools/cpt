@@ -14,7 +14,8 @@ import (
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
-	"github.com/gosuri/uitable"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
@@ -161,17 +162,21 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 			}
 
 			// Table to display output difference.
-			t := uitable.New()
-			t.Separator = " | "
-			t.MaxColWidth = 50
-			t.Wrap = true
+			t := table.NewWriter()
+			t.SetStyle(table.StyleLight)
+			t.Style().Options.DrawBorder = false
+			t.Style().Box.PaddingRight = "\t"
 
-			hdr := util.ColorHeaderFormat("OUTPUT", "EXPECTED")
-			t.AddRow(hdr[0], hdr[1])
+			headerColor := text.Colors{text.FgBlue, text.Bold}
+			t.SetColumnConfigs([]table.ColumnConfig{
+				{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 50},
+				{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 50},
+			})
 
-			t.AddRow(string(outputBuf), string(expectedBuf))
+			t.AppendHeader(table.Row{"OUTPUT", "EXPECTED"})
+			t.AppendRow(table.Row{string(outputBuf), string(expectedBuf)})
 
-			verdictData.Compare = t.String()
+			verdictData.Compare = t.Render()
 			verdictData.Input = string(inputBuf)
 
 		} else if err != nil {

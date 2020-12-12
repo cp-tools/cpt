@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
-	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"
-	"github.com/gosuri/uitable"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 // Dashboard displays tabulated dashboard data.
@@ -23,14 +23,22 @@ func Dashboard(arg codeforces.Args) {
 	if dashboard.Countdown > 0 {
 		fmt.Println(color.BlueString("Contest ends in:"), dashboard.Countdown)
 	}
+	fmt.Println()
 
-	t := uitable.New()
-	t.Separator = " | "
-	t.MaxColWidth = 40
-	t.Wrap = true
+	// Create table to use.
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.Style().Options.DrawBorder = false
 
-	hdr := util.ColorHeaderFormat("#", "NAME", "STATUS", "SOLVED")
-	t.AddRow(hdr[0], hdr[1], hdr[2], hdr[3])
+	headerColor := text.Colors{text.FgBlue, text.Bold}
+	t.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignRight, WidthMax: 8},
+		{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 30},
+		{Number: 3, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignCenter, WidthMax: 10},
+		{Number: 4, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignRight, WidthMax: 10},
+	})
+
+	t.AppendHeader(table.Row{"#", "NAME", "STATUS", "SOLVED"})
 
 	for _, problem := range dashboard.Problem {
 		status := ""
@@ -43,13 +51,13 @@ func Dashboard(arg codeforces.Args) {
 			status = "NA"
 		}
 
-		t.AddRow(
+		t.AppendRow(table.Row{
 			problem.Arg.Problem, // Problem ID
 			problem.Name,        // Problem name
 			status,              // Solved status
 			problem.SolveCount,  // Solve count
-		)
+		})
 
 	}
-	fmt.Println(t.String())
+	fmt.Println(t.Render())
 }
