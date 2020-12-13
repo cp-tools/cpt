@@ -9,7 +9,6 @@ import (
 
 	"github.com/cp-tools/cpt/packages/conf"
 
-	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 )
 
@@ -40,14 +39,6 @@ func LoadLocalConf(cnf *conf.Conf) *conf.Conf {
 	cnf.LoadFile("meta.yaml")
 
 	return cnf
-}
-
-// ColorHeaderFormat sets color (for headers mostly).
-func ColorHeaderFormat(str ...string) []string {
-	for i := range str {
-		str[i] = color.New(color.FgBlue, color.Bold, color.Underline).Sprint(str[i])
-	}
-	return str
 }
 
 // CleanTemplate creates and runs template on passed string, with given params.

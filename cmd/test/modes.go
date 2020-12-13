@@ -28,7 +28,6 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 		FailLog    error
 		Stderr     string
 		CheckerLog string
-		Input      string
 		Compare    string
 	}
 
@@ -55,18 +54,18 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 			"{{- if .Stderr}}\n" + c("Stderr:") + "\n{{.Stderr}}" + "{{end}}",
 			// Checker Log: Wrong answer, expected 3, found 4.
 			"{{- if .CheckerLog}}\n" + c("Checker Log:") + " {{.CheckerLog}}" + "{{end}}",
-			// Input:
-			// 5 3
-			// 1 2 3 4 5
-			//
-			// OUTPUT | EXPECTED
-			// 4      | 3
-			// 1      | 1
-			"{{- if .Compare}}\n" + c("Input:") + "\n{{.Input}}" + "\n{{.Compare}}" + "{{end}}",
+			// INPUT     | EXPECTED | OUTPUT
+			// 5 3       | 3        | 4
+			// 1 2 3 4 5 | 1        | 1
+			"{{- if .Compare}}\n" + "{{.Compare}}" + "{{end}}",
 		}, "\n"), verdictData)
 
-		fmt.Println()
-		fmt.Println(strings.TrimSpace(out))
+		// Print box around verdict
+		t := table.NewWriter()
+		t.SetStyle(table.StyleBold)
+		t.AppendRow(table.Row{strings.TrimSpace(out)})
+
+		fmt.Println(t.Render())
 	}()
 
 	// Read input from file.
@@ -136,6 +135,7 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 			if n, _ := input.Read(inputBuf); n == len(inputBuf) {
 				inputBuf = append(inputBuf[:n-3], []byte("...")...)
 			}
+			inputBuf = bytes.Trim(inputBuf, "\x00")
 
 			// Read expected from file.
 			expected, err := os.Open(expectedFile)
@@ -148,6 +148,7 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 			if n, _ := expected.Read(expectedBuf); n == len(expectedBuf) {
 				expectedBuf = append(expectedBuf[:n-3], []byte("...")...)
 			}
+			expectedBuf = bytes.Trim(expectedBuf, "\x00")
 
 			// Read output from created output file.
 			output, err := os.Open(outputFile.Name())
@@ -160,24 +161,24 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 			if n, _ := output.Read(outputBuf); n == len(outputBuf) {
 				outputBuf = append(outputBuf[:n-3], []byte("...")...)
 			}
+			outputBuf = bytes.Trim(outputBuf, "\x00")
 
 			// Table to display output difference.
 			t := table.NewWriter()
 			t.SetStyle(table.StyleLight)
 			t.Style().Options.DrawBorder = false
-			t.Style().Box.PaddingRight = "\t"
 
 			headerColor := text.Colors{text.FgBlue, text.Bold}
 			t.SetColumnConfigs([]table.ColumnConfig{
-				{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 50},
-				{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 50},
+				{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, WidthMax: 40},
+				{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, WidthMax: 40},
+				{Number: 3, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, WidthMax: 40},
 			})
 
-			t.AppendHeader(table.Row{"OUTPUT", "EXPECTED"})
-			t.AppendRow(table.Row{string(outputBuf), string(expectedBuf)})
+			t.AppendHeader(table.Row{"INPUT", "EXPECTED", "OUTPUT"})
+			t.AppendRow(table.Row{string(inputBuf), string(expectedBuf), string(outputBuf)})
 
 			verdictData.Compare = t.Render()
-			verdictData.Input = string(inputBuf)
 
 		} else if err != nil {
 			// Unknown error; Panic.
@@ -191,7 +192,6 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 
 func interactiveMode(script string) {
 	// It doesn't get any simpler, does it?
-	fmt.Println() // Newline for asthetics.
 	fmt.Println(color.GreenString("---- * ---- launched ---- * ----"))
 	runShellScript(script, time.Hour, os.Stdin, os.Stdout, os.Stderr)
 	fmt.Println(color.GreenString("---- * ---- finished ---- * ----"))

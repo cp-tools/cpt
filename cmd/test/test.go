@@ -23,7 +23,7 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 	// Run preScript.
 	if preScript := cnf.GetString("template." + alias + ".preScript"); preScript != "" {
 		script, _ := util.CleanTemplate(preScript, tmpltData)
-		fmt.Println(color.BlueString("prescript:"), script)
+		fmt.Println(color.BlueString("prescript:"), script, "\n")
 
 		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {
 			fmt.Println(err)
@@ -52,8 +52,7 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 	// Run postScript.
 	if postScript := cnf.GetString("template." + alias + ".postScript"); postScript != "" {
 		script, _ := util.CleanTemplate(postScript, tmpltData)
-		fmt.Println()
-		fmt.Println(color.BlueString("postscript:"), script)
+		fmt.Println("\n", color.BlueString("postscript:"), script)
 
 		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {
 			fmt.Println(err)

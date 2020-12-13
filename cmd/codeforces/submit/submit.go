@@ -32,20 +32,22 @@ func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
 	t.Style().Options.DrawBorder = false
-	t.Style().Box.PaddingRight = "\t"
+	t.Style().Box.PaddingLeft = ""
+	t.Style().Box.MiddleVertical = "\t"
 
 	// Run live verdict till judging completed.
 	writer := uilive.New()
 	writer.Start()
 
+	headerColor := color.New(color.FgBlue, color.Bold).SprintFunc()
 	for sub := range submission {
 		t.ResetRows()
 
-		t.AppendRow(table.Row{color.BlueString("Verdict:"), list.ColorVerdict(sub)})
+		t.AppendRow(table.Row{headerColor("Verdict:"), list.ColorVerdict(sub)})
 		if sub.IsJudging == false {
 			// Judging done; add resource data.
-			t.AppendRow(table.Row{color.BlueString("Memory:"), sub.Memory})
-			t.AppendRow(table.Row{color.BlueString("Time:"), sub.Time})
+			t.AppendRow(table.Row{headerColor("Memory:"), sub.Memory})
+			t.AppendRow(table.Row{headerColor("Time:"), sub.Time})
 		}
 
 		fmt.Fprintln(writer, t.Render())
