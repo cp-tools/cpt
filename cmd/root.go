@@ -23,7 +23,7 @@ var rootCmd = &cobra.Command{
 		color.NoColor = !cnf.GetBool("ui.stdoutColor")
 	},
 
-	Version: "v0.13.2",
+	Version: "v0.14.0",
 }
 
 var (
