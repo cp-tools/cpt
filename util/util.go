@@ -7,8 +7,6 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/cp-tools/cpt/packages/conf"
-
 	"github.com/gosuri/uilive"
 )
 
@@ -31,14 +29,6 @@ func ExtractMapKeys(varMap interface{}) (data []string) {
 		data = append(data, key.String())
 	}
 	return
-}
-
-// LoadLocalConf returns local folder conf.
-func LoadLocalConf(cnf *conf.Conf) *conf.Conf {
-	cnf = conf.New("local").SetParent(cnf)
-	cnf.LoadFile("meta.yaml")
-
-	return cnf
 }
 
 // CleanTemplate creates and runs template on passed string, with given params.

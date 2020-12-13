@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/cp-tools/cpt/cmd/codeforces/submit"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/packages/conf"
 
 	"github.com/spf13/cobra"
 )
@@ -14,7 +14,7 @@ var submitCmd = &cobra.Command{
 	Use:   "submit [SPECIFIER]",
 	Short: "Submit problem solution to judge",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		cnf = util.LoadLocalConf(cnf)
+		cnf = conf.New("local").SetParent(cnf).LoadFile("meta.yaml")
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {

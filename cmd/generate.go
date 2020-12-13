@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cp-tools/cpt/cmd/generate"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/packages/conf"
 
 	"github.com/spf13/cobra"
 )
@@ -13,7 +13,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Create file using template",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		cnf = util.LoadLocalConf(cnf)
+		cnf = conf.New("local").SetParent(cnf).LoadFile("meta.yaml")
 
 		// Handle case where '--template' is not set.
 		if cmd.Flags().MustGetString("template") == "" {

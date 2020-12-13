@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/cp-tools/cpt/cmd/test"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/packages/conf"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +15,7 @@ var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Run code file against sample tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		cnf = util.LoadLocalConf(cnf)
+		cnf = conf.New("local").SetParent(cnf).LoadFile("meta.yaml")
 
 		// Check if mode is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")
