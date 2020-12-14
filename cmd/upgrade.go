@@ -8,7 +8,7 @@ import (
 )
 
 var upgradeCmd = &cobra.Command{
-	Use:   "upgrade [-m s|-m c]",
+	Use:   "upgrade",
 	Args:  cobra.NoArgs,
 	Short: "Upgrade cli to latest version",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -36,7 +36,7 @@ func init() {
 	rootCmd.AddCommand(upgradeCmd)
 
 	// All flags available to command.
-	upgradeCmd.Flags().StringP("mode", "m", "s", "package to be upgraded")
+	upgradeCmd.Flags().StringP("mode", "m", "s", "package to be upgraded [s|c]")
 
 	// All custom completes for command flags.
 	upgradeCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

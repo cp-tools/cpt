@@ -10,7 +10,7 @@ import (
 )
 
 var pullCmd = &cobra.Command{
-	Use:   "pull [SPECIFIER] [-m l|-m la|-m a|-m aa]",
+	Use:   "pull [SPECIFIER]",
 	Short: "Pulls submissions to local storage",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)
@@ -47,7 +47,7 @@ func init() {
 
 	// All flags available to command.
 	pullCmd.Flags().String("username", "", "user to fetch submissions of")
-	pullCmd.Flags().StringP("mode", "m", "la", "mode to select submissions to save")
+	pullCmd.Flags().StringP("mode", "m", "la", "mode to select submissions to save [l|la|a|aa]")
 
 	// All custom completions for command flags.
 	pullCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

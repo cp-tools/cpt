@@ -10,7 +10,7 @@ import (
 )
 
 var listCmd = &cobra.Command{
-	Use:   "list [SPECIFIER] [-m c|-m d|-m s]",
+	Use:   "list [SPECIFIER]",
 	Short: "Lists specified data in tabular form",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)
@@ -65,7 +65,7 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 
 	// All flags available to command.
-	listCmd.Flags().StringP("mode", "m", "c", "mode to select data to output")
+	listCmd.Flags().StringP("mode", "m", "c", "mode to select data to output [c|d|s]")
 	listCmd.Flags().String("username", "", "user to fetch submissions of")
 	listCmd.Flags().UintP("count", "n", 5, "maximum count of rows to display")
 

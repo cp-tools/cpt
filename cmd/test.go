@@ -12,7 +12,7 @@ import (
 )
 
 var testCmd = &cobra.Command{
-	Use:   "test [-m i|-m j]",
+	Use:   "test",
 	Short: "Run code file against sample tests",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)
@@ -56,7 +56,7 @@ func init() {
 	// All flags available to command.
 	testCmd.Flags().StringP("checker", "c", "lcmp", "testlib checker to use")
 	testCmd.Flags().StringP("file", "f", "", "code file to run tests on")
-	testCmd.Flags().StringP("mode", "m", "j", "mode to run tests on")
+	testCmd.Flags().StringP("mode", "m", "j", "mode to run tests on [j|i]")
 	testCmd.Flags().DurationP("timelimit", "t", 2*time.Second, "timelimit per test")
 
 	// All custom completions for command flags.

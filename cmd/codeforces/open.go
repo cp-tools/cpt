@@ -9,7 +9,7 @@ import (
 )
 
 var openCmd = &cobra.Command{
-	Use:   "open [SPECIFIER] [-m p|-m d|-m s]",
+	Use:   "open [SPECIFIER]",
 	Short: "Open required page in default browser",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		cnf = util.LoadLocalConf(cnf)
@@ -40,7 +40,7 @@ func init() {
 	rootCmd.AddCommand(openCmd)
 
 	// All flags available to command.
-	openCmd.Flags().StringP("mode", "m", "p", "mode to select page to open")
+	openCmd.Flags().StringP("mode", "m", "p", "mode to select page to open [p|d|s]")
 
 	// All custom completions for command flags.
 	openCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
