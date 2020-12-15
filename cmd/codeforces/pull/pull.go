@@ -7,7 +7,7 @@ import (
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/generate"
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"

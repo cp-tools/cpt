@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/cp-tools/cpt/cmd/codeforces/submit"
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 
 	"github.com/spf13/cobra"
 )

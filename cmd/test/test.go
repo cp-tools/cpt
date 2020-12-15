@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 	"github.com/cp-tools/cpt/util"
 
 	"github.com/fatih/color"

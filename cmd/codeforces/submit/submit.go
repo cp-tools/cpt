@@ -7,7 +7,7 @@ import (
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/list"
 	"github.com/cp-tools/cpt/cmd/test"
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"

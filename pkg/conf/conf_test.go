@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )

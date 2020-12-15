@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
