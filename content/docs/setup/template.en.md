@@ -12,7 +12,7 @@ weight: 1
 
 Templates are core components of cpt, and configuration of the same is required to use two of the most powerful features of cpt - `test` and `submit`.
 
-Templates are stored under global settings. Shown below is a snippet of the template configuration for the language `C++` on Linux (refer [here]({{< relref "/docs/setup" >}}) for details about different configuration files).
+Templates are stored under global settings. Shown below is a snippet of the template configuration for the language `C++` on Linux (refer [here]({{< relref "/docs/setup" >}}) for details about the different configuration files).
 
 {{< tabs "template-example" >}}
 {{< tab "cpt.yaml" >}}
@@ -149,12 +149,6 @@ The value of this key differs from site to site, and is thus configured at the m
 
 The value specified here, is the language selected while submitting the code file (corresponding to this template) to the remote judge.
 
-This is to be configured separately for each website you wish to use this template, as shown below:
-```bash
-❯ cpt codeforces config
-? What configuration do you want to perform? template - set language
-? Which template do you want to configure? cpp
-? Which language does template 'cpp' correspond to? GNU G++17 7.3.0
-```
+# Screencast
 
-A drop down will be provided to you, with the list of available languages.
+<script id="asciicast-uOH4Fjo5JNQkHkkUX6J3ZMCTl" src="https://asciinema.org/a/uOH4Fjo5JNQkHkkUX6J3ZMCTl.js" async data-rows="20" data-speed="1.5" data-theme="monokai"></script>
