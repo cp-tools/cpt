@@ -22,7 +22,7 @@ Browser settings can be configured, both at the global as well as the module lev
 {{< tab "cpt.yaml" >}}
 ```yaml
 browser:
-  binary: google-chrome
+  binary: /opt/google/chrome/google-chrome
   profile: /home/infinitepro/.config/google-chrome
 ```
 {{< /tab >}}
@@ -38,3 +38,7 @@ Not all browsers are supported. Refer [here](https://github.com/go-rod/rod#q-doe
 1. Navigate to `chrome://version/` or `edge://version/`, depending on your browser.
 2. Copy the value of key <u>Executable Path</u> as the *binary*.
 3. Copy the value of key <u>Profile Path</u> (strip the suffix `/Default`) as the *profile*.
+
+# Screencast
+
+<script id="asciicast-eNMwl4oJtkjBfz3bJLzuUnS2G" src="https://asciinema.org/a/eNMwl4oJtkjBfz3bJLzuUnS2G.js" async data-rows="10" data-speed="1.5" data-theme="monokai"></script>
