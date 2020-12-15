@@ -14,8 +14,7 @@ weight: 1
 The below instructions are for first time users only.
 Existing users can upgrade using:
 ```bash
-cpt upgrade -m s # Upgrade cli tool
-cpt upgrade -m c # Upgrade checkers
+cpt upgrade --mode s
 ```
 {{< /hint >}}
 
@@ -27,11 +26,6 @@ Download the tarball corresponding to your system from the [latest release](http
 **Linux/MacOS**
 
 Zsh users may need to use `.zshrc` instead of `.bashrc`.
-{{< /hint >}}
-{{< hint danger >}}
-**Windows**
-
-[WSL/WSL2](https://docs.microsoft.com/en-us/windows/wsl/about) is currently not supported.
 {{< /hint >}}
 
 {{< tabs "github-releases" >}}
@@ -87,3 +81,12 @@ A successful installation would output text similar to
 cpt version vX.Y.Z
 ```
 on running the command `cpt --version`.
+
+# Checkers
+
+Checkers are used by the `test` module to validate a solution output against the expected output. This step can be omitted, if you instead wish to use your set of custom checkers.
+
+A set of default checkers are available at [cp-tools/cpt-checker](https://github.com/cp-tools/cpt-checker). To install/upgrade the checkers:
+```bash
+cpt upgrade --mode c
+```
