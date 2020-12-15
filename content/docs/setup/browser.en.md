@@ -37,4 +37,4 @@ Not all browsers are supported. Refer [here](https://github.com/go-rod/rod#q-doe
 
 1. Navigate to `chrome://version/` or `edge://version/`, depending on your browser.
 2. Copy the value of key <u>Executable Path</u> as the *binary*.
-3. Copy the value of key <u>Profile Path</u> (strip the suffix *Default*) as the *profile*.
+3. Copy the value of key <u>Profile Path</u> (strip the suffix `/Default`) as the *profile*.
