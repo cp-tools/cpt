@@ -6,6 +6,8 @@ theme: book
 disablePathToLower: true
 enableGitInfo: true
 
+disableKinds: ['taxonomy', 'taxonomyTerm']
+
 # Needed for mermaid/katex shortcodes
 markup:
   goldmark:
