@@ -116,8 +116,6 @@ github.com/infinitepr0/cobra v1.0.1-0.20201026004338-69df80ec4c29 h1:8sZbtR5dQH4
 github.com/infinitepr0/cobra v1.0.1-0.20201026004338-69df80ec4c29/go.mod h1:WnodtKOvamDL/PwE2M4iKs8aMDBZ5Q5klgD3qfVJQMI=
 github.com/infinitepr0/go-homedir v1.2.0 h1:qSxnzzIRBvXMelmOFbchkf+p1UOrho7D1smgEsF9D5M=
 github.com/infinitepr0/go-homedir v1.2.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
-github.com/infinitepr0/survey/v2 v2.1.2-0.20201020093512-df7fb29f615a h1:qTBOMqCAEH5fV6s7p0BiMFq/6NB0UcENOXKzquAVd0I=
-github.com/infinitepr0/survey/v2 v2.1.2-0.20201020093512-df7fb29f615a/go.mod h1:9FJRdMdDm8rnT+zHVbvQT2RTSTLq0Ttd6q3Vl2fahjk=
 github.com/jedib0t/go-pretty/v6 v6.0.5 h1:oOo0/jSb3NEYKT6l1hhFXoX2UZnkanMuCE2DVT1mqnE=
 github.com/jedib0t/go-pretty/v6 v6.0.5/go.mod h1:MTr6FgcfNdnN5wPVBzJ6mhJeDyiF0yBvS2TMXEV/XSU=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
