@@ -1,0 +1,1 @@
+if(navigator.serviceWorker){navigator.serviceWorker.register("/cpt/sw.js",{scope:"/cpt/"});}
