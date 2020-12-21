@@ -12,7 +12,7 @@ weight: 1
 
 Templates are core components of cpt, and configuration of the same is required to use two of the most powerful features of cpt - `test` and `submit`.
 
-Templates are stored under global settings. Shown below is a snippet of the template configuration for the language `C++` on Linux (refer [here]({{< relref "/docs/setup" >}}) for details about the different configuration files).
+Templates are stored under global settings. Shown below is a snippet of the template configuration for the language `C++` on Linux (refer [here]({{ relref . "/docs/setup" }}) for details about the different configuration files).
 
 {{< tabs "template-example" >}}
 {{< tab "cpt.yaml" >}}

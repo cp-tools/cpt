@@ -16,7 +16,7 @@ All website related functions (fetch, submit, list etc) are executed using an au
 No data of your browser is modified in this method. See [this](https://github.com/cp-tools/cpt-lib#is-sensitive-data-of-my-browser-at-risk) for more details on the process behind the browser automation.
 {{< /hint >}}
 
-Browser settings can be configured, both at the global as well as the module level. Shown below is a snippet of the browser configuration for `Google Chrome` on Linux. (refer [here]({{< relref "/docs/setup" >}}) for details about the different configuration files)
+Browser settings can be configured, both at the global as well as the module level. Shown below is a snippet of the browser configuration for `Google Chrome` on Linux. (refer [here]({{ relref . "/docs/setup" }}) for details about the different configuration files)
 
 {{< tabs "browser-example" >}}
 {{< tab "cpt.yaml" >}}
