@@ -117,13 +117,13 @@ Test scripts also support the following generic placeholders:
 {{.fileBasename}}   - The name of the file, without the extension
 ```
 
-### Prescript *(optional)*
+### Prescript
 
 This script is executed *before the testing*. The intended usecase is to compile your solution file. Interpreted languages like Python and Golang may leave this blank.
 
 <!--Add folded section of commands by language-->
 
-### Runscript *(required)*
+### Runscript
 
 This script is executed *once per test case*. This command is meant to run the compile binary (for compiled languages) or launch the solution file (for interpreted languages).
 
@@ -135,7 +135,7 @@ This issue shall be addressed in upcoming updates.
 
 <!--Add folded section of commands by language-->
 
-### Postscript *(optional)*
+### Postscript
 
 This script is executed *after the testing*. The intended usecase is to clean up residual files (executables, log files etc). May be left blank if not required.
 
