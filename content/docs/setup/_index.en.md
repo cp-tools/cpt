@@ -33,4 +33,4 @@ graph LR
 - Submodules are recursively loaded, in the order they are called.
 - Local configurations are loaded from the file `meta.yaml` in the **current directory**.
 
-If the same key is present in multiple configurations, the value from the *last* parsed configuration file containing the key, is considered. 
+If the same key is present in multiple configurations, the value from the *last* parsed configuration file containing the key is considered.
