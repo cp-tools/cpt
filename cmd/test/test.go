@@ -42,6 +42,10 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 			inputFiles, expectedFiles := extractTestsFiles(cnf)
 			for i := 0; i < len(inputFiles); i++ {
 				judgeMode(script, checkerTmplt, timelimit, inputFiles[i], expectedFiles[i], i)
+				if i != len(inputFiles)-1 {
+					// Print newline after every (but last) test case.
+					fmt.Println()
+				}
 			}
 
 		case "i": // Interactive mode.

@@ -60,12 +60,7 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 			"{{- if .Compare}}\n" + "{{.Compare}}" + "{{end}}",
 		}, "\n"), verdictData)
 
-		// Print box around verdict
-		t := table.NewWriter()
-		t.SetStyle(table.StyleBold)
-		t.AppendRow(table.Row{strings.TrimSpace(out)})
-
-		fmt.Println(t.Render())
+		fmt.Println(strings.TrimSpace(out))
 	}()
 
 	// Read input from file.
