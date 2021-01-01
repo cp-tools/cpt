@@ -3,8 +3,8 @@ module github.com/cp-tools/cpt
 go 1.14
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.2.5
-	github.com/cp-tools/cpt-lib/v2 v2.1.3
+	github.com/AlecAivazis/survey/v2 v2.2.7
+	github.com/cp-tools/cpt-lib/v2 v2.1.4
 	github.com/fatih/color v1.10.0
 	github.com/gosuri/uilive v0.0.4
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
@@ -15,7 +15,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.0
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/mod v0.1.0
+	golang.org/x/mod v0.4.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -87,10 +88,12 @@ func SelectCodeFile(filePath string, cnf *conf.Conf) (fileName string, alias str
 
 		fileName = filePath
 		// Prompt user to select template alias to use.
-		survey.AskOne(&survey.Select{
+		err := survey.AskOne(&survey.Select{
 			Message: "Which template (alias) do you want to use?",
 			Options: aliasData,
 		}, &alias)
+		util.SurveyOnInterrupt(err)
+
 		return
 	}
 	fileName, alias = filePath, generatedFilesMap[filePath]

@@ -16,7 +16,7 @@ var configCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Prompt user for configuration to modify.
 		index := 0
-		survey.AskOne(&survey.Select{
+		err := survey.AskOne(&survey.Select{
 			Message: "What configuration do you want to perform?",
 			Options: []string{
 				"template - set language",
@@ -25,6 +25,7 @@ var configCmd = &cobra.Command{
 				"browser - set headless browser",
 			},
 		}, &index)
+		util.SurveyOnInterrupt(err)
 
 		rootCnf := cnf.GetParent("codeforces")
 		switch index {

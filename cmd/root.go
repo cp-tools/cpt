@@ -8,7 +8,6 @@ import (
 
 	"github.com/cp-tools/cpt/pkg/conf"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -47,12 +46,6 @@ func init() {
 	cobra.OnInitialize(initConfDir)
 	// Set Persistent commands to be queued.
 	cobra.EnablePersistentRunOverride = false
-
-	// Set OnSIGINT function for survey module.
-	survey.OnInterrupt = func() {
-		fmt.Println("interrupted")
-		os.Exit(1)
-	}
 }
 
 // Determine and set configDir path.

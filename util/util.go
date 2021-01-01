@@ -2,11 +2,14 @@ package util
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"text/template"
 	"time"
 
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 )
 
@@ -44,4 +47,15 @@ func CleanTemplate(str string, data interface{}) (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+// SurveyOnInterrupt is run on SIGINT.
+func SurveyOnInterrupt(err error) {
+	if err == terminal.InterruptErr {
+		fmt.Println("interrupted")
+		os.Exit(130)
+	} else if err != nil {
+		fmt.Println(color.RedString("unexpected error occurred:"), err)
+		os.Exit(1)
+	}
 }
