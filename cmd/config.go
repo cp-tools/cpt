@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/cp-tools/cpt/cmd/config"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -26,7 +26,7 @@ var configCmd = &cobra.Command{
 				"ui - set stdout colorization",
 			},
 		}, &index)
-		util.SurveyOnInterrupt(err)
+		utils.SurveyOnInterrupt(err)
 
 		// We are editing global config here.
 		rootCnf := cnf.GetParent("global")

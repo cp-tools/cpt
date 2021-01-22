@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/mitchellh/go-homedir"
@@ -67,7 +67,7 @@ Here are the locations of browser profiles of various browsers:
 			},
 		},
 	}, &browserMap)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Set("browser", browserMap)
 }

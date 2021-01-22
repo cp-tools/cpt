@@ -6,7 +6,7 @@ import (
 	"runtime"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
 	"github.com/inconshreveable/go-update"
@@ -30,7 +30,7 @@ func Self(currentVersion string) {
 		Message: "Do you wish to upgrade to '" + latestVersion + "'?",
 		Default: true,
 	}, &confirm)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	if confirm == false {
 		return

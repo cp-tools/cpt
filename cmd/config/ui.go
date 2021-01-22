@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -14,7 +14,7 @@ func SetStdoutColor(cnf *conf.Conf) {
 		Message: "Do you want color printing of verbose text?",
 		Default: true,
 	}, &choice)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Set("ui.stdoutColor", choice)
 }

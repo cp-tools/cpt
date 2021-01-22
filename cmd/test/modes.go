@@ -11,8 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cp-tools/cpt/util"
-
+	"github.com/cp-tools/cpt/utils"
 	"github.com/fatih/color"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -43,7 +42,7 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 		// Verdict format is as follows:
 
 		c := color.New(color.FgBlue, color.Bold).SprintFunc()
-		out, _ := util.CleanTemplate(strings.Join([]string{
+		out, _ := utils.CleanTemplate(strings.Join([]string{
 			// Test: #4    Verdict: WA    Time: 32ms
 			c("Test:") + " #{{.Index}}" + "\t" + c("Verdict:") + " {{.Verdict}}" + "\t" + c("Time:") + " {{.Elapsed}}",
 			// Fail: Could not execute checker
@@ -100,7 +99,7 @@ func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
 		outputFile.Write(output.Bytes())
 
 		// Run checker to validate output.
-		checkerScript, err := util.CleanTemplate(checkerTmplt, map[string]string{
+		checkerScript, err := utils.CleanTemplate(checkerTmplt, map[string]string{
 			"inputFile":    inputFile,
 			"outputFile":   outputFile.Name(),
 			"expectedFile": expectedFile,

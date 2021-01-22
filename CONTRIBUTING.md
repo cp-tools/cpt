@@ -35,7 +35,7 @@ Be kind, respectful and considerate towards the community. Take time to help oth
    - **Blue** - General verbose messages are to be printed in this color.
    - **Yellow** - Warning messages, but code execution continues.
    - **Green** - Successful execution of some routine.
-5. If a code snippet is used across multiple different sub packages, add it to `utils/util.go`.
+5. If a code snippet is used across multiple different sub packages, add it to `utils/utils.go`.
 6. **Add suitable comments to your code, to let future reviewers know why a given part of the code is required.**
 
 

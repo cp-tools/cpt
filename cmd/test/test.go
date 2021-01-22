@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
 )
@@ -22,7 +22,7 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 
 	// Run preScript.
 	if preScript := cnf.GetString("template." + alias + ".preScript"); preScript != "" {
-		script, _ := util.CleanTemplate(preScript, tmpltData)
+		script, _ := utils.CleanTemplate(preScript, tmpltData)
 		fmt.Println(color.BlueString("prescript:"), script, "\n")
 
 		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {
@@ -33,7 +33,7 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 
 	// Run script for tests.
 	if runScript := cnf.GetString("template." + alias + ".runScript"); runScript != "" {
-		script, _ := util.CleanTemplate(runScript, tmpltData)
+		script, _ := utils.CleanTemplate(runScript, tmpltData)
 
 		switch mode {
 		case "j": // Default judge mode.
@@ -55,7 +55,7 @@ func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Con
 
 	// Run postScript.
 	if postScript := cnf.GetString("template." + alias + ".postScript"); postScript != "" {
-		script, _ := util.CleanTemplate(postScript, tmpltData)
+		script, _ := utils.CleanTemplate(postScript, tmpltData)
 		fmt.Println("\n", color.BlueString("postscript:"), script)
 
 		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -37,7 +37,7 @@ It must be unique, and should not contain whitespaces.`,
 		}
 		return nil
 	}))
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	// select file containing template code
 	templateMap := make(map[string]interface{})
@@ -158,7 +158,7 @@ Java ==> 'rm {{.fileNoExt}}' (linux)
 			},
 		},
 	}, &templateMap)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Set("template."+alias, templateMap)
 }
@@ -175,7 +175,7 @@ func RemoveTemplate(cnf *conf.Conf) {
 		Message: "Which template do you want to delete?",
 		Options: cnf.GetMapKeys("template"),
 	}, &alias)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Delete("template." + alias)
 }
@@ -189,7 +189,7 @@ func SetTemplateLanguage(cnf *conf.Conf, languages []string) {
 		Message: "Which template do you want to configure?",
 		Options: cnf.GetMapKeys("template"),
 	}, &alias)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	// Select language to map to template.
 	language := ""
@@ -197,7 +197,7 @@ func SetTemplateLanguage(cnf *conf.Conf, languages []string) {
 		Message: "Which language does template '" + alias + "' correspond to?",
 		Options: append(languages, ""),
 	}, &language)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	if language == "" {
 		cnf.Delete("template." + alias + ".language")

@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -14,7 +14,7 @@ func SetGenerateOnFetch(cnf *conf.Conf) {
 		Message: "Do you want to generate the default template when problem tests are fetched?",
 		Default: false,
 	}, &choice)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Set("generate.onFetch", choice)
 }
@@ -26,7 +26,7 @@ func SetDefaultTemplate(cnf *conf.Conf) {
 		Message: "Which template do you want to make the default?",
 		Options: append(cnf.GetMapKeys("template"), ""),
 	}, &alias)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	if alias == "" {
 		// Remove default template value.

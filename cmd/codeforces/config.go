@@ -3,7 +3,7 @@ package codeforces
 import (
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/config"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -25,12 +25,12 @@ var configCmd = &cobra.Command{
 				"browser - set headless browser",
 			},
 		}, &index)
-		util.SurveyOnInterrupt(err)
+		utils.SurveyOnInterrupt(err)
 
 		rootCnf := cnf.GetParent("codeforces")
 		switch index {
 		case 0:
-			languages := util.ExtractMapKeys(codeforces.LanguageID)
+			languages := utils.ExtractMapKeys(codeforces.LanguageID)
 			config.SetTemplateLanguage(rootCnf, languages)
 
 		case 1:

@@ -8,7 +8,7 @@ import (
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/generate"
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
 )
@@ -25,7 +25,7 @@ func Pull(arg codeforces.Args, mode, username string, cnf *conf.Conf) {
 
 	// Template to use to specify folder path for each fetched problem submission.
 	folderPath := filepath.Join(cnf.GetStrings("pull.problemFolderPath")...)
-	if _, err := util.CleanTemplate(folderPath, nil); err != nil {
+	if _, err := utils.CleanTemplate(folderPath, nil); err != nil {
 		fmt.Println(color.RedString("error occurred while parsing 'folderPath' template:"), err)
 		os.Exit(1)
 	}
@@ -52,7 +52,7 @@ func Pull(arg codeforces.Args, mode, username string, cnf *conf.Conf) {
 			}
 
 			// Determine folder path to parse problem submission to.
-			problemDir, _ := util.CleanTemplate(folderPath, sub)
+			problemDir, _ := utils.CleanTemplate(folderPath, sub)
 			problemDir = filepath.Clean(problemDir)
 			// Create folder and check for errors.
 			if err := os.MkdirAll(problemDir, os.ModePerm); err != nil {

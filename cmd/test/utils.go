@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -92,7 +92,7 @@ func SelectCodeFile(filePath string, cnf *conf.Conf) (fileName string, alias str
 			Message: "Which template (alias) do you want to use?",
 			Options: aliasData,
 		}, &alias)
-		util.SurveyOnInterrupt(err)
+		utils.SurveyOnInterrupt(err)
 
 		return
 	}

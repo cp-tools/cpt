@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 )
 
 func DecideFileName(baseFileName, fileExtension string) string {
@@ -25,6 +25,6 @@ func updatePlaceholders(str []byte, dataMap map[string]interface{}) []byte {
 	dataMap["date"] = time.Now().Format("02.01.2006")
 	dataMap["time"] = time.Now().Format("15:04")
 
-	out, _ := util.CleanTemplate(string(str), dataMap)
+	out, _ := utils.CleanTemplate(string(str), dataMap)
 	return []byte(out)
 }

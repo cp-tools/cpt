@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/cp-tools/cpt/pkg/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -38,7 +38,7 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 		Message: "Do you wish to upgrade checkers to '" + latestVersion + "'?",
 		Default: true,
 	}, &confirm)
-	util.SurveyOnInterrupt(err)
+	utils.SurveyOnInterrupt(err)
 
 	if confirm == false {
 		return
