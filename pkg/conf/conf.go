@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/cp-tools/cpt/utils"
+
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
@@ -50,7 +52,7 @@ func (cnf *Conf) SetParent(parentCnf *Conf) *Conf {
 func (cnf *Conf) LoadFile(path string) *Conf {
 	cnf.koFile = path
 	// Check if file at given path exists.
-	if file, err := os.Stat(path); os.IsNotExist(err) || file.IsDir() {
+	if !utils.FileExists(path) {
 		return cnf
 	}
 	// Load YAML conf file.

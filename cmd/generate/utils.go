@@ -2,7 +2,6 @@ package generate
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -16,7 +15,7 @@ func DecideFileName(baseFileName, fileExtension string) string {
 	baseFileName = strings.ReplaceAll(baseFileName, " ", "_")
 	for fileName, i := baseFileName, 0; true; i++ {
 		fullName := fileName + fileExtension
-		if file, err := os.Stat(fullName); os.IsNotExist(err) || file.IsDir() {
+		if !utils.FileExists(fullName) {
 			return fullName
 		}
 		fileName = fmt.Sprintf("%v_%d", baseFileName, i)

@@ -2,10 +2,10 @@ package codeforces
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/cp-tools/cpt/cmd/codeforces/submit"
 	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +24,7 @@ var submitCmd = &cobra.Command{
 		// Check if given file path points to valid file.
 		fileFlag := cmd.Flags().MustGetString("file")
 		if fileFlag != "" {
-			if file, err := os.Stat(fileFlag); os.IsNotExist(err) || file.IsDir() {
+			if !utils.FileExists(fileFlag) {
 				return fmt.Errorf("invalid flags - %v is not a valid file", fileFlag)
 			}
 		}
