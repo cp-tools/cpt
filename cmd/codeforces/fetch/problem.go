@@ -3,9 +3,12 @@ package fetch
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
+
 	"github.com/fatih/color"
 )
 
@@ -41,24 +44,38 @@ func createConf(problem codeforces.Problem, testInFiles, testOutFiles []string) 
 }
 
 func createTests(problem codeforces.Problem) (inFiles, outFiles []string) {
-	for i := range problem.SampleTests {
-		inFile, err := os.Create(fmt.Sprintf("%d.in", i))
+	// create tests/ folder, to save tests to.
+	if err := os.MkdirAll("tests", os.ModePerm); err != nil {
+		fmt.Println(color.RedString("error occurred while creating tests folder:"), err)
+		os.Exit(1)
+	}
+
+	lastTestIndex := 0
+	for _, sampleTest := range problem.SampleTests {
+		inFileName := func() string { return filepath.Join("tests", fmt.Sprintf("%d.in", lastTestIndex)) }
+		outFileName := func() string { return filepath.Join("tests", fmt.Sprintf("%d.out", lastTestIndex)) }
+
+		for utils.FileExists(inFileName()) || utils.FileExists(outFileName()) {
+			lastTestIndex++
+		}
+
+		inFile, err := os.Create(inFileName())
 		if err != nil {
 			fmt.Println(color.RedString("error while creating file:"), err)
 			return
 		}
-		outFile, err := os.Create(fmt.Sprintf("%d.out", i))
+		outFile, err := os.Create(outFileName())
 		if err != nil {
 			fmt.Println(color.RedString("error while creating file:"), err)
 			return
 		}
 
 		// Write data to respective files.
-		inFile.WriteString(problem.SampleTests[i].Input)
-		outFile.WriteString(problem.SampleTests[i].Output)
+		inFile.WriteString(sampleTest.Input)
+		outFile.WriteString(sampleTest.Output)
 		// Append names to slices.
-		inFiles = append(inFiles, inFile.Name())
-		outFiles = append(outFiles, outFile.Name())
+		inFiles = append(inFiles, inFileName())
+		outFiles = append(outFiles, outFileName())
 
 		inFile.Close()
 		outFile.Close()

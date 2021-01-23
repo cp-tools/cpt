@@ -59,3 +59,12 @@ func SurveyOnInterrupt(err error) {
 		os.Exit(1)
 	}
 }
+
+// FileExists returns a bool signifying if given file exists.
+func FileExists(filename string) bool {
+	f, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !f.IsDir()
+}
