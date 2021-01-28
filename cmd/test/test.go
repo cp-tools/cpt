@@ -14,16 +14,17 @@ import (
 // Test tests
 func Test(checker, filePath, mode string, timelimit time.Duration, cnf *conf.Conf) {
 	// Determine code file and template alias to use.
-	fileName, alias := SelectCodeFile(filePath, cnf)
+	alias := SelectSubmissionFile(&filePath, cnf)
 	// Configure all template placeholder fields here.
 	tmpltData := map[string]interface{}{
-		"file": fileName,
+		"file": filePath,
 	}
 
 	// Run preScript.
 	if preScript := cnf.GetString("template." + alias + ".preScript"); preScript != "" {
 		script, _ := utils.CleanTemplate(preScript, tmpltData)
-		fmt.Println(color.BlueString("prescript:"), script, "\n")
+		fmt.Println(color.BlueString("prescript:"), script)
+		fmt.Println()
 
 		if _, err := runShellScript(script, time.Minute, os.Stdin, os.Stdout, os.Stderr); err != nil {
 			fmt.Println(err)
