@@ -36,6 +36,13 @@ func SelectSubmissionFile(submissionFilePath *string, cnf *conf.Conf) string {
 		if templateAlias, ok := generatedFilesMap[*submissionFilePath]; ok {
 			return templateAlias
 		}
+	}
+
+	if *submissionFilePath != "" {
+		// Specified submission file exists in generated-file list.
+		if templateAlias, ok := generatedFilesMap[*submissionFilePath]; ok {
+			return templateAlias
+		}
 
 		// Determine template alias to use.
 		candidateAliases := make([]string, 0)
