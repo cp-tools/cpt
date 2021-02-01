@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"syscall"
 	"time"
 
 	"github.com/kballard/go-shellquote"
@@ -17,7 +18,7 @@ import (
 // Execute runs the command with resource restrictions.
 func Execute(dir, command string,
 	stdin io.Reader, stdout, stderr io.Writer,
-	timeLimit time.Duration, memoryLimit uint64) error {
+	timeLimit time.Duration, memoryLimit uint64) (time.Duration, uint64, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeLimit)
 	defer cancel()
@@ -28,7 +29,20 @@ func Execute(dir, command string,
 	cmd.Dir = dir
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, stdout, stderr
 
-	return cmd.Run()
+	timer := time.Now()
+	err := cmd.Run()
+	timeConsumed := time.Since(timer)
+
+	if ctx.Err() == context.DeadlineExceeded {
+		err = ctx.Err()
+	}
+
+	var memoryConsumed uint64
+	if ps := cmd.ProcessState; ps != nil {
+		memoryConsumed = uint64(ps.SysUsage().(*syscall.Rusage).Maxrss)
+	}
+
+	return timeConsumed, memoryConsumed * 1024, err
 }
 
 // Sandbox runs child process with specified memory.
@@ -41,15 +55,17 @@ func Sandbox(command string, memoryLimit uint64) {
 	}
 
 	if memoryLimit > rLimit.Max {
-		memoryLimit = rLimit.Max
+		memoryLimit = rLimit.Max - 1
 	}
 	rLimit.Cur = memoryLimit
 
-	if err := unix.Setrlimit(unix.RLIMIT_AS, &rLimit); err != nil {
+	if err := unix.Setrlimit(unix.RLIMIT_DATA, &rLimit); err != nil {
 		fmt.Fprintln(os.Stderr, "error setting rlimit:", err)
 		os.Exit(1)
 	}
 
+	// Remove quotes.
+	command = command[1 : len(command)-1]
 	cmds, err := shellquote.Split(command)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -62,7 +78,7 @@ func Sandbox(command string, memoryLimit uint64) {
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }

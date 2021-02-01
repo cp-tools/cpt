@@ -1,33 +1,16 @@
 package test
 
 import (
-	"context"
 	"fmt"
-	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"time"
 
 	"github.com/cp-tools/cpt/pkg/conf"
 	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
-	"github.com/kballard/go-shellquote"
 )
-
-func extractTestsFiles(cnf *conf.Conf) (inputFiles, expectedFiles []string) {
-	inputFiles = cnf.GetStrings("problem.test.input")
-	expectedFiles = cnf.GetStrings("problem.test.output")
-
-	if len(inputFiles) != len(expectedFiles) {
-		// Mismatch in test cases count.
-		fmt.Println(color.RedString("error selecting test files:"), fmt.Sprintf("number of 'inputFiles' [%d] not equals number of 'expectedFiles' [%d]", len(inputFiles), len(expectedFiles)))
-		os.Exit(1)
-	}
-	return
-}
 
 // SelectSubmissionFile returns template of submission file to use, based
 // on configured templates and passed 'submissionFilePath' value.
@@ -102,32 +85,4 @@ func SelectSubmissionFile(submissionFilePath *string, cnf *conf.Conf) string {
 	utils.SurveyOnInterrupt(err)
 
 	return generatedFilesMap[*submissionFilePath]
-}
-
-func runShellScript(script string, timeout time.Duration,
-	stdin io.Reader, stdout, stderr io.Writer) (time.Duration, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	cmds, err := shellquote.Split(script)
-	if err != nil {
-		return 0, err
-	}
-
-	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
-	cmd.Stdin = stdin
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-
-	// time execution of command.
-	start := time.Now()
-	err = cmd.Run()
-	elapsed := time.Since(start)
-
-	if ctx.Err() == context.DeadlineExceeded {
-		// Timeout took place.
-		return elapsed, ctx.Err()
-	}
-
-	return elapsed, err
 }

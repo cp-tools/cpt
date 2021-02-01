@@ -19,7 +19,7 @@ var testCmd = &cobra.Command{
 
 		// Check if mode is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")
-		if modeFlag != "j" && modeFlag != "i" {
+		if modeFlag != "d" && modeFlag != "c" {
 			return fmt.Errorf("invalid flags - unknown mode '%v'", modeFlag)
 		}
 
@@ -29,7 +29,7 @@ var testCmd = &cobra.Command{
 			return fmt.Errorf("invalid flags - checker '%v' not configured", checkerFlag)
 		}
 
-		// Check if given file path point to valid file.
+		// Check if given file path points to valid file.
 		fileFlag := cmd.Flags().MustGetString("file")
 		if fileFlag != "" {
 			if !utils.FileExists(fileFlag) {
@@ -44,9 +44,20 @@ var testCmd = &cobra.Command{
 		checker := cmd.Flags().MustGetString("checker")
 		file := cmd.Flags().MustGetString("file")
 		mode := cmd.Flags().MustGetString("mode")
-		timelimit := cmd.Flags().MustGetDuration("timelimit")
+		timeLimit := cmd.Flags().MustGetDuration("time-limit")
+		memoryLimit := cmd.Flags().MustGetUint64("memory-limit")
 
-		test.Test(checker, file, mode, timelimit, cnf)
+		// If user has not specified time limit for custom testing,
+		// set 1 hour limit (huge limit for interactive situations).
+		if mode == "c" && !cmd.Flags().Changed("time-limit") {
+			timeLimit = time.Hour
+		}
+
+		checkerScript := cnf.GetString("checker.checkers." + checker + ".script")
+
+		test.Test(file, checkerScript,
+			timeLimit, memoryLimit,
+			"", "", mode, cnf)
 	},
 }
 
@@ -56,8 +67,9 @@ func init() {
 	// All flags available to command.
 	testCmd.Flags().StringP("checker", "c", "lcmp", "testlib checker to use")
 	testCmd.Flags().StringP("file", "f", "", "code file to run tests on")
-	testCmd.Flags().StringP("mode", "m", "j", "mode to run tests on")
-	testCmd.Flags().DurationP("timelimit", "t", 2*time.Second, "timelimit per test")
+	testCmd.Flags().StringP("mode", "m", "d", "mode to run tests on")
+	testCmd.Flags().DurationP("time-limit", "t", 2*time.Second, "time limit per test")
+	testCmd.Flags().Uint64("memory-limit", 256*1024*1024, "memory limit per test (in bytes)")
 
 	// All custom completions for command flags.
 	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -72,8 +84,8 @@ func init() {
 
 	testCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		modes := []string{
-			"j\tjudge",
-			"i\tinteractive",
+			"d\tdefault",
+			"c\tcustom",
 		}
 
 		return modes, cobra.ShellCompDirectiveDefault
