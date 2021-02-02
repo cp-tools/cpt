@@ -46,6 +46,8 @@ var testCmd = &cobra.Command{
 		mode := cmd.Flags().MustGetString("mode")
 		timeLimit := cmd.Flags().MustGetDuration("time-limit")
 		memoryLimit := cmd.Flags().MustGetUint64("memory-limit")
+		inputStreamFile := cmd.Flags().MustGetString("input-stream")
+		outputStreamFile := cmd.Flags().MustGetString("output-stream")
 
 		// If user has not specified time limit for
 		// interactive testing, set 1 hour limit.
@@ -57,7 +59,7 @@ var testCmd = &cobra.Command{
 
 		test.Test(file, checkerScript,
 			timeLimit, memoryLimit*1024*1024,
-			"", "", mode, cnf)
+			inputStreamFile, outputStreamFile, mode, cnf)
 	},
 }
 
@@ -70,6 +72,8 @@ func init() {
 	testCmd.Flags().StringP("mode", "m", "d", "mode to run tests on")
 	testCmd.Flags().DurationP("time-limit", "t", 2*time.Second, "time limit per test")
 	testCmd.Flags().Uint64("memory-limit", 512, "memory limit per test (in mb)")
+	testCmd.Flags().String("input-stream", "", "input stream file used by submission")
+	testCmd.Flags().String("output-stream", "", "output stream file used by submission")
 
 	// All custom completions for command flags.
 	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
