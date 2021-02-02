@@ -22,7 +22,6 @@ template:
     codeFile: /home/admin/Documents/template.cpp
     preScript: g++ "{{.file}}"
     runScript: ./a.out
-    postScript: rm a.out
 ```
 {{< /tab >}}
 
@@ -109,12 +108,13 @@ int main(){
 
 ## Test Scripts
 
-Test scripts are required *exclusively* by `cpt test` - the testing module - and specify the compilation *(prescript)*, execution *(runscript)* and cleanup *(postscript)* commands to be executed.
+Test scripts are required *exclusively* by `cpt test` - the testing module - and specify the compilation *(prescript)* and execution *(runscript)* commands to be executed.
 
 Test scripts also support the following generic placeholders:
 ```
-{{.file}}           - The solution code file specifed to test
-{{.fileBasename}}   - The name of the file, without the extension
+{{.file}}               - The absolute path to the solution code file
+{{.fileBasename}}       - The name of the file, without the path
+{{.fileBasenameNoExt}}  - The name of the file, without path and extension
 ```
 
 ### Prescript
@@ -125,19 +125,12 @@ This script is executed *before the testing*. The intended usecase is to compile
 
 ### Runscript
 
-This script is executed *once per test case*. This command is meant to run the compile binary (for compiled languages) or launch the solution file (for interpreted languages).
+This script is executed *once per test case*. This command is meant to run the compiled binary (for compiled languages) or execute the solution file (for interpreted languages).
 
 {{< hint warning >}}
-Test case *input/output* must be read from/written to the *standard input/standard output*. Hence, **don't** pipe text streams in your solution or runscript.
+Unless flags `input-stream` and `output-stream` are used while testing, the test case *input/output* is read from/written to the *standard input/standard output*.
 {{< /hint >}}
-For problems that require *file input/file output*, the current workaround is to use local flags or environment variables to switch between *standard input/standard output* and *file input/file output*.
-This issue shall be addressed in upcoming updates.
-
-<!--Add folded section of commands by language-->
-
-### Postscript
-
-This script is executed *after the testing*. The intended usecase is to clean up residual files (executables, log files etc). May be left blank if not required.
+For problems that require *file input/file output*, use the command line flags `input-stream` and `output-stream` respectively.
 
 <!--Add folded section of commands by language-->
 
@@ -151,4 +144,4 @@ The value specified here, is the language selected while submitting the code fil
 
 # Screencast
 
-<script id="asciicast-uOH4Fjo5JNQkHkkUX6J3ZMCTl" src="https://asciinema.org/a/uOH4Fjo5JNQkHkkUX6J3ZMCTl.js" async data-rows="20" data-speed="1.5" data-theme="monokai"></script>
+<script id="asciicast-F3qk7qtQy5AKhAhL7Oj6xbmQP" src="https://asciinema.org/a/F3qk7qtQy5AKhAhL7Oj6xbmQP.js" async data-rows="20" data-speed="1.5" data-theme="monokai"></script>
