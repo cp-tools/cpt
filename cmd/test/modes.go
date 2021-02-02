@@ -172,7 +172,7 @@ func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 	return
 }
 
-func customTestingMode(sandboxDir, runScript string,
+func interactiveTestingMode(sandboxDir, runScript string,
 	timeLimit time.Duration, memoryLimit uint64) {
 
 	fmt.Println(color.GreenString("────────────────────────────────"))

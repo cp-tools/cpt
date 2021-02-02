@@ -74,12 +74,8 @@ func Test(submissionFilePath, checkerScript string,
 		// d => default: Runs on each specified test case
 		//      from the provided configuration.
 		//
-		// c => custom: Starts an interactive prompt
+		// i => interactive: Starts an interactive prompt
 		//      with stdin/stdout to the terminal.
-		//
-		// i => interactive: Runs two commands, connecting
-		//      stdin/stdout of first command to stdout/stdin
-		//      of second command. (TODO)
 
 		switch testingMode {
 		case "d":
@@ -146,10 +142,10 @@ func Test(submissionFilePath, checkerScript string,
 				verd.prettyPrint(testIndex)
 			}
 
-		case "c":
-			// Custom testing mode.
+		case "i":
+			// Interactive testing mode.
 
-			customTestingMode(sandboxDir, runScript,
+			interactiveTestingMode(sandboxDir, runScript,
 				timeLimit, memoryLimit)
 		}
 	}

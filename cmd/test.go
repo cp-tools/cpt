@@ -19,7 +19,7 @@ var testCmd = &cobra.Command{
 
 		// Check if mode is valid.
 		modeFlag := cmd.Flags().MustGetString("mode")
-		if modeFlag != "d" && modeFlag != "c" {
+		if modeFlag != "d" && modeFlag != "i" {
 			return fmt.Errorf("invalid flags - unknown mode '%v'", modeFlag)
 		}
 
@@ -47,9 +47,9 @@ var testCmd = &cobra.Command{
 		timeLimit := cmd.Flags().MustGetDuration("time-limit")
 		memoryLimit := cmd.Flags().MustGetUint64("memory-limit")
 
-		// If user has not specified time limit for custom testing,
-		// set 1 hour limit (huge limit for interactive situations).
-		if mode == "c" && !cmd.Flags().Changed("time-limit") {
+		// If user has not specified time limit for
+		// interactive testing, set 1 hour limit.
+		if mode == "i" && !cmd.Flags().Changed("time-limit") {
 			timeLimit = time.Hour
 		}
 
@@ -85,7 +85,7 @@ func init() {
 	testCmd.RegisterFlagCompletionFunc("mode", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		modes := []string{
 			"d\tdefault",
-			"c\tcustom",
+			"i\tinteractive",
 		}
 
 		return modes, cobra.ShellCompDirectiveDefault
