@@ -15,115 +15,136 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/kballard/go-shellquote"
+	"github.com/shirou/gopsutil/process"
 )
 
-// extractGeneratedFiles returns a map consisting of previously generated
-// files in local configuration, along with the corresponding template alias.
-func extractGeneratedFiles(cnf *conf.Conf) map[string]string {
-	data := make(map[string]string)
-	// Extract all template aliases.
-	for _, alias := range cnf.GetMapKeys("template") {
-		// Extract and all generated files of alias.
-		generatedFiles := cnf.GetStrings("template." + alias + ".generatedFiles")
-		for _, fileName := range generatedFiles {
-			data[fileName] = alias
+// SelectSubmissionFile returns template of submission file to use, based
+// on configured templates and passed 'submissionFilePath' value.
+// 'submissionFilePath' must point to a valid file, if specified.
+func SelectSubmissionFile(submissionFilePath *string, cnf *conf.Conf) string {
+	// Find all generated submission files in local configurations.
+	generatedFilesMap := make(map[string]string)
+	for _, templateAlias := range cnf.GetMapKeys("template") {
+		generatedFiles := cnf.GetStrings("template." + templateAlias + ".generatedFiles")
+		for _, generatedFileName := range generatedFiles {
+			generatedFilesMap[generatedFileName] = templateAlias
 		}
 	}
-	return data
-}
 
-func extractTestsFiles(cnf *conf.Conf) (inputFiles, expectedFiles []string) {
-	inputFiles = cnf.GetStrings("problem.test.input")
-	expectedFiles = cnf.GetStrings("problem.test.output")
-
-	if len(inputFiles) != len(expectedFiles) {
-		// Mismatch in test cases count.
-		fmt.Println(color.RedString("error selecting test files:"), fmt.Sprintf("number of 'inputFiles' [%d] not equals number of 'expectedFiles' [%d]", len(inputFiles), len(expectedFiles)))
-		os.Exit(1)
-	}
-	return
-}
-
-// SelectCodeFile returns file name and template of code file to use, based
-// on configured templates and passed 'filePath' value.
-// 'filePath' must point to a valid file.
-func SelectCodeFile(filePath string, cnf *conf.Conf) (fileName string, alias string) {
-	// Find all generated code files in local configurations.
-	generatedFilesMap := extractGeneratedFiles(cnf)
-	// Check if filePath exists in generatedFilesMap.
-	if _, ok := generatedFilesMap[filePath]; !ok {
-		// Try to auto select code file, if not specified.
-		if filePath == "" {
-			if len(generatedFilesMap) != 1 {
-				fmt.Println(color.RedString("error selecting solution file:"),
-					"file not specified, unable to auto-select code file from local configurations")
-				os.Exit(1)
-			}
-			// Auto select code file to use.
-			for k, v := range generatedFilesMap {
-				fileName, alias = k, v
-			}
-			return
+	if *submissionFilePath != "" {
+		// Specified submission file exists in generated-file list.
+		if templateAlias, ok := generatedFilesMap[*submissionFilePath]; ok {
+			return templateAlias
 		}
 
-		// Find all templates with extension matching filePath.
-		aliasData := make([]string, 0)
-		fileExtension := filepath.Ext(filePath)
-		for _, alias := range cnf.GetMapKeys("template") {
-			codeFile := cnf.GetString("template." + alias + ".codeFile")
-			if fileExtension == filepath.Ext(codeFile) {
-				aliasData = append(aliasData, alias)
+		// Determine template alias to use.
+		candidateAliases := make([]string, 0)
+		submissionFilePathExt := filepath.Ext(*submissionFilePath)
+		for _, templateAlias := range cnf.GetMapKeys("template") {
+			templateFilePath := cnf.GetString("template." + templateAlias + ".codeFile")
+			if submissionFilePathExt == filepath.Ext(templateFilePath) {
+				candidateAliases = append(candidateAliases, templateAlias)
 			}
 		}
 
-		if len(aliasData) == 0 {
+		if len(candidateAliases) == 0 {
 			fmt.Println(color.RedString("error selecting solution file:"),
-				"no template with code file matching '"+filePath+"' found")
+				"no template with extension matching '"+*submissionFilePath+"' found")
 			os.Exit(1)
-		} else if len(aliasData) == 1 {
-			// Auto set template configuration to use.
-			fileName, alias = filePath, aliasData[0]
-			return
 		}
 
-		fileName = filePath
-		// Prompt user to select template alias to use.
+		// Auto select when only one matching template exists.
+		if len(candidateAliases) == 1 {
+			return candidateAliases[0]
+		}
+
+		templateAlias := ""
 		err := survey.AskOne(&survey.Select{
 			Message: "Which template (alias) do you want to use?",
-			Options: aliasData,
-		}, &alias)
+			Options: candidateAliases,
+		}, &templateAlias)
 		utils.SurveyOnInterrupt(err)
 
-		return
+		return templateAlias
 	}
-	fileName, alias = filePath, generatedFilesMap[filePath]
-	return
+
+	// No generated files exist.
+	if len(generatedFilesMap) == 0 {
+		fmt.Println(color.RedString("error selecting submission file:"),
+			"file not specified; no generated files exist in local configuration")
+		os.Exit(1)
+	}
+
+	// Exactly one generated file present.
+	if len(generatedFilesMap) == 1 {
+		for k, v := range generatedFilesMap {
+			*submissionFilePath = k
+			return v
+		}
+	}
+
+	// Prompt user to select file from generated-files list.
+	err := survey.AskOne(&survey.Select{
+		Message: "Which (generated) file do you want to use?",
+		Options: utils.ExtractMapKeys(generatedFilesMap),
+	}, submissionFilePath)
+	utils.SurveyOnInterrupt(err)
+
+	return generatedFilesMap[*submissionFilePath]
 }
 
-func runShellScript(script string, timeout time.Duration,
-	stdin io.Reader, stdout, stderr io.Writer) (time.Duration, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+// Execute runs the command with resource restrictions.
+func Execute(dir, command string,
+	stdin io.Reader, stdout, stderr io.Writer,
+	timeLimit time.Duration, memoryLimit uint64) (time.Duration, uint64, error) {
+
+	cmds, err := shellquote.Split(command)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeLimit)
 	defer cancel()
 
-	cmds, err := shellquote.Split(script)
-	if err != nil {
-		return 0, err
+	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
+	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, stdout, stderr
+	cmd.Dir = dir
+
+	timer := time.Now()
+	cmd.Start()
+
+	// Actively check for MLE.
+	ch := make(chan error)
+	go func() { ch <- cmd.Wait() }()
+
+	err = nil
+	var memoryConsumed uint64
+	for running := true; running; {
+		select {
+		case err = <-ch:
+			running = false
+
+		default:
+			pid := int32(cmd.Process.Pid)
+			if p, err := process.NewProcess(pid); err == nil {
+				if m, err := p.MemoryInfo(); err == nil {
+					if m.RSS > memoryConsumed {
+						memoryConsumed = m.RSS
+					}
+				}
+			}
+
+			if memoryConsumed > memoryLimit {
+				cmd.Process.Kill()
+			}
+		}
 	}
 
-	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
-	cmd.Stdin = stdin
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-
-	// time execution of command.
-	start := time.Now()
-	err = cmd.Run()
-	elapsed := time.Since(start)
+	timeConsumed := time.Since(timer)
 
 	if ctx.Err() == context.DeadlineExceeded {
-		// Timeout took place.
-		return elapsed, ctx.Err()
+		err = ctx.Err()
 	}
 
-	return elapsed, err
+	return timeConsumed, memoryConsumed, err
 }

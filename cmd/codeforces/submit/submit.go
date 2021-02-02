@@ -18,10 +18,10 @@ import (
 // filePath must point to a valid file.
 func Submit(arg codeforces.Args, filePath string, cnf *conf.Conf) {
 	// Determine code file and template alias to use.
-	fileName, alias := test.SelectCodeFile(filePath, cnf)
+	alias := test.SelectSubmissionFile(&filePath, cnf)
 	// Submit solution.
 	langName := cnf.GetString("template." + alias + ".language")
-	submission, err := arg.SubmitSolution(langName, fileName)
+	submission, err := arg.SubmitSolution(langName, filePath)
 	if err != nil {
 		fmt.Println(color.RedString("error submitting solution:"), err)
 		os.Exit(1)
