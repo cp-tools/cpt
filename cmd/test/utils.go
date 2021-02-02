@@ -108,6 +108,7 @@ func Execute(dir, command string,
 
 	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, stdout, stderr
+	cmd.Dir = dir
 
 	timer := time.Now()
 	cmd.Start()
