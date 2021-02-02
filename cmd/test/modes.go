@@ -14,8 +14,6 @@ import (
 	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 type (
@@ -35,55 +33,6 @@ type (
 		}
 	}
 )
-
-func (verd *testExecDetails) prettyPrint(testIndex int) {
-	c := color.New(color.FgBlue, color.Bold).SprintFunc()
-
-	// Test: 4    Verdict: WA    Time: 32ms
-	fmt.Println(c("Test:"), testIndex, "\t"+c("Verdict:"), verd.verdict)
-	// Time: 32ms    Memory: 2000kb
-	verd.timeConsumed = verd.timeConsumed.Truncate(time.Millisecond)
-	memoryKB := fmt.Sprintf("%dkb", verd.memoryConsumed/1024)
-	fmt.Println(c("Time:"), verd.timeConsumed, "\t"+c("Memory:"), memoryKB)
-
-	if verd.failLog != "" {
-		// Fail: Could not execute checker
-		fmt.Println(c("Fail log:"), strings.TrimSpace(verd.failLog))
-	}
-
-	if verd.stderrLog != "" {
-		// Stderr:
-		// 1 2 3
-		// a b c
-		fmt.Println(c("Stderr:"), strings.TrimSpace(verd.stderrLog))
-	}
-
-	if verd.checkerLog != "" {
-		// Checker Log: Wrong answer, expected 3, found 4.
-		fmt.Println(c("Checker log:"), strings.TrimSpace(verd.checkerLog))
-	}
-
-	if strings.Contains(verd.verdict, "WA") {
-		t := table.NewWriter()
-		t.SetStyle(table.StyleLight)
-		t.Style().Options.DrawBorder = false
-
-		headerColor := text.Colors{text.FgBlue, text.Bold}
-		t.SetColumnConfigs([]table.ColumnConfig{
-			{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, WidthMax: 40},
-			{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, WidthMax: 40},
-			{Number: 3, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, WidthMax: 40},
-		})
-
-		t.AppendHeader(table.Row{"INPUT", "EXPECTED", "OUTPUT"})
-		t.AppendRow(table.Row{verd.testDetails.truncInput,
-			verd.testDetails.truncExpected, verd.testDetails.truncOutput})
-
-		fmt.Println()
-		fmt.Println(t.Render())
-	}
-	fmt.Println()
-}
 
 func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 	testInputFile, testOutputFile, testExpectedFile string,
@@ -112,7 +61,7 @@ func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 
 		testStdin = fl
 	} else {
-		err := os.Symlink(testInputFile, filepath.Join(sandboxDir, testInputStreamFile))
+		err := os.Link(testInputFile, filepath.Join(sandboxDir, testInputStreamFile))
 		if err != nil {
 			panic(err)
 		}
@@ -129,7 +78,7 @@ func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 
 		testStdout = fl
 	} else {
-		err := os.Symlink(testOutputFile, filepath.Join(sandboxDir, testOutputStreamFile))
+		err := os.Link(testOutputFile, filepath.Join(sandboxDir, testOutputStreamFile))
 		if err != nil {
 			panic(err)
 		}

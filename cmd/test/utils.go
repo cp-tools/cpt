@@ -1,15 +1,21 @@
 package test
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"time"
 
 	"github.com/cp-tools/cpt/pkg/conf"
 	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
+	"github.com/kballard/go-shellquote"
+	"github.com/shirou/gopsutil/process"
 )
 
 // SelectSubmissionFile returns template of submission file to use, based
@@ -85,4 +91,59 @@ func SelectSubmissionFile(submissionFilePath *string, cnf *conf.Conf) string {
 	utils.SurveyOnInterrupt(err)
 
 	return generatedFilesMap[*submissionFilePath]
+}
+
+// Execute runs the command with resource restrictions.
+func Execute(dir, command string,
+	stdin io.Reader, stdout, stderr io.Writer,
+	timeLimit time.Duration, memoryLimit uint64) (time.Duration, uint64, error) {
+
+	cmds, err := shellquote.Split(command)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeLimit)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmds[0], cmds[1:]...)
+	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, stdout, stderr
+
+	timer := time.Now()
+	cmd.Start()
+
+	// Actively check for MLE.
+	ch := make(chan error)
+	go func() { ch <- cmd.Wait() }()
+
+	err = nil
+	var memoryConsumed uint64
+	for running := true; running; {
+		select {
+		case err = <-ch:
+			running = false
+
+		default:
+			pid := int32(cmd.Process.Pid)
+			if p, err := process.NewProcess(pid); err == nil {
+				if m, err := p.MemoryInfo(); err == nil {
+					if m.RSS > memoryConsumed {
+						memoryConsumed = m.RSS
+					}
+				}
+			}
+
+			if memoryConsumed > memoryLimit {
+				cmd.Process.Kill()
+			}
+		}
+	}
+
+	timeConsumed := time.Since(timer)
+
+	if ctx.Err() == context.DeadlineExceeded {
+		err = ctx.Err()
+	}
+
+	return timeConsumed, memoryConsumed, err
 }
