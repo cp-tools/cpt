@@ -56,7 +56,7 @@ var testCmd = &cobra.Command{
 		checkerScript := cnf.GetString("checker.checkers." + checker + ".script")
 
 		test.Test(file, checkerScript,
-			timeLimit, memoryLimit,
+			timeLimit, memoryLimit*1024*1024,
 			"", "", mode, cnf)
 	},
 }
@@ -69,7 +69,7 @@ func init() {
 	testCmd.Flags().StringP("file", "f", "", "code file to run tests on")
 	testCmd.Flags().StringP("mode", "m", "d", "mode to run tests on")
 	testCmd.Flags().DurationP("time-limit", "t", 2*time.Second, "time limit per test")
-	testCmd.Flags().Uint64("memory-limit", 256*1024*1024, "memory limit per test (in bytes)")
+	testCmd.Flags().Uint64("memory-limit", 512, "memory limit per test (in mb)")
 
 	// All custom completions for command flags.
 	testCmd.RegisterFlagCompletionFunc("checker", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
