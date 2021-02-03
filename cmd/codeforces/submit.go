@@ -2,10 +2,10 @@ package codeforces
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/cp-tools/cpt/cmd/codeforces/submit"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -14,7 +14,7 @@ var submitCmd = &cobra.Command{
 	Use:   "submit [SPECIFIER]",
 	Short: "Submit problem solution to judge",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		cnf = util.LoadLocalConf(cnf)
+		cnf = conf.New("local").SetParent(cnf).LoadFile("meta.yaml")
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {
@@ -24,7 +24,7 @@ var submitCmd = &cobra.Command{
 		// Check if given file path points to valid file.
 		fileFlag := cmd.Flags().MustGetString("file")
 		if fileFlag != "" {
-			if file, err := os.Stat(fileFlag); os.IsNotExist(err) || file.IsDir() {
+			if !utils.FileExists(fileFlag) {
 				return fmt.Errorf("invalid flags - %v is not a valid file", fileFlag)
 			}
 		}

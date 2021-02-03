@@ -1,7 +1,8 @@
 package config
 
 import (
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/mitchellh/go-homedir"
@@ -10,7 +11,7 @@ import (
 // SetHeadlessBrowser configures headless browser to use.
 func SetHeadlessBrowser(cnf *conf.Conf) {
 	browserMap := make(map[string]interface{})
-	survey.Ask([]*survey.Question{
+	err := survey.Ask([]*survey.Question{
 		{
 			Name: "binary",
 			Prompt: &survey.Input{
@@ -66,6 +67,7 @@ Here are the locations of browser profiles of various browsers:
 			},
 		},
 	}, &browserMap)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Set("browser", browserMap)
 }

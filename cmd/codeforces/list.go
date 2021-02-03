@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cp-tools/cpt/cmd/codeforces/list"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/pkg/conf"
 
 	"github.com/spf13/cobra"
 )
@@ -13,7 +13,7 @@ var listCmd = &cobra.Command{
 	Use:   "list [SPECIFIER]",
 	Short: "Lists specified data in tabular form",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		cnf = util.LoadLocalConf(cnf)
+		cnf = conf.New("local").SetParent(cnf).LoadFile("meta.yaml")
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {

@@ -3,7 +3,7 @@ package conf_test
 import (
 	"testing"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 	"github.com/stretchr/testify/assert"
 )
 

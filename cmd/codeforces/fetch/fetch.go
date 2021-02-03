@@ -8,8 +8,8 @@ import (
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/codeforces/open"
 	"github.com/cp-tools/cpt/cmd/generate"
-	"github.com/cp-tools/cpt/packages/conf"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
 )
@@ -26,7 +26,7 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 
 	// Start countdown timer if contest has not started.
 	if countdownDur.Seconds() > 0 {
-		util.RunCountdown(countdownDur, color.BlueString("Contest begins in:"))
+		utils.RunCountdown(countdownDur, color.BlueString("Contest begins in:"))
 		// Open problems page and dashboard once countdown done.
 		open.Open(arg, "p")
 		open.Open(arg, "d")
@@ -41,7 +41,7 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 
 	// Template to use to specify folder path for each fetched problem.
 	folderPath := filepath.Join(cnf.GetStrings("fetch.problemFolderPath")...)
-	if _, err := util.CleanTemplate(folderPath, nil); err != nil {
+	if _, err := utils.CleanTemplate(folderPath, nil); err != nil {
 		fmt.Println(color.RedString("error occurred while parsing 'folderPath' template:"), err)
 		os.Exit(1)
 	}
@@ -54,7 +54,7 @@ func Fetch(arg codeforces.Args, cnf *conf.Conf) {
 
 	for _, problem := range problems {
 		// Determine folder path to parse problem to.
-		problemDir, _ := util.CleanTemplate(folderPath, problem)
+		problemDir, _ := utils.CleanTemplate(folderPath, problem)
 		problemDir = filepath.Clean(problemDir)
 		// Create folder and check for errors.
 		if err := os.MkdirAll(problemDir, os.ModePerm); err != nil {

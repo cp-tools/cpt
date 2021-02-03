@@ -3,7 +3,7 @@ package codeforces
 import (
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
 	"github.com/cp-tools/cpt/cmd/config"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
@@ -16,7 +16,7 @@ var configCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Prompt user for configuration to modify.
 		index := 0
-		survey.AskOne(&survey.Select{
+		err := survey.AskOne(&survey.Select{
 			Message: "What configuration do you want to perform?",
 			Options: []string{
 				"template - set language",
@@ -25,11 +25,12 @@ var configCmd = &cobra.Command{
 				"browser - set headless browser",
 			},
 		}, &index)
+		utils.SurveyOnInterrupt(err)
 
 		rootCnf := cnf.GetParent("codeforces")
 		switch index {
 		case 0:
-			languages := util.ExtractMapKeys(codeforces.LanguageID)
+			languages := utils.ExtractMapKeys(codeforces.LanguageID)
 			config.SetTemplateLanguage(rootCnf, languages)
 
 		case 1:

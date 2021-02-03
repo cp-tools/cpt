@@ -9,7 +9,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -33,10 +34,11 @@ func Checkers(checkerDir string, cnf *conf.Conf) {
 	fmt.Println(descMsg)
 
 	var confirm bool
-	survey.AskOne(&survey.Confirm{
+	err := survey.AskOne(&survey.Confirm{
 		Message: "Do you wish to upgrade checkers to '" + latestVersion + "'?",
 		Default: true,
 	}, &confirm)
+	utils.SurveyOnInterrupt(err)
 
 	if confirm == false {
 		return

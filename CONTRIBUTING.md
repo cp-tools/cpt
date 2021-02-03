@@ -28,14 +28,14 @@ Be kind, respectful and considerate towards the community. Take time to help oth
 # Guidelines
 
 1. The framework [spf13/cobra](https://github.com/spf13/cobra) is used to create the command line interface. Refer the corresponding documentation for details on incorporating flags, arguments etc.
-2. All configuration management shall be done solely by `packages/conf` to ensure consistency. If there is something missing, consider adding/porting the functionality to the `conf` package.
+2. All configuration management shall be done solely by `pkg/conf` to ensure consistency. If there is something missing, consider adding/porting the functionality to the `conf` package.
 3. The subroutine code of each sub command must be present in a nested directory. This is to prevent cyclic dependencies and incidental accessing/modification of global scope variables.
 4. Ensure inclusion of (color formatted) verbose messages in the subroutines. The color formatting to follow is (can be tweaked, based on the requirement):
    - **Red** - Fatal error messages. Usually followed by `os.Exit(1)`.
    - **Blue** - General verbose messages are to be printed in this color.
    - **Yellow** - Warning messages, but code execution continues.
    - **Green** - Successful execution of some routine.
-5. If a code snippet is used across multiple different sub packages, add it to `utils/util.go`.
+5. If a code snippet is used across multiple different sub packages, add it to `utils/utils.go`.
 6. **Add suitable comments to your code, to let future reviewers know why a given part of the code is required.**
 
 

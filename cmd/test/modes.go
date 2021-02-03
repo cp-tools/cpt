@@ -3,196 +3,191 @@ package test
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func judgeMode(runScript, checkerTmplt string, timelimit time.Duration,
-	inputFile, expectedFile string, index int) {
-	// Verdict template configurations.
-	var verdictData struct {
-		Index      int
-		Verdict    string
-		Elapsed    time.Duration
-		FailLog    error
-		Stderr     string
-		CheckerLog string
-		Input      string
-		Compare    string
-	}
+type (
+	testExecDetails struct {
+		verdict    string
+		failLog    string
+		checkerLog string
+		stderrLog  string
+		runtimeLog string
 
-	// handle panic; print verdict.
-	defer func() {
-		verdictData.Index = index
-		// handle panic; recover.
-		if r := recover(); r != nil {
-			verdictData.Verdict = color.RedString("FAIL")
-			verdictData.FailLog = r.(error)
+		timeConsumed   time.Duration
+		memoryConsumed uint64
+
+		testDetails struct {
+			truncInput    string
+			truncOutput   string
+			truncExpected string
 		}
+	}
+)
 
-		// Verdict format is as follows:
+func defaultTestingMode(sandboxDir, runScript, checkerScript string,
+	testInputFile, testOutputFile, testExpectedFile string,
+	testInputStreamFile, testOutputStreamFile string,
+	timeLimit time.Duration, memoryLimit uint64) (verd testExecDetails) {
 
-		c := color.New(color.FgBlue, color.Bold).SprintFunc()
-		out, _ := util.CleanTemplate(strings.Join([]string{
-			// Test: #4    Verdict: WA    Time: 32ms
-			c("Test:") + " #{{.Index}}" + "\t" + c("Verdict:") + " {{.Verdict}}" + "\t" + c("Time:") + " {{.Elapsed}}",
-			// Fail: Could not execute checker
-			"{{- if .FailLog}}\n" + c("Fail:") + " {{.FailLog}}" + "{{end}}",
-			// Stderr:
-			// 1 2 3
-			// a b c
-			"{{- if .Stderr}}\n" + c("Stderr:") + "\n{{.Stderr}}" + "{{end}}",
-			// Checker Log: Wrong answer, expected 3, found 4.
-			"{{- if .CheckerLog}}\n" + c("Checker Log:") + " {{.CheckerLog}}" + "{{end}}",
-			// Input:
-			// 5 3
-			// 1 2 3 4 5
-			//
-			// OUTPUT | EXPECTED
-			// 4      | 3
-			// 1      | 1
-			"{{- if .Compare}}\n" + c("Input:") + "\n{{.Input}}" + "\n{{.Compare}}" + "{{end}}",
-		}, "\n"), verdictData)
-
-		fmt.Println()
-		fmt.Println(strings.TrimSpace(out))
+	// Unexpected errors - handle panics.
+	defer func() {
+		if r := recover(); r != nil {
+			verd.verdict = color.HiRedString("FAIL")
+			verd.failLog = r.(error).Error()
+		}
 	}()
 
-	// Read input from file.
-	input, err := os.Open(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	defer input.Close()
+	var testStdin io.Reader
+	var testStdout io.Writer
+	var testStderr strings.Builder
 
-	// Run code against test case.
-	var output, stderr bytes.Buffer
-	elapsed, err := runShellScript(runScript, timelimit, input, &output, &stderr)
-
-	verdictData.Elapsed = elapsed.Truncate(time.Millisecond)
-	verdictData.Stderr = stderr.String()
-
-	// Determine verdicts.
-	switch {
-	case errors.Is(err, context.DeadlineExceeded):
-		// It's a time limit exceeded case.
-		verdictData.Verdict = color.YellowString("TLE")
-
-	case err != nil:
-		// It's a runtime error case.
-		verdictData.Verdict = color.RedString("RTE")
-
-	default:
-		// Output recieved, and program exited normally.
-		// Check if output matches required answer(s).
-
-		// write output to temporary file.
-		outputFile, err := ioutil.TempFile(os.TempDir(), "cpt-test-output-")
+	// If the submission code reads from stdin.
+	if testInputStreamFile == "" {
+		fl, err := os.Open(testInputFile)
 		if err != nil {
 			panic(err)
 		}
-		defer os.Remove(outputFile.Name())
-		outputFile.Write(output.Bytes())
+		defer fl.Close()
 
-		// Run checker to validate output.
-		checkerScript, err := util.CleanTemplate(checkerTmplt, map[string]string{
-			"inputFile":    inputFile,
-			"outputFile":   outputFile.Name(),
-			"expectedFile": expectedFile,
+		testStdin = fl
+	} else {
+		os.Remove(filepath.Join(sandboxDir, testInputStreamFile))
+		err := os.Link(testInputFile, filepath.Join(sandboxDir, testInputStreamFile))
+		if err != nil {
+			panic(err)
+		}
+		testStdin = nil
+	}
+
+	// If the output code writes to stdout.
+	if testOutputStreamFile == "" {
+		fl, err := os.Create(testOutputFile)
+		if err != nil {
+			panic(err)
+		}
+		defer fl.Close()
+
+		testStdout = fl
+	} else {
+		os.Remove(filepath.Join(sandboxDir, testOutputStreamFile))
+		err := os.Link(testOutputFile, filepath.Join(sandboxDir, testOutputStreamFile))
+		if err != nil {
+			panic(err)
+		}
+		testStdout = nil
+	}
+
+	// Run submission against the testcase.
+	timeConsumed, memoryConsumed, err := Execute(sandboxDir, runScript,
+		testStdin, testStdout, &testStderr,
+		timeLimit, memoryLimit)
+
+	verd.timeConsumed = timeConsumed
+	verd.memoryConsumed = memoryConsumed
+	verd.stderrLog = testStderr.String()
+
+	if err == context.DeadlineExceeded {
+		verd.verdict = color.YellowString("TLE")
+	} else if memoryConsumed >= memoryLimit {
+		verd.verdict = color.YellowString("MLE")
+	} else if err != nil {
+		verd.verdict = color.RedString("RTE")
+		verd.runtimeLog = err.Error()
+	} else {
+		// Program exited gracefully (exit code 0).
+		// Run checker to determine verdict.
+
+		checkerScript, err := utils.CleanTemplate(checkerScript, map[string]string{
+			"inputFile":    testInputFile,
+			"outputFile":   testOutputFile,
+			"expectedFile": testExpectedFile,
 		})
 		if err != nil {
 			panic(err)
 		}
 
-		var checkerStderr bytes.Buffer
-		_, err = runShellScript(checkerScript, time.Minute, nil, nil, &checkerStderr)
+		var checkerStderr strings.Builder
+		_, _, err = Execute(sandboxDir, checkerScript,
+			nil, nil, &checkerStderr,
+			time.Second*10, 256*1024*1024)
 
-		verdictData.CheckerLog = checkerStderr.String()
+		verd.checkerLog = checkerStderr.String()
 
-		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
-			// Checker ended with error code 1.
-			// Verdict is thus wrong answer.
-			verdictData.Verdict = color.RedString("WA")
+		// Determine checker verdict by exit code.
+		// Refer github.com/MikeMirzayanov/testlib/blob/master/testlib.h#L219
+		// for complete details of all EXIT codes.
 
-			// Read input from file.
-			input, err := os.Open(inputFile)
-			if err != nil {
-				panic(err)
-			}
-			defer input.Close()
-
-			inputBuf := make([]byte, 80)
-			if n, _ := input.Read(inputBuf); n == len(inputBuf) {
-				inputBuf = append(inputBuf[:n-3], []byte("...")...)
-			}
-
-			// Read expected from file.
-			expected, err := os.Open(expectedFile)
-			if err != nil {
-				panic(err)
-			}
-			defer expected.Close()
-
-			expectedBuf := make([]byte, 80)
-			if n, _ := expected.Read(expectedBuf); n == len(expectedBuf) {
-				expectedBuf = append(expectedBuf[:n-3], []byte("...")...)
-			}
-
-			// Read output from created output file.
-			output, err := os.Open(outputFile.Name())
-			if err != nil {
-				panic(err)
-			}
-			defer output.Close()
-
-			outputBuf := make([]byte, 80)
-			if n, _ := output.Read(outputBuf); n == len(outputBuf) {
-				outputBuf = append(outputBuf[:n-3], []byte("...")...)
-			}
-
-			// Table to display output difference.
-			t := table.NewWriter()
-			t.SetStyle(table.StyleLight)
-			t.Style().Options.DrawBorder = false
-			t.Style().Box.PaddingRight = "\t"
-
-			headerColor := text.Colors{text.FgBlue, text.Bold}
-			t.SetColumnConfigs([]table.ColumnConfig{
-				{Number: 1, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 50},
-				{Number: 2, AlignHeader: text.AlignCenter, ColorsHeader: headerColor, Align: text.AlignLeft, WidthMax: 50},
-			})
-
-			t.AppendHeader(table.Row{"OUTPUT", "EXPECTED"})
-			t.AppendRow(table.Row{string(outputBuf), string(expectedBuf)})
-
-			verdictData.Compare = t.Render()
-			verdictData.Input = string(inputBuf)
-
-		} else if err != nil {
-			// Unknown error; Panic.
-			panic(err)
+		var exitErrno int
+		if exitErr, ok := err.(*exec.ExitError); !ok {
+			exitErrno = 0
 		} else {
-			// Solution produced correct answer.
-			verdictData.Verdict = color.GreenString("AC")
+			exitErrno = exitErr.ExitCode()
+		}
+
+		switch exitErrno {
+		case 0, 7:
+			// ==> AC
+			// ==> POINTS
+			verd.verdict = color.GreenString("AC")
+		case 1, 2:
+			// ==> WA
+			// ==> PE
+			verd.verdict = color.RedString("WA")
+		case 3:
+			// ==> FAIL
+			verd.verdict = color.HiRedString("FAIL")
+		case 8:
+			// ==> EOF
+			verd.verdict = color.YellowString("EOF")
 		}
 	}
+
+	// Read input/output/expected files; Truncates to 80 bytes.
+	truncReadFile := func(filePath string) string {
+		fl, err := os.Open(filePath)
+		if err != nil {
+			panic(err)
+		}
+
+		buf := make([]byte, 80)
+		if n, _ := fl.Read(buf); n == 80 {
+			// Output has been truncated.
+			buf = append(buf, []byte("...")...)
+		}
+		return string(bytes.Trim(buf, "\x00"))
+	}
+
+	verd.testDetails.truncInput = truncReadFile(testInputFile)
+	verd.testDetails.truncOutput = truncReadFile(testOutputFile)
+	verd.testDetails.truncExpected = truncReadFile(testExpectedFile)
+
+	return
 }
 
-func interactiveMode(script string) {
-	// It doesn't get any simpler, does it?
-	fmt.Println() // Newline for asthetics.
-	fmt.Println(color.GreenString("---- * ---- launched ---- * ----"))
-	runShellScript(script, time.Hour, os.Stdin, os.Stdout, os.Stderr)
-	fmt.Println(color.GreenString("---- * ---- finished ---- * ----"))
+func interactiveTestingMode(sandboxDir, runScript string,
+	timeLimit time.Duration, memoryLimit uint64) {
+
+	fmt.Println(color.GreenString("────────────────────────────────"))
+	timeConsumed, memoryConsumed, _ := Execute(sandboxDir, runScript,
+		os.Stdin, os.Stdout, os.Stderr,
+		timeLimit, memoryLimit)
+	fmt.Println(color.GreenString("────────────────────────────────"))
+
+	// Time: 32ms    Memory: 2000kb
+	c := color.New(color.FgBlue, color.Bold).SprintFunc()
+	timeConsumed = timeConsumed.Truncate(time.Millisecond)
+	memoryKB := fmt.Sprintf("%dkb", memoryConsumed/1024)
+	fmt.Println(c("Time:"), timeConsumed, "\t"+c("Memory:"), memoryKB)
+	fmt.Println()
 }

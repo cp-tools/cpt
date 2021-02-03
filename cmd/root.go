@@ -6,9 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -23,7 +22,7 @@ var rootCmd = &cobra.Command{
 		color.NoColor = !cnf.GetBool("ui.stdoutColor")
 	},
 
-	Version: "v0.13.2",
+	Version: "v0.16.1",
 
 	TraverseChildrenHooks: true,
 }
@@ -47,12 +46,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfDir)
-
-	// Set OnSIGINT function for survey module.
-	survey.OnInterrupt = func() {
-		fmt.Println("interrupted")
-		os.Exit(1)
-	}
 }
 
 // Determine and set configDir path.

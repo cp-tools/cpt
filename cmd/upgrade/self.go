@@ -6,6 +6,8 @@ import (
 	"runtime"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/cp-tools/cpt/utils"
+
 	"github.com/fatih/color"
 	"github.com/inconshreveable/go-update"
 	"golang.org/x/mod/semver"
@@ -24,10 +26,11 @@ func Self(currentVersion string) {
 	fmt.Println(descMsg)
 
 	var confirm bool
-	survey.AskOne(&survey.Confirm{
+	err := survey.AskOne(&survey.Confirm{
 		Message: "Do you wish to upgrade to '" + latestVersion + "'?",
 		Default: true,
 	}, &confirm)
+	utils.SurveyOnInterrupt(err)
 
 	if confirm == false {
 		return

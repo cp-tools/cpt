@@ -3,19 +3,22 @@ module github.com/cp-tools/cpt
 go 1.14
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.2.5
-	github.com/cp-tools/cpt-lib/v2 v2.1.3
+	github.com/AlecAivazis/survey/v2 v2.2.7
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
+	github.com/cp-tools/cpt-lib/v2 v2.1.4
 	github.com/fatih/color v1.10.0
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gosuri/uilive v0.0.4
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
-	github.com/jedib0t/go-pretty/v6 v6.0.5
+	github.com/jedib0t/go-pretty/v6 v6.0.6
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
-	github.com/knadh/koanf v0.14.0
+	github.com/knadh/koanf v0.15.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mitchellh/mapstructure v1.4.0
+	github.com/mitchellh/mapstructure v1.4.1
+	github.com/shirou/gopsutil v3.21.1+incompatible
 	github.com/spf13/cobra v1.1.1
-	github.com/stretchr/testify v1.6.1
-	golang.org/x/mod v0.1.0
+	github.com/stretchr/testify v1.7.0
+	golang.org/x/mod v0.4.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 

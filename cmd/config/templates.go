@@ -5,7 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cp-tools/cpt/packages/conf"
+	"github.com/cp-tools/cpt/pkg/conf"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
@@ -17,7 +18,7 @@ import (
 func AddTemplate(cnf *conf.Conf) {
 	// Template alias is what template will be called.
 	alias := ""
-	survey.AskOne(&survey.Input{
+	err := survey.AskOne(&survey.Input{
 		Message: "What do you want to call the template?",
 		Help: `Set the alias you wish to refer the template by.
 It must be unique, and should not contain whitespaces.`,
@@ -36,10 +37,11 @@ It must be unique, and should not contain whitespaces.`,
 		}
 		return nil
 	}))
+	utils.SurveyOnInterrupt(err)
 
 	// select file containing template code
 	templateMap := make(map[string]interface{})
-	survey.Ask([]*survey.Question{
+	err = survey.Ask([]*survey.Question{
 		{
 			Name: "codeFile",
 			Prompt: &survey.Input{
@@ -156,6 +158,7 @@ Java ==> 'rm {{.fileNoExt}}' (linux)
 			},
 		},
 	}, &templateMap)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Set("template."+alias, templateMap)
 }
@@ -168,10 +171,11 @@ func RemoveTemplate(cnf *conf.Conf) {
 	}
 
 	alias := ""
-	survey.AskOne(&survey.Select{
+	err := survey.AskOne(&survey.Select{
 		Message: "Which template do you want to delete?",
 		Options: cnf.GetMapKeys("template"),
 	}, &alias)
+	utils.SurveyOnInterrupt(err)
 
 	cnf.Delete("template." + alias)
 }
@@ -181,17 +185,19 @@ func RemoveTemplate(cnf *conf.Conf) {
 func SetTemplateLanguage(cnf *conf.Conf, languages []string) {
 	// Select template to map language to.
 	alias := ""
-	survey.AskOne(&survey.Select{
+	err := survey.AskOne(&survey.Select{
 		Message: "Which template do you want to configure?",
 		Options: cnf.GetMapKeys("template"),
 	}, &alias)
+	utils.SurveyOnInterrupt(err)
 
 	// Select language to map to template.
 	language := ""
-	survey.AskOne(&survey.Select{
+	err = survey.AskOne(&survey.Select{
 		Message: "Which language does template '" + alias + "' correspond to?",
 		Options: append(languages, ""),
 	}, &language)
+	utils.SurveyOnInterrupt(err)
 
 	if language == "" {
 		cnf.Delete("template." + alias + ".language")

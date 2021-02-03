@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/cp-tools/cpt/cmd/codeforces/open"
-	"github.com/cp-tools/cpt/util"
+	"github.com/cp-tools/cpt/pkg/conf"
+
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,7 @@ var openCmd = &cobra.Command{
 	Use:   "open [SPECIFIER]",
 	Short: "Open required page in default browser",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		cnf = util.LoadLocalConf(cnf)
+		cnf = conf.New("local").SetParent(cnf).LoadFile("meta.yaml")
 
 		// Check if given args is a valid specifier.
 		if _, err := parseSpecifier(args, cnf); err != nil {

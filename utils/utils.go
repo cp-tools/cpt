@@ -1,14 +1,14 @@
-package util
+package utils
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 	"text/template"
 	"time"
 
-	"github.com/cp-tools/cpt/packages/conf"
-
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
 	"github.com/gosuri/uilive"
 )
@@ -34,22 +34,6 @@ func ExtractMapKeys(varMap interface{}) (data []string) {
 	return
 }
 
-// LoadLocalConf returns local folder conf.
-func LoadLocalConf(cnf *conf.Conf) *conf.Conf {
-	cnf = conf.New("local").SetParent(cnf)
-	cnf.LoadFile("meta.yaml")
-
-	return cnf
-}
-
-// ColorHeaderFormat sets color (for headers mostly).
-func ColorHeaderFormat(str ...string) []string {
-	for i := range str {
-		str[i] = color.New(color.FgBlue, color.Bold, color.Underline).Sprint(str[i])
-	}
-	return str
-}
-
 // CleanTemplate creates and runs template on passed string, with given params.
 func CleanTemplate(str string, data interface{}) (string, error) {
 	tmplt, err := template.New("").Parse(str)
@@ -63,4 +47,24 @@ func CleanTemplate(str string, data interface{}) (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+// SurveyOnInterrupt is run on SIGINT.
+func SurveyOnInterrupt(err error) {
+	if err == terminal.InterruptErr {
+		fmt.Println("interrupted")
+		os.Exit(130)
+	} else if err != nil {
+		fmt.Println(color.RedString("unexpected error occurred:"), err)
+		os.Exit(1)
+	}
+}
+
+// FileExists returns a bool signifying if given file exists.
+func FileExists(filename string) bool {
+	f, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !f.IsDir()
 }
