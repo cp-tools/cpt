@@ -23,6 +23,8 @@ var rootCmd = &cobra.Command{
 	},
 
 	Version: "v0.16.1",
+
+	TraverseChildrenHooks: true,
 }
 
 var (
@@ -44,8 +46,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfDir)
-	// Set Persistent commands to be queued.
-	cobra.EnablePersistentRunOverride = false
 }
 
 // Determine and set configDir path.

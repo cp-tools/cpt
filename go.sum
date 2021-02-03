@@ -43,6 +43,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cornfeedhobo/pflag v1.0.2 h1:IjSe1CSlZeyvu35MojSSkOy0KT2D9o3/GkqXkYe+Ufw=
 github.com/cornfeedhobo/pflag v1.0.2/go.mod h1:52HSr+TtbhOmAXFt941ErpwRFt+yJBCDDsZdW/kD/JM=
+github.com/cp-tools/cobra v1.1.2-0.20210203184158-3f48611f4183 h1:qc9Tq8VkjqCNHr2433Vskd6Sp8RCXG5av2kVquv2PMY=
+github.com/cp-tools/cobra v1.1.2-0.20210203184158-3f48611f4183/go.mod h1:ZjwqWkCg0LnXvLRIfTLdB4Y/MCO3gMHHJ2KFxQZy4xE=
 github.com/cp-tools/cpt-lib/v2 v2.1.4 h1:5lofTKqwKqSepXXcbfp5aK9TftAUK/nW7Wgd0SAWu00=
 github.com/cp-tools/cpt-lib/v2 v2.1.4/go.mod h1:G7PKzsihBLNd+mzzzydZ7VJn3qL8Gye7qWNDzEJ+BBU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -138,8 +140,6 @@ github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf h1:WfD7V
 github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf/go.mod h1:hyb9oH7vZsitZCiBt0ZvifOrB+qc8PS5IiilCIb87rg=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
-github.com/infinitepr0/cobra v1.0.1-0.20201026004338-69df80ec4c29 h1:8sZbtR5dQH4xR+X0Kc1RFfQuNV8TQfD907lUlzLslO4=
-github.com/infinitepr0/cobra v1.0.1-0.20201026004338-69df80ec4c29/go.mod h1:WnodtKOvamDL/PwE2M4iKs8aMDBZ5Q5klgD3qfVJQMI=
 github.com/infinitepr0/go-homedir v1.2.0 h1:qSxnzzIRBvXMelmOFbchkf+p1UOrho7D1smgEsF9D5M=
 github.com/infinitepr0/go-homedir v1.2.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/jedib0t/go-pretty/v6 v6.0.6 h1:hUOe8GJCG1gyGSUT8wiiFtB7TnkprPIkj5YmgcpR7lE=

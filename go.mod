@@ -26,4 +26,4 @@ replace github.com/spf13/pflag => github.com/cornfeedhobo/pflag v1.0.2
 
 replace github.com/mitchellh/go-homedir => github.com/infinitepr0/go-homedir v1.2.0
 
-replace github.com/spf13/cobra => github.com/infinitepr0/cobra v1.0.1-0.20201026004338-69df80ec4c29
+replace github.com/spf13/cobra => github.com/cp-tools/cobra v1.1.2-0.20210203184158-3f48611f4183
