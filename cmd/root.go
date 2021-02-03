@@ -24,6 +24,8 @@ var rootCmd = &cobra.Command{
 	},
 
 	Version: "v0.13.2",
+
+	TraverseChildrenHooks: true,
 }
 
 var (
@@ -45,8 +47,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfDir)
-	// Set Persistent commands to be queued.
-	cobra.EnablePersistentRunOverride = false
 
 	// Set OnSIGINT function for survey module.
 	survey.OnInterrupt = func() {
