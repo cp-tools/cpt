@@ -9,33 +9,36 @@ import (
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|fish|powershell]",
 	Short: "Generate completion script",
-	Long: `To load completions:
-Bash:
+	Long: `To generate shell completions:
 
-# To load completions for each session, execute once:
+Bash:
+------------
+To load completions for each session, execute once:
 Linux:
-  $ cpt completion bash > /etc/bash_completion.d/cpt
+	cpt completion bash > /etc/bash_completion.d/cpt
 MacOS:
-  $ cpt completion bash > /usr/local/etc/bash_completion.d/cpt
+	cpt completion bash > /usr/local/etc/bash_completion.d/cpt
 
 Zsh:
+------------
+If shell completion is not enabled in your environment, you will
+need to enable it. Execute the following once:
+	echo "autoload -U compinit; compinit" >> ~/.zshrc
 
-# If shell completion is not already enabled in your environment you will need
-# to enable it.  You can execute the following once:
-
-$ echo "autoload -U compinit; compinit" >> ~/.zshrc
-
-# To load completions for each session, execute once:
-$ cpt completion zsh > "${fpath[1]}/_cpt"
-
-# You will need to start a new shell for this setup to take effect.
+To load completions for each session, execute once:
+	cpt completion zsh > "${fpath[1]}/_cpt" 
 
 Fish:
+------------
+To load completions for each session, execute once:
+	cpt completion fish > ~/.config/fish/completions/cpt.fish
 
-$ cpt completion fish | source
+Powershell:
+------------
+To load completions for each session, execute once:
+	cpt completion powershell > cpt.ps1
 
-# To load completions for each session, execute once:
-$ cpt completion fish > ~/.config/fish/completions/cpt.fish
+Source the generated file from your powershell profile.
 `,
 	DisableFlagsInUseLine: true,
 	ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
