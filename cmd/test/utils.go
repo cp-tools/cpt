@@ -118,7 +118,9 @@ func Execute(dir, command string,
 	cmd.Dir = dir
 
 	timer := time.Now()
-	cmd.Start()
+	if err := cmd.Start(); err != nil {
+		return 0, 0, err
+	}
 
 	// Actively check for MLE.
 	ch := make(chan error)

@@ -22,6 +22,7 @@ type (
 		failLog    string
 		checkerLog string
 		stderrLog  string
+		runtimeLog string
 
 		timeConsumed   time.Duration
 		memoryConsumed uint64
@@ -61,6 +62,7 @@ func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 
 		testStdin = fl
 	} else {
+		os.Remove(filepath.Join(sandboxDir, testInputStreamFile))
 		err := os.Link(testInputFile, filepath.Join(sandboxDir, testInputStreamFile))
 		if err != nil {
 			panic(err)
@@ -78,6 +80,7 @@ func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 
 		testStdout = fl
 	} else {
+		os.Remove(filepath.Join(sandboxDir, testOutputStreamFile))
 		err := os.Link(testOutputFile, filepath.Join(sandboxDir, testOutputStreamFile))
 		if err != nil {
 			panic(err)
@@ -100,7 +103,7 @@ func defaultTestingMode(sandboxDir, runScript, checkerScript string,
 		verd.verdict = color.YellowString("MLE")
 	} else if err != nil {
 		verd.verdict = color.RedString("RTE")
-
+		verd.runtimeLog = err.Error()
 	} else {
 		// Program exited gracefully (exit code 0).
 		// Run checker to determine verdict.

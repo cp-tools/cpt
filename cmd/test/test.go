@@ -30,6 +30,7 @@ func Test(submissionFilePath, checkerScript string,
 		fmt.Println(color.RedString("error while creating sandbox:"), err)
 		os.Exit(1)
 	}
+	defer os.RemoveAll(sandboxDir)
 
 	// Copy submission file to sandbox directory.
 	submissionFilePath, _ = filepath.Abs(submissionFilePath)
@@ -171,6 +172,11 @@ func (verd *testExecDetails) prettyPrint(testIndex int) {
 		// 1 2 3
 		// a b c
 		fmt.Println(c("Stderr:"), strings.TrimSpace(verd.stderrLog))
+	}
+
+	if verd.runtimeLog != "" {
+		// Segmentation fault (core dumped)
+		fmt.Println(c("Runtime log:"), strings.TrimSpace(verd.runtimeLog))
 	}
 
 	if verd.checkerLog != "" {
