@@ -81,10 +81,7 @@ C++ ==> 'g++ -std=c++11 -Wall {{.file}}'
 Java ==> 'javac {{.file}}'
 
 - The runscript (next prompt) is run per test case.
-See explanation in help section of next prompt.
-
-- The postscript (final prompt) is run at the end, exactly once.
-See explanation in help section of final prompt.`,
+See explanation in help section of next prompt.`,
 			},
 			Validate: func(ans interface{}) error {
 				// check if script is well formed
@@ -111,48 +108,13 @@ This is a required field.
 Example runscripts that you can use (without quotes) are:
 Python ==> 'python3 {{.file}}'
 Java ==> 'java {{.fileNoExt}}'
-C++ ==> './a.out' (linux) or 'a.exe' (windows)
-
-Note that, you need not redirect input/output in your code
-and instead read and write to stdin and stdout respectively.
-
-- The postscript (final prompt) is run at the end, exactly once.
-See explanation in help section of final prompt.`,
+C++ ==> './a.out' (linux) or 'a.exe' (windows)`,
 			},
 			Validate: func(ans interface{}) error {
 				if ans.(string) == "" {
 					return fmt.Errorf("runscript value is required")
 				}
 
-				_, err := shellquote.Split(ans.(string))
-				return err
-			},
-		},
-		{
-			Name: "postscript",
-			Prompt: &survey.Input{
-				Message: "What script should be run, after testing the solution code?",
-				Help: `
-When testing your solution using 'cpt test', the following takes place:
-
-- The prescript (first prompt) is run at the start, exactly once.
-See explanation in help section of first prompt.
-
-- The runscript (previous prompt) is run per test case.
-See explanation in help section of previous prompt.
-
-- The postscript (current prompt) is run at the end, exactly once.
-Generally, this is used to clean up residual files like executables, if any.
-Intepreted languages (like python) can omit this.
-
-Example postscripts you can use (without quotes) are:
-C++ ==> 'rm a.out' (linux) or 'rem a.exe' (windows)
-Java ==> 'rm {{.fileNoExt}}' (linux)
-		 'rem {{.fileNoExt}}' (windows)
-`,
-			},
-			Validate: func(ans interface{}) error {
-				// check if script is well formed
 				_, err := shellquote.Split(ans.(string))
 				return err
 			},
