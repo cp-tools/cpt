@@ -3,10 +3,9 @@ package open
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"runtime"
 
 	"github.com/cp-tools/cpt-lib/v2/codeforces"
+	"github.com/cp-tools/cpt/utils"
 
 	"github.com/fatih/color"
 )
@@ -30,24 +29,5 @@ func Open(arg codeforces.Args, mode string) {
 		os.Exit(1)
 	}
 	// Open the webpage.
-	openURL(pageURL)
-}
-
-// Attribution: https://stackoverflow.com/a/39324149
-// openURL opens the specified URL in the default browser of the user.
-func openURL(url string) error {
-	var cmd string
-	var args []string
-
-	switch runtime.GOOS {
-	case "windows":
-		cmd = "cmd"
-		args = []string{"/c", "start"}
-	case "darwin":
-		cmd = "open"
-	default: // "linux", "freebsd", "openbsd", "netbsd"
-		cmd = "xdg-open"
-	}
-	args = append(args, url)
-	return exec.Command(cmd, args...).Start()
+	utils.OpenURL(pageURL)
 }
