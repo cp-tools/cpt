@@ -21,7 +21,7 @@ import (
 // Checkers upgrades the default checker files.
 func Checkers(checkerDir string, cnf *conf.Conf) {
 	// Version of current checkers present.
-	currentVersion := cnf.GetParent("checker").GetString("version")
+	currentVersion := cnf.GetParent("checker").GetString("checker.version")
 
 	latestVersion, descMsg := getLatestReleaseInfo("https://api.github.com/repos/cp-tools/cpt-checker/releases/latest")
 	// Check if current version is outdated.
