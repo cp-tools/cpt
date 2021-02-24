@@ -3,11 +3,11 @@ module github.com/cp-tools/cpt
 go 1.14
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.2.7
+	github.com/AlecAivazis/survey/v2 v2.2.8
 	github.com/Netflix/go-expect v0.0.0-20201125194554-85d881c3777e // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/cp-tools/cpt-lib/v2 v2.2.1
+	github.com/cp-tools/cpt-lib/v2 v2.2.2
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/fatih/color v1.10.0
 	github.com/go-ole/go-ole v1.2.5 // indirect
@@ -32,8 +32,8 @@ require (
 	github.com/ysmood/got v0.10.0 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/mod v0.4.1
-	golang.org/x/net v0.0.0-20210220033124-5f55cee0dc0d // indirect
-	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect
+	golang.org/x/net v0.0.0-20210222171744-9060382bd457 // indirect
+	golang.org/x/sys v0.0.0-20210223212115-eede4237b368 // indirect
 	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
