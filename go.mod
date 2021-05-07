@@ -7,11 +7,11 @@ require (
 	github.com/Netflix/go-expect v0.0.0-20201125194554-85d881c3777e // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/cp-tools/cpt-lib/v2 v2.2.2
+	github.com/cp-tools/cpt-lib/v2 v2.2.3
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/fatih/color v1.10.0
 	github.com/go-ole/go-ole v1.2.5 // indirect
-	github.com/go-rod/rod v0.92.0 // indirect
+	github.com/go-rod/rod v0.97.12 // indirect
 	github.com/gosuri/uilive v0.0.4
 	github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c // indirect
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
@@ -29,7 +29,6 @@ require (
 	github.com/shirou/gopsutil v3.21.1+incompatible
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
-	github.com/ysmood/got v0.10.0 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/mod v0.4.1
 	golang.org/x/net v0.0.0-20210222171744-9060382bd457 // indirect
