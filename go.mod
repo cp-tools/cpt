@@ -11,7 +11,6 @@ require (
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/fatih/color v1.10.0
 	github.com/go-ole/go-ole v1.2.5 // indirect
-	github.com/go-rod/rod v0.97.12 // indirect
 	github.com/gosuri/uilive v0.0.4
 	github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c // indirect
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
